@@ -1,17 +1,20 @@
-import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+
+import React from 'react';
 import { createUseStyles } from 'react-jss';
-import { AppTheme } from './types/styles';
+
 import { globalTheme } from './common/theming';
+import { AppTheme } from './common/theming.types';
+import logo from './logo.svg';
 
 const useStyles = createUseStyles((theme: AppTheme) => ({
-  ...globalTheme(theme)
-}))
+  ...globalTheme(theme),
+}));
 
 function App() {
+  const classes = useStyles();
   return (
-    <div className="App">
+    <div>
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>

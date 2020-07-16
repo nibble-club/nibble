@@ -1,0 +1,13 @@
+{
+  "editor.tabSize": 2,
+  "python.linting.pylintEnabled": true,
+  "python.linting.enabled": true,
+  "cSpell.words": ["theming"],
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ]
+}
