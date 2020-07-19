@@ -2,7 +2,10 @@
   "editor.tabSize": 2,
   "python.linting.pylintEnabled": true,
   "python.linting.enabled": true,
-  "cSpell.words": ["theming"],
+  "cSpell.words": [
+    "tfstate",
+    "theming"
+  ],
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "eslint.validate": [
     "javascript",

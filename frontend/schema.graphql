@@ -7,11 +7,11 @@ type Query {
     property: NibbleRecommendationReason
   ): [NibbleAvailable]
   closestRestaurants(
-    location: LatLon
+    location: LatLonInput
     paginationInput: PaginationInput
   ): [Restaurant]
   restaurantInformation(restaurantId: ID!): Restaurant
-  recentSearch(userId: ID!): [SearchParametersInput]
+  recentSearch(userId: ID!): [SearchParameters]
   search(
     user: UserCurrentContextInput
     searchParameters: SearchParametersInput
@@ -38,9 +38,8 @@ type Mutation {
 # keep alphabetically sorted below here
 
 type Address {
-  id: ID!
   streetAddress: Int!
-  dependentLocality: String
+  dependentLocality: Stringstr
   locality: String!
   administrativeArea: String!
   country: String!
@@ -48,28 +47,38 @@ type Address {
   location: LatLon
 }
 
+input AddressInput {
+  id: ID!
+  streetAddress: Int!
+  dependentLocality: String
+  locality: String!
+  administrativeArea: String!
+  country: String!
+  postalCode: String!
+}
+
 input AdminNibbleInput {
   name: String!
   type: NibbleType
   count: Int! # number available
-  imageUrl: S3Object!
+  imageUrl: S3ObjectInput!
   restaurantId: ID!
   description: String
-  price: Price! # price in cents
-  availableFrom: ZonedDateTime!
-  availableTo: ZonedDateTime!
+  price: Int! # price in cents
+  availableFrom: AWSTimestamp!
+  availableTo: AWSTimestamp!
 }
 
-input AdminCreateNibbleResponse {
+type AdminCreateNibbleResponse {
   id: ID!
 }
 
 input AdminCreateRestaurantInput {
   name: String!
-  address: Address!
+  address: AddressInput!
   description: String!
-  logoUrl: S3Object!
-  heroUrl: S3Object!
+  logoUrl: S3ObjectInput!
+  heroUrl: S3ObjectInput!
   disclaimer: String
 }
 
@@ -90,11 +99,10 @@ type LatLon {
   longitude: Float!
 }
 
-"""
-Accepts strings in format YYYY-MM-DD HH:MM:SS; does not hold information about
-time zone
-"""
-scalar LocalDateTime
+input LatLonInput {
+  latitude: Float!
+  longitude: Float!
+}
 
 type NibbleAvailable implements NibbleCard {
   id: ID!
@@ -104,40 +112,40 @@ type NibbleAvailable implements NibbleCard {
   imageUrl: S3Object!
   restaurant: Restaurant!
   description: String
-  price: Price! # price in cents
-  availableFrom: ZonedDateTime!
-  availableTo: ZonedDateTime!
+  price: Int! # price in cents
+  availableFrom: AWSTimestamp!
+  availableTo: AWSTimestamp!
 }
 
 type NibbleCancelReservationResponse {
-  price: Price!
+  price: Int!
 }
 
 interface NibbleCard {
   id: ID!
   name: String!
   type: NibbleType
-  count: number!
+  count: Int!
   imageUrl: S3Object!
   restaurant: Restaurant!
   description: String
 }
 
 type NibbleCreateReservationResponse {
-  price: Price!
+  price: Int!
 }
 
 type NibbleHistory implements NibbleCard {
   id: ID!
   name: String!
   type: NibbleType
-  count: number!
+  count: Int!
   imageUrl: S3Object!
   restaurant: Restaurant!
   description: String
   status: NibbleOrderStatus!
-  reservedAt: ZonedDateTime!
-  cancelledAt: ZonedDateTime # mandatory if NibbleOrderStatus is CANCELLED*
+  reservedAt: AWSTimestamp!
+  cancelledAt: AWSTimestamp # mandatory if NibbleOrderStatus is CANCELLED*
   cancellationReason: String
 }
 
@@ -145,13 +153,13 @@ type NibbleReserved implements NibbleCard {
   id: ID!
   name: String!
   type: NibbleType
-  count: number! # number reserved
-  price: Price! # price in cents for entire reservation
+  count: Int! # number reserved
+  price: Int! # price in cents for entire reservation
   imageUrl: S3Object!
   restaurant: Restaurant!
-  reservedAt: ZonedDateTime!
-  availableFrom: ZonedDateTime!
-  availableTo: ZonedDateTime!
+  reservedAt: AWSTimestamp!
+  availableFrom: AWSTimestamp!
+  availableTo: AWSTimestamp!
   description: String
 }
 
@@ -178,11 +186,6 @@ input PaginationInput {
   limit: Int
 }
 
-"""
-Scalar is an integer, representing price in cents
-"""
-scalar Price
-
 type Restaurant {
   id: ID!
   name: String!
@@ -191,7 +194,7 @@ type Restaurant {
   logoUrl: S3Object!
   heroUrl: S3Object!
   disclaimer: String
-  distance(currentPos: LatLon): Float!
+  distance(currentPos: LatLonInput): Float!
   nibblesAvailable: [NibbleAvailable]!
   active: Boolean!
 }
@@ -202,16 +205,26 @@ type S3Object {
   key: String!
 }
 
+input S3ObjectInput {
+  bucket: String!
+  region: String!
+  key: String!
+}
+
+type SearchParameters {
+  text: String!
+}
+
 input SearchParametersInput {
   text: String!
   maxDistance: Int
-  earliestPickup: ZonedDateTime
-  latestPickup: ZonedDateTime
+  earliestPickup: AWSTimestamp
+  latestPickup: AWSTimestamp
   pagination: PaginationInput
 }
 
 type SearchRecentQueries {
-  recentQueries: [SearchParametersInput]
+  recentQueries: [SearchParameters]
 }
 
 type SearchResults {
@@ -219,15 +232,10 @@ type SearchResults {
   restaurants: [Restaurant]
 }
 
-"""
-The time zone offset in hours from UTC
-"""
-scalar TimeZone
-
 input UserCurrentContextInput {
   id: ID!
   postalCode: String!
-  location: LatLon
+  location: LatLonInput
 }
 
 type User {
@@ -239,9 +247,4 @@ type User {
   postalCode: String!
   nibblesReserved: [NibbleReserved]!
   nibblesHistory: [NibbleHistory]!
-}
-
-type ZonedDateTime {
-  localDateTime: LocalDateTime!
-  timeZone: TimeZone!
 }
