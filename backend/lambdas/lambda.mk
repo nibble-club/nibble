@@ -31,6 +31,8 @@ ARTIFACT_ENV_VAR_SET := $(ARTIFACT_ENV_VAR) = "$(TARGET_LAMBDA_PACKAGE_NAME).zip
 build: test compile
 
 archive:
+	echo $(NAME_ENV_VAR_SET)
+	echo $(ARTIFACT_ENV_VAR_SET)
 	@echo "Uploading artifact..."
 # upload to s3
 	@aws s3 cp $(BUILDS_DIR)/$(SOURCE_LAMBDA_PACKAGE_NAME).zip $(S3_DESTINATION) --profile nibble-deploy
@@ -38,8 +40,8 @@ archive:
 	@echo "Lambda artifact name: $(TARGET_LAMBDA_PACKAGE_NAME).zip"
 	@grep -q "^$(ARTIFACT_ENV_VAR)" $(ENV_VARS_FILE) \
 		&& perl -pi -e 's/^$(NAME_ENV_VAR).*/$(NAME_ENV_VAR_SET)/g' $(ENV_VARS_FILE) \
-		|| echo $(NAME_ENV_VAR_SET) >> $(ENV_VARS_FILE)
+		|| echo '$(NAME_ENV_VAR_SET)' >> $(ENV_VARS_FILE)
 	@grep -q "^$(ARTIFACT_ENV_VAR)" $(ENV_VARS_FILE) \
 		&& perl -pi -e 's/^$(ARTIFACT_ENV_VAR).*/$(ARTIFACT_ENV_VAR_SET)/g' $(ENV_VARS_FILE) \
-		|| echo $(ARTIFACT_ENV_VAR_SET) >> $(ENV_VARS_FILE)
+		|| echo '$(ARTIFACT_ENV_VAR_SET)' >> $(ENV_VARS_FILE)
 	@echo "Wrote lambda artifact and name to $(ENV_VARS_FILE)"

@@ -33,7 +33,7 @@ public class Handler implements RequestHandler<Map<String, String>, String> {
 
       TransferManager transferManager = TransferManagerBuilder.defaultTransferManager();
       File destDir = new File(MIGRATION_LOCATION);
-      logger.info("Set up transfer manager, transferring to {}", destDir.toString());
+      logger.info("Set up transfer manager, transferring from {} to {}", bucket + "/" + key, destDir.toString());
       MultipleFileDownload download = transferManager.downloadDirectory(bucket, key, destDir);
       logger.info("Started download process");
       download.waitForCompletion();
@@ -42,7 +42,8 @@ public class Handler implements RequestHandler<Map<String, String>, String> {
       String dbUrl = System.getenv("DB_URL");
       String dbUser = System.getenv("DB_USERNAME");
       String dbPassword = System.getenv("DB_PASSWORD");
-      Flyway flyway = Flyway.configure().dataSource(dbUrl, dbUser, dbPassword).locations("filesystem:" + MIGRATION_LOCATION).load();
+      Flyway flyway = Flyway.configure().dataSource(dbUrl, dbUser, dbPassword)
+          .locations("filesystem:" + MIGRATION_LOCATION).load();
 
       flyway.migrate();
       logger.info("Successfully migrated");

@@ -4,6 +4,7 @@ import json
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+
 def lambda_handler(event, context):
     logger.info("I'm alive!")
     logger.info(event)

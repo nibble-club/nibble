@@ -10,7 +10,8 @@ resource aws_iam_group_membership everyone {
   group = aws_iam_group.everyone.name
 
   users = [
-    aws_iam_user.a_churchill.name
+    aws_iam_user.a_churchill.name,
+    aws_iam_user.wendy.name,
   ]
 }
 
@@ -138,7 +139,8 @@ resource aws_iam_group_membership billing {
   group = aws_iam_group.billing.name
 
   users = [
-    aws_iam_user.a_churchill.name
+    aws_iam_user.a_churchill.name,
+    aws_iam_user.wendy.name,
   ]
 }
 

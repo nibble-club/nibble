@@ -57,17 +57,24 @@ prod-workspace:
 sync-postgres-schemas:
 	@echo "Syncing local schemas folder..."
 ifeq ($(DEPLOY_ENV),dev)
-	aws s3api head-bucket --bucket $(DB_SCHEMAS_S3_BUCKET)
-	aws s3 sync $(BACKEND_HOME)/schemas/postgres s3://$(DB_SCHEMAS_S3_BUCKET)/$(DEPLOY_ENV)/$(PERSONAL_WORKSPACE)/postgres
+	@aws s3api head-bucket --bucket $(DB_SCHEMAS_S3_BUCKET)
+	@aws s3 sync $(BACKEND_HOME)/schemas/postgres s3://$(DB_SCHEMAS_S3_BUCKET)/$(DEPLOY_ENV)_$(PERSONAL_WORKSPACE)-postgres
 else
-	aws s3api head-bucket --bucket $(DB_SCHEMAS_S3_BUCKET)
-	aws s3 sync $(BACKEND_HOME)/schemas/postgres s3://$(DB_SCHEMAS_S3_BUCKET)/$(DEPLOY_ENV)/postgres
+	@aws s3api head-bucket --bucket $(DB_SCHEMAS_S3_BUCKET)
+	@aws s3 sync $(BACKEND_HOME)/schemas/postgres s3://$(DB_SCHEMAS_S3_BUCKET)/$(DEPLOY_ENV)-postgres
 endif
+	@echo "Schemas synced successfully"
 
 migrate-postgres-schemas:
 	@echo "Migrating schemas..."
 ifeq ($(DEPLOY_ENV),dev)
-	aws lambda invoke --function-name $(DEPLOY_ENV)_$(PERSONAL_WORKSPACE)-migrate_database --log-type Tail /dev/null
+	@aws lambda invoke --function-name $(DEPLOY_ENV)_$(PERSONAL_WORKSPACE)-migrate_database \
+		--log-type Tail \
+		--query 'LogResult' \
+		--output text /dev/null | base64 -d
 else
-	aws lambda invoke --function-name $(DEPLOY_ENV)-migrate_database --log-type Tail /dev/null
+	@aws lambda invoke --function-name $(DEPLOY_ENV)-migrate_database \
+		--log-type Tail \
+		--query 'LogResult' \
+		--output text /dev/null | base64 -d
 endif

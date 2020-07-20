@@ -93,6 +93,19 @@ variable migrate_database_lambda_release_version {
   default = ""
 }
 
+variable psycopg2_lambda_name {
+  type = string
+}
+
+variable psycopg2_lambda_artifact {
+  type = string
+}
+
+variable psycopg2_lambda_release_version {
+  type    = string
+  default = ""
+}
+
 # secure parameters
 data aws_ssm_parameter postgres_password {
   name = "/environment/${var.environment_namespace}/postgres_password"

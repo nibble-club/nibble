@@ -1,16 +1,16 @@
 resource aws_kms_key state {
-  description = "Encrypts Terraform remote state bucket objects"
+  description             = "Encrypts Terraform remote state bucket objects"
   deletion_window_in_days = 10
-  enable_key_rotation = true
+  enable_key_rotation     = true
   tags = {
-    Name = "${local.name_prefix}-state_kms_key"
-    Purpose = "Terraform remote state"
+    Name        = "${local.name_prefix}-state_kms_key"
+    Purpose     = "Terraform remote state"
     Terraformed = "ops/modules/bootstrap"
   }
 }
 
 resource aws_kms_alias state {
-  name = "alias/terraform-state"
+  name          = "alias/terraform-state"
   target_key_id = aws_kms_key.state.key_id
 }
 
@@ -31,22 +31,22 @@ resource aws_s3_bucket state {
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
-        sse_algorithm = "aws:kms"
+        sse_algorithm     = "aws:kms"
         kms_master_key_id = aws_kms_key.state.arn
       }
     }
   }
 
   tags = {
-    Name = "${local.name_prefix}-terraform-state"
-    Purpose = "Terraform remote state"
+    Name        = "${local.name_prefix}-terraform-state"
+    Purpose     = "Terraform remote state"
     Terraformed = "ops/modules/bootstrap"
   }
 }
 
 resource aws_dynamodb_table state_lock {
-  hash_key = "LockID"
-  name = "${local.name_prefix}-terraform-state-lock"
+  hash_key     = "LockID"
+  name         = "${local.name_prefix}-terraform-state-lock"
   billing_mode = "PAY_PER_REQUEST"
 
   server_side_encryption {
@@ -83,8 +83,8 @@ data aws_iam_policy_document state_secret {
 }
 
 resource aws_iam_policy state_secret {
-  name = "${local.name_prefix}-remote_state_security"
-  path = "/state/secret/"
+  name   = "${local.name_prefix}-remote_state_security"
+  path   = "/state/secret/"
   policy = data.aws_iam_policy_document.state_secret.json
 }
 
@@ -140,7 +140,7 @@ data aws_iam_policy_document state_data {
 }
 
 resource aws_iam_policy state_data {
-  name = "${local.name_prefix}-remote_state_data"
-  path = "/state/data/"
+  name   = "${local.name_prefix}-remote_state_data"
+  path   = "/state/data/"
   policy = data.aws_iam_policy_document.state_data.json
 }

@@ -25,11 +25,12 @@ accounts = {
 def main():
     args = sys.argv[1:]
     assert (
-        len(args) > 0 and len(args) <= 2
-    ), "Arguments: mfa_code [target_account_name], e.g. 123456 nibble-development"
+        len(args) > 0 and len(args) <= 3
+    ), "Arguments: mfa_code [target_account_name] [target_role_name], e.g. 123456 nibble-development admin/full-access"
     mfa_code = args[0]
-    target_account_name = args[1] if len(args) == 2 else "nibble-development"
-    print("Assuming role in {0}".format(target_account_name))
+    target_account_name = args[1] if len(args) > 1 else "nibble-development"
+    target_role_name = args[2] if len(args) > 2 else "admin/deployment"
+    print("Assuming role {0} in {1}".format(target_role_name, target_account_name))
     try:
         target_account = accounts[target_account_name]
     except:
@@ -105,7 +106,7 @@ def main():
     user_name = mfa_device.UserName
 
     # get credentials
-    target_role = "arn:aws:iam::{0}:role/admin/deployment".format(target_account)
+    target_role = "arn:aws:iam::{0}:role/{1}".format(target_account, target_role_name)
     role_session_name = "aws_mfa-" + str(uuid.uuid4())
     credentials = aws_sts_client.assume_role(
         RoleArn=target_role,
@@ -126,11 +127,12 @@ def main():
     with open(aws_credentials_path, "w") as f:
         aws_credentials_file.write(f)
 
-    if mfa_profile not in aws_config_file:
-        aws_config_file[mfa_profile] = dict()
+    mfa_profile_name = "profile {0}".format(mfa_profile)
+    if mfa_profile_name not in aws_config_file:
+        aws_config_file[mfa_profile_name] = dict()
     created = datetime.now(timezone.utc)
     expires = created + timedelta(seconds=duration)
-    aws_config_file[mfa_profile].update(
+    aws_config_file[mfa_profile_name].update(
         {
             "source_profile": mfa_profile,
             "role_session_name": role_session_name,

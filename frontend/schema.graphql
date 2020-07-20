@@ -39,7 +39,7 @@ type Mutation {
 
 type Address {
   streetAddress: Int!
-  dependentLocality: Stringstr
+  dependentLocality: String
   locality: String!
   administrativeArea: String!
   country: String!

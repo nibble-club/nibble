@@ -15,7 +15,7 @@ module migrate_database_lambda {
   memory_size        = 1024
   environment = {
     S3_BUCKET   = local.db_schemas_bucket
-    S3_KEY      = "postgres"
+    S3_KEY      = "${var.environment_namespace}-postgres"
     DB_URL      = "jdbc:postgresql://${aws_db_instance.postgres.address}:${aws_db_instance.postgres.port}/${aws_db_instance.postgres.name}"
     DB_USERNAME = aws_db_instance.postgres.username
     DB_PASSWORD = aws_db_instance.postgres.password
@@ -24,6 +24,7 @@ module migrate_database_lambda {
     security_group_ids = [aws_security_group.lambda_security_group.id]
     subnet_ids         = var.private_subnet_ids
   }
+  layers = [aws_lambda_layer_version.postgres_lib.arn]
 }
 
 data aws_s3_bucket db_schemas {

@@ -11,10 +11,9 @@ CREATE TABLE "restaurant" (
 	"administrative_area" TEXT NOT NULL,
 	"country" TEXT NOT NULL,
 	"postal_code" TEXT NOT NULL,
-	"latitude" double NOT NULL,
-	"longitude" double NOT NULL,
-	"longitude" double NOT NULL,
-	"created_at" timestamp with time zone NOT NULL DEFAULT 'clock_timestamp()',
+	"latitude" double precision NOT NULL,
+	"longitude" double precision NOT NULL,
+	"created_at" timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT "restaurant_pk" PRIMARY KEY ("id")
 ) WITH (
   OIDS=FALSE
@@ -33,7 +32,7 @@ CREATE TABLE "nibble" (
 	"available_from" bigint NOT NULL,
 	"available_to" bigint NOT NULL,
 	"image_url" json NOT NULL,
-	"created_at" timestamp with time zone NOT NULL DEFAULT 'clock_timestamp()',
+	"created_at" timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT "nibble_pk" PRIMARY KEY ("id")
 ) WITH (
   OIDS=FALSE

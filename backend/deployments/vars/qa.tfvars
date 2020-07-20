@@ -1,7 +1,21 @@
 aws_region = "us-west-2"
 aws_profile = "nibble-deploy"
-environment_namespace = "qa"
-vpc_id = "vpc-0bba75db8452c9c2b"
-private_subnet_count = 2
+aws_target_account_id = "018002986064"
+environment = "qa"
+
+vpc_id = "vpc-0ccd4611785a9a2bb"
+public_subnet_id = "subnet-0b4b92fd9281d541b"
+private_subnet_ids = [
+  "subnet-0fe2f56efed741610",
+  "subnet-0dd79a5131defba7f",
+]
+vpc_endpoint_id = "vpce-034304dfd95a2aebb"
+
 postgres_instance_class = "db.t2.micro"
-target_aws_account_id = "430696291002"
+
+ssh_public_key_path = "~/.ssh/dev-ssh_key_pair.pub"
+
+resolver_admin_create_nibble_lambda_name = "resolver_admin_create_nibble"
+resolver_admin_create_nibble_lambda_artifact = "resolver_admin_create_nibble-4e8b69e3c0.zip"
+migrate_database_lambda_name = "migrate_database"
+migrate_database_lambda_artifact = "migrate_database-3ebd831858.zip"

@@ -4,6 +4,7 @@ LAMBDA_CODE_HASH := $(shell sha1sum $(shell pwd)/src/main/java/lambda/Handler.ja
 include $(shell git rev-parse --show-toplevel)/backend/lambdas/lambda.mk
 
 compile:
+	@echo "Building with Gradle..."
 	@gradle build
 
 test:

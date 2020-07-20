@@ -1,6 +1,0 @@
-encrypt="true"
-key="nibble/access/terraform.tfstate"
-bucket="430696291002-us-west-1-terraform-state"
-dynamodb_table="430696291002-us-west-1-terraform-state-lock"
-region="us-west-1"
-profile="nibble-bootstrap"
