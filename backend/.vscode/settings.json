@@ -1,5 +1,13 @@
 {
-    "cSpell.words": [
-        "postgres"
-    ]
+  "cSpell.words": [
+    "dbname",
+    "hget",
+    "hset",
+    "postgres",
+    "psycopg",
+    "serializable"
+  ],
+  "python.autoComplete.extraPaths": [
+    "${workspaceFolder}/lambdas/db_utilities/python"
+  ]
 }

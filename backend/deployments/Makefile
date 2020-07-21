@@ -6,8 +6,13 @@ include $(shell git rev-parse --show-toplevel)/backend/common.mk
 DB_SCHEMAS_S3_BUCKET = $(AWS_TARGET_ACCOUNT_ID)-$(AWS_REGION)-$(DEPLOY_ENV)-db-schemas
 
 init:
-	# TODO: refactor this to compute tf-backend variables
-	terraform init -backend-config=$(BACKEND_HOME)/deployments/tf-backend/us-west-2
+	terraform init \
+		-backend-config="encrypt=true" \
+		-backend-config="key=nibble/backend/terraform.tfstate" \
+		-backend-config="bucket=$(AWS_TARGET_ACCOUNT_ID)-$(AWS_REGION)-terraform-state" \
+		-backend-config="dynamodb_table=$(AWS_TARGET_ACCOUNT_ID)-$(AWS_REGION)-terraform-state-lock" \
+		-backend-config="region=$(AWS_REGION)" \
+		-backend-config="profile=$(AWS_PROFILE)"
 	@terraform workspace new $(PERSONAL_WORKSPACE) > /dev/null 2>&1 || echo "Workspace already created, you're good to go!"
 
 fmt:
@@ -58,10 +63,10 @@ sync-postgres-schemas:
 	@echo "Syncing local schemas folder..."
 ifeq ($(DEPLOY_ENV),dev)
 	@aws s3api head-bucket --bucket $(DB_SCHEMAS_S3_BUCKET)
-	@aws s3 sync $(BACKEND_HOME)/schemas/postgres s3://$(DB_SCHEMAS_S3_BUCKET)/$(DEPLOY_ENV)_$(PERSONAL_WORKSPACE)-postgres
+	@aws s3 sync $(BACKEND_HOME)/schemas/postgres s3://$(DB_SCHEMAS_S3_BUCKET)/$(DEPLOY_ENV)_$(PERSONAL_WORKSPACE)-postgres --delete
 else
 	@aws s3api head-bucket --bucket $(DB_SCHEMAS_S3_BUCKET)
-	@aws s3 sync $(BACKEND_HOME)/schemas/postgres s3://$(DB_SCHEMAS_S3_BUCKET)/$(DEPLOY_ENV)-postgres
+	@aws s3 sync $(BACKEND_HOME)/schemas/postgres s3://$(DB_SCHEMAS_S3_BUCKET)/$(DEPLOY_ENV)-postgres --delete
 endif
 	@echo "Schemas synced successfully"
 

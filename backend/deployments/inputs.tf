@@ -67,15 +67,41 @@ variable ssh_public_key_path {
 }
 
 # lambda artifacts
-variable resolver_admin_create_nibble_lambda_name {
+variable resolver_admin_nibble_mutation_lambda_name {
   type = string
 }
 
-variable resolver_admin_create_nibble_lambda_artifact {
+variable resolver_admin_nibble_mutation_lambda_artifact {
   type = string
 }
 
-variable resolver_admin_create_nibble_lambda_release_version {
+variable resolver_admin_nibble_mutation_lambda_release_version {
+  type    = string
+  default = ""
+}
+
+variable resolver_admin_restaurant_mutation_lambda_name {
+  type = string
+}
+
+variable resolver_admin_restaurant_mutation_lambda_artifact {
+  type = string
+}
+
+variable resolver_admin_restaurant_mutation_lambda_release_version {
+  type    = string
+  default = ""
+}
+
+variable resolver_user_info_lambda_name {
+  type = string
+}
+
+variable resolver_user_info_lambda_artifact {
+  type = string
+}
+
+variable resolver_user_info_lambda_release_version {
   type    = string
   default = ""
 }
@@ -93,15 +119,28 @@ variable migrate_database_lambda_release_version {
   default = ""
 }
 
-variable psycopg2_lambda_name {
+variable db_utilities_lambda_name {
   type = string
 }
 
-variable psycopg2_lambda_artifact {
+variable db_utilities_lambda_artifact {
   type = string
 }
 
-variable psycopg2_lambda_release_version {
+variable db_utilities_lambda_release_version {
+  type    = string
+  default = ""
+}
+
+variable add_user_lambda_name {
+  type = string
+}
+
+variable add_user_lambda_artifact {
+  type = string
+}
+
+variable add_user_lambda_release_version {
   type    = string
   default = ""
 }

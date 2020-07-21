@@ -15,7 +15,7 @@ postgres_instance_class = "db.t2.micro"
 
 ssh_public_key_path = "~/.ssh/dev-ssh_key_pair.pub"
 
-resolver_admin_create_nibble_lambda_name = "resolver_admin_create_nibble"
-resolver_admin_create_nibble_lambda_artifact = "resolver_admin_create_nibble-4e8b69e3c0.zip"
+resolver_admin_nibble_mutation_lambda_name = "resolver_admin_nibble_mutation"
+resolver_admin_nibble_mutation_lambda_artifact = "resolver_admin_nibble_mutation-4e8b69e3c0.zip"
 migrate_database_lambda_name = "migrate_database"
 migrate_database_lambda_artifact = "migrate_database-3ebd831858.zip"

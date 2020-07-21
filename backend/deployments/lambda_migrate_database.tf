@@ -24,7 +24,6 @@ module migrate_database_lambda {
     security_group_ids = [aws_security_group.lambda_security_group.id]
     subnet_ids         = var.private_subnet_ids
   }
-  layers = [aws_lambda_layer_version.postgres_lib.arn]
 }
 
 data aws_s3_bucket db_schemas {

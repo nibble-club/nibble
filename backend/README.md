@@ -86,3 +86,11 @@ PGPASSWORD=$DB_PASSWORD psql -h $DB_ADDRESS -p $DB_PORT -U $DB_USERNAME $DB_NAME
 ```
 
 to access the Postgres database. Note that these will only work if you are SSH'ed in to the EC2 instance as described above; these resources are in a private subnet, with restrictive security group settings, so they cannot be accessed from the internet.
+
+Another useful command:
+
+```shell script
+sudo flyway clean
+```
+
+That command will completely wipe your database. Obviously do not use this command on any real data!!

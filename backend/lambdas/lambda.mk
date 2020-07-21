@@ -31,8 +31,6 @@ ARTIFACT_ENV_VAR_SET := $(ARTIFACT_ENV_VAR) = "$(TARGET_LAMBDA_PACKAGE_NAME).zip
 build: test compile
 
 archive:
-	echo $(NAME_ENV_VAR_SET)
-	echo $(ARTIFACT_ENV_VAR_SET)
 	@echo "Uploading artifact..."
 # upload to s3
 	@aws s3 cp $(BUILDS_DIR)/$(SOURCE_LAMBDA_PACKAGE_NAME).zip $(S3_DESTINATION) --profile nibble-deploy

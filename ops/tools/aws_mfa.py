@@ -139,7 +139,6 @@ def main():
             "duration": str(duration),
             "created": created.astimezone().isoformat(),
             "expires": expires.astimezone().isoformat(),
-            "role_arn": target_role,
         }
     )
 

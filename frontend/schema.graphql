@@ -1,44 +1,39 @@
 type Query {
-  userInfo(userId: ID!): User
-  nibblesFeatured(user: UserCurrentContextInput): [NibbleAvailable]
-  nibblesRecommended(user: UserCurrentContextInput): [NibbleAvailable]
+  userInfo(userId: ID!): User!
+  nibblesFeatured(user: UserCurrentContextInput!): [NibbleAvailable]!
+  nibblesRecommended(user: UserCurrentContextInput!): [NibbleAvailable]!
   nibblesWithProperty(
-    user: UserCurrentContextInput
-    property: NibbleRecommendationReason
-  ): [NibbleAvailable]
+    user: UserCurrentContextInput!
+    property: NibbleRecommendationReason!
+  ): [NibbleAvailable]!
   closestRestaurants(
-    location: LatLonInput
-    paginationInput: PaginationInput
-  ): [Restaurant]
-  restaurantInformation(restaurantId: ID!): Restaurant
+    location: LatLonInput!
+    paginationInput: PaginationInput!
+  ): [Restaurant]!
+  restaurantInfo(restaurantId: ID!): Restaurant!
   recentSearch(userId: ID!): [SearchParameters]
   search(
-    user: UserCurrentContextInput
-    searchParameters: SearchParametersInput
-  ): SearchResults
+    user: UserCurrentContextInput!
+    searchParameters: SearchParametersInput!
+  ): SearchResults!
 }
 
 type Mutation {
-  adminCreateRestaurant(
-    input: AdminCreateRestaurantInput
-  ): AdminCreateRestaurantResponse
-  adminCreateNibble(input: AdminNibbleInput): AdminCreateNibbleResponse
-  adminDeleteNibble(id: ID!): AdminDeleteNibbleResponse
-  adminEditNibble(id: ID!, input: AdminNibbleInput): AdminEditNibbleResponse
+  adminCreateRestaurant(input: AdminCreateRestaurantInput!): Restaurant!
+  adminCreateNibble(input: AdminNibbleInput!): NibbleAvailable!
+  adminDeleteNibble(id: ID!): AdminDeleteNibbleResponse!
+  adminEditNibble(id: ID!, input: AdminNibbleInput): NibbleAvailable!
   nibbleCancelReservation(
     userId: ID!
     nibbleId: ID!
-  ): NibbleCancelReservationResponse
-  nibbleCreateReservation(
-    userId: ID!
-    nibbleId: ID!
-  ): NibbleCreateReservationResponse
+  ): NibbleCancelReservationResponse!
+  nibbleCreateReservation(userId: ID!, nibbleId: ID!): NibbleReserved!
 }
 
 # keep alphabetically sorted below here
 
 type Address {
-  streetAddress: Int!
+  streetAddress: String!
   dependentLocality: String
   locality: String!
   administrativeArea: String!
@@ -48,8 +43,7 @@ type Address {
 }
 
 input AddressInput {
-  id: ID!
-  streetAddress: Int!
+  streetAddress: String!
   dependentLocality: String
   locality: String!
   administrativeArea: String!
@@ -76,21 +70,15 @@ type AdminCreateNibbleResponse {
 input AdminCreateRestaurantInput {
   name: String!
   address: AddressInput!
+  location: LatLonInput!
+  market: String!
   description: String!
   logoUrl: S3ObjectInput!
   heroUrl: S3ObjectInput!
   disclaimer: String
 }
 
-type AdminCreateRestaurantResponse {
-  id: ID!
-}
-
 type AdminDeleteNibbleResponse {
-  id: ID!
-}
-
-type AdminEditNibbleResponse {
   id: ID!
 }
 
@@ -244,7 +232,7 @@ type User {
   profilePicUrl: S3Object!
   email: String!
   phoneNumber: String
-  postalCode: String!
+  postalCode: String
   nibblesReserved: [NibbleReserved]!
   nibblesHistory: [NibbleHistory]!
 }
