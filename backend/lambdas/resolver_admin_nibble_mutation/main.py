@@ -38,12 +38,16 @@ def lambda_handler(event, context):
     if validation.in_past(nibble["availableTo"]):
         raise RuntimeError("Invalid nibble availableTo time, in past")
 
+    if nibble["availableFrom"] >= nibble["availableTo"]:
+        raise RuntimeError("Invalid nibble timing, expires before start")
+
     # connect to database
     engine = utils.get_engine()
     nibble_table = tables.get_table_metadata(tables.NibbleTable.NIBBLE)
 
     try:
-        nibble_restaurant_id = nibble["restaurantId"]
+        # can only be null on edit requests, will throw an error below if null for create request
+        nibble_restaurant_id = nibble.get("restaurantId", None)
         nibble_name = nibble["name"]
         nibble_type = nibble["type"]
         nibble_available_count = nibble["count"]
@@ -91,16 +95,12 @@ def lambda_handler(event, context):
                 redis_keys.nibble_lock(nibble_id), blocking_timeout=3
             ):  # acquire Redis lock on nibble
                 # get current counts
-                original_available_count = int(
-                    str(r.hget(redis_keys.NIBBLES_AVAILABLE, nibble_id))
-                )
-                remaining_count = int(
-                    str(r.hget(redis_keys.NIBBLES_REMAINING, nibble_id))
-                )
+                available_count = int(r.hget(redis_keys.NIBBLES_AVAILABLE, nibble_id))
+                remaining_count = int(r.hget(redis_keys.NIBBLES_REMAINING, nibble_id))
                 with engine.begin() as conn:  # transactionizes SQL calls
                     with r.pipeline() as pipe:  # transactionizes Redis calls
                         # validate remaining count
-                        reserved_count = original_available_count - remaining_count
+                        reserved_count = available_count - remaining_count
                         if nibble_available_count < reserved_count:
                             raise RuntimeError(
                                 "Cannot set available count to {0}, there are already {1} reservations".format(
@@ -113,7 +113,6 @@ def lambda_handler(event, context):
                             nibble_table.update()
                             .where(nibble_table.c.id == nibble_id)
                             .values(
-                                restaurant_id=nibble_restaurant_id,
                                 name=nibble_name,
                                 type=nibble_type,
                                 available_count=nibble_available_count,

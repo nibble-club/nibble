@@ -16,6 +16,5 @@ def get_engine():
             db_name=os.environ["DB_NAME"],
         ),
         poolclass=StaticPool,
-        echo=True,
         isolation_level="SERIALIZABLE",
     )

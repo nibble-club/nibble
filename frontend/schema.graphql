@@ -19,10 +19,11 @@ type Query {
 }
 
 type Mutation {
-  adminCreateRestaurant(input: AdminCreateRestaurantInput!): Restaurant!
+  adminCreateRestaurant(input: AdminRestaurantInput!): Restaurant!
+  adminEditRestaurant(id: ID!, input: AdminRestaurantInput!): Restaurant!
   adminCreateNibble(input: AdminNibbleInput!): NibbleAvailable!
   adminDeleteNibble(id: ID!): AdminDeleteNibbleResponse!
-  adminEditNibble(id: ID!, input: AdminNibbleInput): NibbleAvailable!
+  adminEditNibble(id: ID!, input: AdminEditNibbleInput!): NibbleAvailable!
   nibbleCancelReservation(
     userId: ID!
     nibbleId: ID!
@@ -39,7 +40,7 @@ type Address {
   administrativeArea: String!
   country: String!
   postalCode: String!
-  location: LatLon
+  location: LatLon!
 }
 
 input AddressInput {
@@ -49,6 +50,18 @@ input AddressInput {
   administrativeArea: String!
   country: String!
   postalCode: String!
+  location: LatLon! # geolocation should already be done
+}
+
+input AdminEditNibbleInput {
+  name: String!
+  type: NibbleType
+  count: Int! # number available
+  imageUrl: S3ObjectInput!
+  description: String
+  price: Int! # price in cents
+  availableFrom: AWSTimestamp!
+  availableTo: AWSTimestamp!
 }
 
 input AdminNibbleInput {
@@ -63,11 +76,7 @@ input AdminNibbleInput {
   availableTo: AWSTimestamp!
 }
 
-type AdminCreateNibbleResponse {
-  id: ID!
-}
-
-input AdminCreateRestaurantInput {
+input AdminRestaurantInput {
   name: String!
   address: AddressInput!
   location: LatLonInput!
@@ -76,6 +85,7 @@ input AdminCreateRestaurantInput {
   logoUrl: S3ObjectInput!
   heroUrl: S3ObjectInput!
   disclaimer: String
+  active: Boolean!
 }
 
 type AdminDeleteNibbleResponse {
@@ -177,6 +187,7 @@ input PaginationInput {
 type Restaurant {
   id: ID!
   name: String!
+  market: String!
   address: Address!
   description: String!
   logoUrl: S3Object!

@@ -14,7 +14,9 @@ class UserPool(Enum):
 
 
 def lambda_handler(event, context):
-    """Triggered when a user confirms their registration"""
+    """Triggered when a user confirms their registration (normal users) or an admin
+    creates a user (restaurant admin users)
+    """
 
     logger.info(event)
     user = event["request"]["userAttributes"]

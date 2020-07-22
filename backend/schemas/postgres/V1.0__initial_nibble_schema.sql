@@ -98,3 +98,7 @@ ALTER TABLE nibble ADD CONSTRAINT nibble_fk0 FOREIGN KEY (restaurant_id) REFEREN
 
 ALTER TABLE nibble_reservation ADD CONSTRAINT nibble_reservation_fk0 FOREIGN KEY (nibble_id) REFERENCES nibble(id);
 ALTER TABLE nibble_reservation ADD CONSTRAINT nibble_reservation_fk1 FOREIGN KEY (user_id) REFERENCES nibble_user(id);
+
+
+
+CREATE INDEX restaurant_id_idx ON nibble(restaurant_id)

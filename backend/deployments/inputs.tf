@@ -145,6 +145,45 @@ variable add_user_lambda_release_version {
   default = ""
 }
 
+variable resolver_restaurant_lambda_name {
+  type = string
+}
+
+variable resolver_restaurant_lambda_artifact {
+  type = string
+}
+
+variable resolver_restaurant_lambda_release_version {
+  type    = string
+  default = ""
+}
+
+variable resolver_restaurant_distance_lambda_name {
+  type = string
+}
+
+variable resolver_restaurant_distance_lambda_artifact {
+  type = string
+}
+
+variable resolver_restaurant_distance_lambda_release_version {
+  type    = string
+  default = ""
+}
+
+variable resolver_nibble_lambda_name {
+  type = string
+}
+
+variable resolver_nibble_lambda_artifact {
+  type = string
+}
+
+variable resolver_nibble_lambda_release_version {
+  type    = string
+  default = ""
+}
+
 # secure parameters
 data aws_ssm_parameter postgres_password {
   name = "/environment/${var.environment_namespace}/postgres_password"
