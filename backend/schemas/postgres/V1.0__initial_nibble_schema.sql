@@ -60,16 +60,16 @@ CREATE TABLE nibble (
 
 
 CREATE TABLE nibble_reservation (
-	id serial NOT NULL,
 	nibble_id bigint NOT NULL,
 	user_id text NOT NULL,
+	nibble_name text NOT NULL,  -- used to keep record at time of reservation
 	reserved_count int NOT NULL,
 	reserved_at bigint NOT NULL,
 	price int NOT NULL,
 	status text NOT NULL,
 	cancelled_at bigint,
 	cancellation_reason text,
-	CONSTRAINT nibble_reservation_pk PRIMARY KEY (id)
+	CONSTRAINT nibble_reservation_pk PRIMARY KEY (nibble_id, user_id)
 ) WITH (
   OIDS=FALSE
 );

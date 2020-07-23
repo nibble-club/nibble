@@ -2,6 +2,7 @@ import logging
 import json
 import os
 from common import tables, utils, validation, redis_keys
+from sqlalchemy.sql import select
 import redis
 from redis.lock import LockError
 
@@ -46,7 +47,8 @@ def lambda_handler(event, context):
     nibble_table = tables.get_table_metadata(tables.NibbleTable.NIBBLE)
 
     try:
-        # can only be null on edit requests, will throw an error below if null for create request
+        # restaurant id can only be null on edit requests, will throw an error below if
+        # null for create request
         nibble_restaurant_id = nibble.get("restaurantId", None)
         nibble_name = nibble["name"]
         nibble_type = nibble["type"]
@@ -106,6 +108,24 @@ def lambda_handler(event, context):
                                 "Cannot set available count to {0}, there are already {1} reservations".format(
                                     nibble_available_count, reserved_count
                                 )
+                            )
+
+                        # check if Nibble is in past
+                        sel = select([nibble_table.c.available_to]).where(
+                            nibble_table.c.id == nibble_id
+                        )
+
+                        result = conn.execute(sel)
+                        nibble_row = result.fetchone()
+
+                        if nibble_row is None:
+                            raise RuntimeError(
+                                "No Nibble exists with id {0}".format(nibble_id)
+                            )
+
+                        if validation.in_past(nibble_row["available_to"]):
+                            raise RuntimeError(
+                                "Cannot update archived Nibble; please create a new one"
                             )
 
                         # confirmed valid update

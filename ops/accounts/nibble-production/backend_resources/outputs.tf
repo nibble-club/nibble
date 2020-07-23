@@ -10,8 +10,8 @@ output private_subnet_ids {
   value = module.backend_resources.private_subnet_ids
 }
 
-output vpc_endpoint_id {
-  value = module.backend_resources.vpc_endpoint_id
+output s3_vpc_endpoint_id {
+  value = module.backend_resources.s3_vpc_endpoint_id
 }
 
 output lambdas_bucket {

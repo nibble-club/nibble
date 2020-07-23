@@ -3,6 +3,7 @@
     "dbname",
     "geopy",
     "hget",
+    "hincrby",
     "hset",
     "postgres",
     "psycopg",

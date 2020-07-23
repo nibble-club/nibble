@@ -58,6 +58,16 @@ resource aws_appsync_resolver nibble_available_restaurant {
   response_template = file("./resolver_templates/response_lambda.vm")
 }
 
+resource aws_appsync_resolver nibble_reserved_restaurant {
+  api_id            = aws_appsync_graphql_api.api.id
+  kind              = "UNIT"
+  field             = "restaurant"
+  type              = "NibbleReserved"
+  data_source       = module.restaurant_datasource.name
+  request_template  = templatefile("./resolver_templates/request_lambda.vm", { field = "Nibble.restaurant" })
+  response_template = file("./resolver_templates/response_lambda.vm")
+}
+
 resource aws_appsync_resolver restaurant_info {
   api_id            = aws_appsync_graphql_api.api.id
   kind              = "UNIT"
@@ -85,5 +95,75 @@ resource aws_appsync_resolver restaurant_nibbles_available {
   type              = "Restaurant"
   data_source       = module.available_nibble_datasource.name
   request_template  = templatefile("./resolver_templates/request_lambda.vm", { field = "Restaurant.nibblesAvailable" })
+  response_template = file("./resolver_templates/response_lambda.vm")
+}
+
+resource aws_appsync_resolver nibble_info {
+  api_id            = aws_appsync_graphql_api.api.id
+  kind              = "UNIT"
+  field             = "nibbleInfo"
+  type              = "Query"
+  data_source       = module.available_nibble_datasource.name
+  request_template  = templatefile("./resolver_templates/request_lambda.vm", { field = "Query.nibbleInfo" })
+  response_template = file("./resolver_templates/response_lambda.vm")
+}
+
+resource aws_appsync_resolver nibbles_reserved {
+  api_id            = aws_appsync_graphql_api.api.id
+  kind              = "UNIT"
+  field             = "nibblesReserved"
+  type              = "User"
+  data_source       = module.nibble_history_datasource.name
+  request_template  = templatefile("./resolver_templates/request_lambda.vm", { field = "User.nibblesReserved" })
+  response_template = file("./resolver_templates/response_lambda.vm")
+}
+
+resource aws_appsync_resolver nibbles_history {
+  api_id            = aws_appsync_graphql_api.api.id
+  kind              = "UNIT"
+  field             = "nibblesHistory"
+  type              = "User"
+  data_source       = module.nibble_history_datasource.name
+  request_template  = templatefile("./resolver_templates/request_lambda.vm", { field = "User.nibblesHistory" })
+  response_template = file("./resolver_templates/response_lambda.vm")
+}
+
+resource aws_appsync_resolver nibble_create_reservation {
+  api_id            = aws_appsync_graphql_api.api.id
+  kind              = "UNIT"
+  field             = "nibbleCreateReservation"
+  type              = "Mutation"
+  data_source       = module.nibble_reservation_datasource.name
+  request_template  = templatefile("./resolver_templates/request_lambda.vm", { field = "nibbleCreateReservation" })
+  response_template = file("./resolver_templates/response_lambda.vm")
+}
+
+resource aws_appsync_resolver nibble_edit_reservation {
+  api_id            = aws_appsync_graphql_api.api.id
+  kind              = "UNIT"
+  field             = "nibbleEditReservation"
+  type              = "Mutation"
+  data_source       = module.nibble_reservation_datasource.name
+  request_template  = templatefile("./resolver_templates/request_lambda.vm", { field = "nibbleEditReservation" })
+  response_template = file("./resolver_templates/response_lambda.vm")
+}
+
+resource aws_appsync_resolver nibble_admin_delete_reservation {
+  api_id            = aws_appsync_graphql_api.api.id
+  kind              = "UNIT"
+  field             = "adminCancelReservation"
+  type              = "Mutation"
+  data_source       = module.nibble_reservation_datasource.name
+  request_template  = templatefile("./resolver_templates/request_lambda.vm", { field = "adminCancelReservation" })
+  response_template = file("./resolver_templates/response_lambda.vm")
+}
+
+resource aws_appsync_resolver nibble_delete_reservation {
+  api_id            = aws_appsync_graphql_api.api.id
+  kind              = "UNIT"
+  field             = "nibbleCancelReservation"
+  type              = "Mutation"
+  data_source       = module.nibble_reservation_datasource.name
+  request_template  = templatefile("./resolver_templates/request_lambda.vm", { field = "nibbleCancelReservation" })
   response_template = file("./resolver_templates/response_lambda.vm")
 }

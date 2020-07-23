@@ -11,3 +11,7 @@ provider aws {
   region  = var.aws_region
   profile = var.aws_profile
 }
+
+data aws_kms_key account_key {
+  key_id = "alias/account-key"
+}

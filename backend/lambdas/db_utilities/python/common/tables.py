@@ -111,15 +111,16 @@ def get_table_metadata(table_name=None):
     nibble_reservation = Table(
         "nibble_reservation",
         metadata,
-        Column("id", Integer, primary_key=True),
         Column("nibble_id", BIGINT, ForeignKey(nibble.c.id), nullable=False),
         Column("user_id", TEXT, ForeignKey(nibble_user.c.id), nullable=False),
+        Column("nibble_name", TEXT, nullable=False),
         Column("reserved_count", Integer, nullable=False),
         Column("reserved_at", BIGINT, nullable=False),
         Column("price", Integer, nullable=False),
         Column("status", TEXT, nullable=False),
         Column("cancelled_at", BIGINT),
         Column("cancellation_reason", TEXT),
+        PrimaryKeyConstraint("nibble_id", "user_id", name="nibble_reservation_pk"),
     )
 
     tables = {

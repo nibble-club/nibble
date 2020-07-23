@@ -1,6 +1,7 @@
 type Query {
   userInfo(userId: ID!): User!
   nibblesFeatured(user: UserCurrentContextInput!): [NibbleAvailable]!
+  nibbleInfo(nibbleId: ID!): NibbleAvailable!
   nibblesRecommended(user: UserCurrentContextInput!): [NibbleAvailable]!
   nibblesWithProperty(
     user: UserCurrentContextInput!
@@ -21,14 +22,39 @@ type Query {
 type Mutation {
   adminCreateRestaurant(input: AdminRestaurantInput!): Restaurant!
   adminEditRestaurant(id: ID!, input: AdminRestaurantInput!): Restaurant!
+  # restaurants are never deleted, they are only deactivated
+  adminDeactivateRestaurant(id: ID!): Restaurant!
   adminCreateNibble(input: AdminNibbleInput!): NibbleAvailable!
-  adminDeleteNibble(id: ID!): AdminDeleteNibbleResponse!
   adminEditNibble(id: ID!, input: AdminEditNibbleInput!): NibbleAvailable!
+  adminDeleteNibble(id: ID!): AdminDeleteNibbleResponse!
+  # used for restaurant to cancel reservation
+  adminCancelReservation(
+    userId: ID!
+    nibbleId: ID!
+    reason: String
+  ): NibbleCancelReservationResponse!
+
+  # user creates reservation. Nibble reservations are uniquely defined by the
+  # user ID and the nibble ID, meaning that a user can only have one
+  # reservation per nibble
+  nibbleCreateReservation(
+    userId: ID!
+    nibbleId: ID!
+    count: Int!
+  ): NibbleReserved!
+  # user updates reservation
+  nibbleEditReservation(
+    userId: ID!
+    nibbleId: ID!
+    newCount: Int!
+  ): NibbleReserved!
   nibbleCancelReservation(
     userId: ID!
     nibbleId: ID!
+    reason: String
   ): NibbleCancelReservationResponse!
-  nibbleCreateReservation(userId: ID!, nibbleId: ID!): NibbleReserved!
+  # either restaurant or user can mark reservation as completed
+  nibbleCompleteReservation(userId: ID!, nibbleId: ID!): NibbleReserved!
 }
 
 # keep alphabetically sorted below here
@@ -50,7 +76,7 @@ input AddressInput {
   administrativeArea: String!
   country: String!
   postalCode: String!
-  location: LatLon! # geolocation should already be done
+  location: LatLonInput! # geolocation should already be done
 }
 
 input AdminEditNibbleInput {
@@ -79,7 +105,6 @@ input AdminNibbleInput {
 input AdminRestaurantInput {
   name: String!
   address: AddressInput!
-  location: LatLonInput!
   market: String!
   description: String!
   logoUrl: S3ObjectInput!
@@ -116,7 +141,7 @@ type NibbleAvailable implements NibbleCard {
 }
 
 type NibbleCancelReservationResponse {
-  price: Int!
+  oldPrice: Int!
 }
 
 interface NibbleCard {
@@ -133,20 +158,10 @@ type NibbleCreateReservationResponse {
   price: Int!
 }
 
-type NibbleHistory implements NibbleCard {
-  id: ID!
-  name: String!
-  type: NibbleType
-  count: Int!
-  imageUrl: S3Object!
-  restaurant: Restaurant!
-  description: String
-  status: NibbleOrderStatus!
-  reservedAt: AWSTimestamp!
-  cancelledAt: AWSTimestamp # mandatory if NibbleOrderStatus is CANCELLED*
-  cancellationReason: String
-}
-
+# represents Nibbles that have a reservation, either currently
+# or in the past. Nibble reservations are uniquely defined by the user ID
+# and the nibble ID, meaning that a user can only have one reservation per
+# nibble
 type NibbleReserved implements NibbleCard {
   id: ID!
   name: String!
@@ -155,22 +170,25 @@ type NibbleReserved implements NibbleCard {
   price: Int! # price in cents for entire reservation
   imageUrl: S3Object!
   restaurant: Restaurant!
+  description: String
+  status: NibbleReservationStatus!
+  cancelledAt: AWSTimestamp # mandatory if NibbleReservationStatus is CANCELLED*
+  cancellationReason: String
   reservedAt: AWSTimestamp!
   availableFrom: AWSTimestamp!
   availableTo: AWSTimestamp!
-  description: String
-}
-
-enum NibbleOrderStatus {
-  Reserved
-  CancelledByUser
-  CancelledByRestaurant
-  Completed
 }
 
 enum NibbleRecommendationReason {
   Distance
   AvailableNow
+}
+
+enum NibbleReservationStatus {
+  Reserved
+  CancelledByUser
+  CancelledByRestaurant
+  Completed
 }
 
 enum NibbleType {
@@ -245,5 +263,5 @@ type User {
   phoneNumber: String
   postalCode: String
   nibblesReserved: [NibbleReserved]!
-  nibblesHistory: [NibbleHistory]!
+  nibblesHistory: [NibbleReserved]!
 }

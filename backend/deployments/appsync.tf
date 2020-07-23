@@ -11,7 +11,8 @@ resource aws_appsync_graphql_api api {
 }
 
 resource aws_appsync_api_key api_key {
-  api_id = aws_appsync_graphql_api.api.id
+  api_id      = aws_appsync_graphql_api.api.id
+  description = "API key for ${var.environment_namespace}"
 }
 
 # policies

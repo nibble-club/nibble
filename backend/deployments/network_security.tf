@@ -94,6 +94,17 @@ resource aws_security_group_rule allow_lambda_to_s3 {
   security_group_id = aws_security_group.lambda_security_group.id
 }
 
+resource aws_security_group_rule allow_lambda_to_sqs {
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  type              = "egress"
+  description       = "Lambda to SQS permission via VPC endpoint"
+  security_group_id = aws_security_group.lambda_security_group.id
+  # actually destination
+  source_security_group_id = aws_security_group.sqs_security_group.id
+}
+
 # postgres
 resource aws_security_group postgres_security_group {
   name        = "${var.environment_namespace}-postgres_security_group"
@@ -125,6 +136,23 @@ resource aws_security_group redis_security_group {
   }
   tags = {
     Name = "${var.environment_namespace}-redis_security_group"
+  }
+}
+
+# sqs
+resource aws_security_group sqs_security_group {
+  name        = "${var.environment_namespace}-sqs_security_group"
+  description = "Allows resources to access SQS, via VPC endpoint (interface type)"
+  vpc_id      = data.aws_vpc.vpc.id
+  ingress {
+    description     = "Allow access from Lambdas"
+    from_port       = 0
+    protocol        = "-1"
+    to_port         = 0
+    security_groups = [aws_security_group.lambda_security_group.id]
+  }
+  tags = {
+    Name = "${var.environment_namespace}-sqs_security_group"
   }
 }
 

@@ -47,8 +47,8 @@ def lambda_handler(event, context):
         restaurant_administrative_area = restaurant["address"]["administrativeArea"]
         restaurant_country = restaurant["address"]["country"]
         restaurant_postal_code = restaurant["address"]["postalCode"]
-        restaurant_latitude = restaurant["location"]["latitude"]
-        restaurant_longitude = restaurant["location"]["longitude"]
+        restaurant_latitude = restaurant["address"]["location"]["latitude"]
+        restaurant_longitude = restaurant["address"]["location"]["longitude"]
         restaurant_active = restaurant["active"]
     except KeyError:
         raise RuntimeError("Restaurant input missing required element")

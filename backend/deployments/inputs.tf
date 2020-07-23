@@ -184,6 +184,32 @@ variable resolver_nibble_lambda_release_version {
   default = ""
 }
 
+variable resolver_nibble_history_lambda_name {
+  type = string
+}
+
+variable resolver_nibble_history_lambda_artifact {
+  type = string
+}
+
+variable resolver_nibble_history_lambda_release_version {
+  type    = string
+  default = ""
+}
+
+variable resolver_nibble_reservation_lambda_name {
+  type = string
+}
+
+variable resolver_nibble_reservation_lambda_artifact {
+  type = string
+}
+
+variable resolver_nibble_reservation_lambda_release_version {
+  type    = string
+  default = ""
+}
+
 # secure parameters
 data aws_ssm_parameter postgres_password {
   name = "/environment/${var.environment_namespace}/postgres_password"

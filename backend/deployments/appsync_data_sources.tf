@@ -75,3 +75,29 @@ module available_nibble_datasource {
   assume_role_policy_json  = data.aws_iam_policy_document.appsync_assume_role.json
   permissions_boundary_arn = local.permissions_boundary_arn
 }
+
+module nibble_history_datasource {
+  source = "./modules/appsync_lambda_data_source"
+
+  name         = "nibble_history"
+  description  = "Data source for nibble reservation history"
+  function_arn = module.resolver_nibble_history_lambda.arn
+
+  appsync_graphql_api_id   = aws_appsync_graphql_api.api.id
+  environment_namespace    = var.environment_namespace
+  assume_role_policy_json  = data.aws_iam_policy_document.appsync_assume_role.json
+  permissions_boundary_arn = local.permissions_boundary_arn
+}
+
+module nibble_reservation_datasource {
+  source = "./modules/appsync_lambda_data_source"
+
+  name         = "nibble_reservations"
+  description  = "Data source for making, updating, and deleting reservations"
+  function_arn = module.resolver_nibble_reservation_lambda.arn
+
+  appsync_graphql_api_id   = aws_appsync_graphql_api.api.id
+  environment_namespace    = var.environment_namespace
+  assume_role_policy_json  = data.aws_iam_policy_document.appsync_assume_role.json
+  permissions_boundary_arn = local.permissions_boundary_arn
+}

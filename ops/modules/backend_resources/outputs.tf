@@ -10,7 +10,7 @@ output private_subnet_ids {
   value = aws_subnet.private_subnets.*.id
 }
 
-output vpc_endpoint_id {
+output s3_vpc_endpoint_id {
   value = aws_vpc_endpoint.s3_access_endpoint.id
 }
 

@@ -73,7 +73,7 @@ def lambda_handler(event, context):
         result.close()
 
     if restaurant_row is None:
-        raise RuntimeError("Restaurant for nibble ID {0} not found".format(nibble_id))
+        raise RuntimeError("No such restaurant")
 
     restaurant = {
         "id": restaurant_row["id"],
