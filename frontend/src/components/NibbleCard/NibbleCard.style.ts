@@ -1,7 +1,8 @@
 import { createUseStyles } from "react-jss";
+
+import { appTheme } from "../../common/theming";
 import { AppTheme } from "../../common/theming.types";
 import { NibbleCardProps } from "./NibbleCard.types";
-import { appTheme } from "../../common/theming";
 
 type NibbleCardPropsWithHover = NibbleCardProps & { isHovered: boolean };
 
@@ -24,7 +25,6 @@ export const imageWidth = `calc(${cardWidth} + 2 * (${cardPadding}))`;
  */
 const commonContainerStyles = (theme: AppTheme) => ({
   width: cardWidth,
-  height: `calc(${cardWidth} + 70px)`,
   background: theme.color.card[0],
   borderRadius: theme.rounding.medium,
   padding: cardPadding,
@@ -99,13 +99,13 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
 export const useLoadingStyles = createUseStyles((theme: AppTheme) => ({
   loading: {
     ...commonContainerStyles(theme),
+    height: `calc(${cardWidth} + 70px)`,
     "& svg": {
       width: imageWidth,
       height: "100%",
       marginLeft: `calc(-1 * (${cardPadding}))`,
       marginTop: `calc(-1 * (${cardPadding}))`,
     },
-    boxShadow: (isHovered: boolean) =>
-      isHovered ? theme.shadow[2] : theme.shadow[0],
+    boxShadow: (isHovered: boolean) => (isHovered ? theme.shadow[2] : theme.shadow[0]),
   },
 }));

@@ -3,6 +3,10 @@
   "python.linting.pylintEnabled": true,
   "python.linting.enabled": true,
   "cSpell.words": [
+    "baloo",
+    "docgen",
+    "rehydrated",
+    "signup",
     "tfstate",
     "theming"
   ],
@@ -12,5 +16,12 @@
     "javascriptreact",
     "typescript",
     "typescriptreact"
-  ]
+  ],
+  "[css]": {
+    "editor.formatOnSave": false
+  },
+  "importSorter.importStringConfiguration.quoteMark": "double",
+  "importSorter.importStringConfiguration.maximumNumberOfImportExpressionsPerLine.count": 88,
+  "importSorter.importStringConfiguration.maximumNumberOfImportExpressionsPerLine.type": "newLineEachExpressionAfterCountLimit",
+  "importSorter.importStringConfiguration.tabSize": 2
 }

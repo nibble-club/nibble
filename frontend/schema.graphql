@@ -37,17 +37,9 @@ type Mutation {
   # user creates reservation. Nibble reservations are uniquely defined by the
   # user ID and the nibble ID, meaning that a user can only have one
   # reservation per nibble
-  nibbleCreateReservation(
-    userId: ID!
-    nibbleId: ID!
-    count: Int!
-  ): NibbleReserved!
+  nibbleCreateReservation(userId: ID!, nibbleId: ID!, count: Int!): NibbleReserved!
   # user updates reservation
-  nibbleEditReservation(
-    userId: ID!
-    nibbleId: ID!
-    newCount: Int!
-  ): NibbleReserved!
+  nibbleEditReservation(userId: ID!, nibbleId: ID!, newCount: Int!): NibbleReserved!
   nibbleCancelReservation(
     userId: ID!
     nibbleId: ID!

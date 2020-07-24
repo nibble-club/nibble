@@ -40,7 +40,8 @@ def lambda_handler(event, context):
             id=event.get("userName"),
             full_name=user.get("name"),
             email=user.get("email"),
-            profile_url={"bucket": "", "region": "", "key": ""},
+            profile_url={"bucket": "PLACEHOLDER", "region": "", "key": "profile"},
+            postal_code=user.get("custom:postal_code"),
         )
 
         with engine.connect() as conn:

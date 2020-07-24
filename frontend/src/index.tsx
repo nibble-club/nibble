@@ -1,27 +1,61 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
-import { ThemeProvider } from 'react-jss';
-import { appTheme } from './common/theming';
-import { ApolloProvider } from '@apollo/react-hooks';
-import ApolloClient from 'apollo-boost';
+import React from "react";
+import ReactDOM from "react-dom";
+import { ThemeProvider } from "react-jss";
+import { Provider } from "react-redux";
+import { BrowserRouter } from "react-router-dom";
+import { createStore } from "redux";
+import { devToolsEnhancer } from "redux-devtools-extension";
 
-const client = new ApolloClient({
-  uri: process.env.GRAPHQL_CLIENT,
+import {
+  ApolloClient,
+  ApolloProvider,
+  createHttpLink,
+  from,
+  InMemoryCache
+} from "@apollo/client";
+import Auth from "@aws-amplify/auth";
+
+import App from "./App";
+import { appTheme } from "./common/theming";
+import { authFlowLink } from "./links/auth";
+import { loggerLink } from "./links/logging";
+import { retryLink } from "./links/retry";
+import nibbleApp from "./redux/reducers";
+import * as serviceWorker from "./serviceWorker";
+
+Auth.configure({
+  mandatorySignIn: true,
+  region: process.env.REACT_APP_AWS_REGION,
+  userPoolId: process.env.REACT_APP_COGNITO_USER_POOL_ID,
+  userPoolWebClientId: process.env.REACT_APP_COGNITO_CLIENT_ID,
 });
 
+const httpLink = createHttpLink({
+  uri: process.env.REACT_APP_GRAPHQL_ENDPOINT,
+});
+
+const link = from([retryLink, authFlowLink, loggerLink, httpLink]);
+
+const client = new ApolloClient({
+  link,
+  cache: new InMemoryCache(),
+});
+
+const store = createStore(nibbleApp, devToolsEnhancer({}));
 
 ReactDOM.render(
   <React.StrictMode>
-    <ThemeProvider theme={appTheme}>
-      <ApolloProvider client={client} >
-        <App />
-      </ApolloProvider>
-    </ThemeProvider>
+    <Provider store={store}>
+      <BrowserRouter>
+        <ThemeProvider theme={appTheme}>
+          <ApolloProvider client={client}>
+            <App />
+          </ApolloProvider>
+        </ThemeProvider>
+      </BrowserRouter>
+    </Provider>
   </React.StrictMode>,
-  document.getElementById('root')
+  document.getElementById("root")
 );
 
 // If you want your app to work offline and load faster, you can change

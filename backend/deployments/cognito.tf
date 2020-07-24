@@ -43,6 +43,19 @@ resource aws_cognito_user_pool users {
     }
   }
 
+  schema {
+    attribute_data_type      = "String"
+    developer_only_attribute = false
+    mutable                  = true
+    name                     = "postal_code"
+    required                 = false
+
+    string_attribute_constraints {
+      max_length = "5"
+      min_length = "5"
+    }
+  }
+
   username_configuration {
     case_sensitive = false
   }
@@ -62,7 +75,7 @@ resource aws_cognito_user_pool_client users {
   allowed_oauth_flows_user_pool_client = true
   allowed_oauth_scopes                 = ["email", "openid", "profile"]
   callback_urls                        = ["https://localhost:3000"]
-  explicit_auth_flows                  = ["ALLOW_REFRESH_TOKEN_AUTH", "ALLOW_USER_PASSWORD_AUTH"]
+  explicit_auth_flows                  = ["ALLOW_REFRESH_TOKEN_AUTH", "ALLOW_USER_PASSWORD_AUTH", "ALLOW_USER_SRP_AUTH"]
   generate_secret                      = false
   logout_urls                          = ["https://localhost:3000"]
   prevent_user_existence_errors        = "ENABLED"
@@ -70,12 +83,14 @@ resource aws_cognito_user_pool_client users {
     "email",
     "email_verified",
     "name",
+    "custom:postal_code",
   ]
   refresh_token_validity       = 30
   supported_identity_providers = ["COGNITO"]
   write_attributes = [
     "email",
     "name",
+    "custom:postal_code",
   ]
 }
 

@@ -1,8 +1,8 @@
-import React from "react";
-import { appTheme } from "../../common/theming";
-import ContentLoader from "react-content-loader";
-import { cardWidth, imageWidth, cardPadding } from "./NibbleCard.style";
-import { useLoadingStyles } from "./NibbleCard.style";
+import React from 'react';
+import ContentLoader from 'react-content-loader';
+
+import { appTheme } from '../../common/theming';
+import { cardPadding, cardWidth, useLoadingStyles } from './NibbleCard.style';
 
 const NibbleCardLoading = (props: { isHovered: boolean }) => {
   const classes = useLoadingStyles(props.isHovered);

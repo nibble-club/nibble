@@ -1,7 +1,7 @@
-import React from "react";
+import React from 'react';
 
-import NibbleCard from "./NibbleCard";
-import { NibbleCardProps } from "./NibbleCard.types";
+import NibbleCard from './NibbleCard';
+import { NibbleCardProps } from './NibbleCard.types';
 
 export default {
   component: NibbleCard,
@@ -19,7 +19,7 @@ export const symphonySushiProps: NibbleCardProps = {
   type: "Prepared",
   count: 5,
   imageUrl:
-    "https://lh3.googleusercontent.com/d/1PhQuDOXzQDLH1WRmgyLxAv90IoIy7u6s=w265-h177-n?authuser=0",
+    "https://www.history.com/.image/ar_16:9%2Cc_fill%2Ccs_srgb%2Cfl_progressive%2Cg_faces:center%2Cq_auto:good%2Cw_768/MTU3OTIzNTgwOTUyOTc5NDA2/nigiri-to-california-rolls-sushi-in-americas-featured-photo.jpg",
   loading: false,
 };
 

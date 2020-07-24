@@ -1,7 +1,7 @@
 import { AppTheme } from "./theming.types";
 
-const fluidSize = (baseSize: number, ratio = 1) => {
-  return `calc(${baseSize}px + ${ratio} * 1vw)`;
+export const fluidSize = (baseSize: number, ratio = 1) => {
+  return `calc(${baseSize}px + ${ratio} * min(1vw, 10px))`;
 };
 
 export const appTheme: AppTheme = {
@@ -52,19 +52,44 @@ export const appTheme: AppTheme = {
 
 export const globalTheme = (theme: AppTheme) => ({
   "@global": {
+    html: {
+      backgroundColor: theme.color.background,
+    },
     body: {
-      fontFamily: "Baloo 2",
+      margin: 0,
+      padding: 0,
+      fontFamily: '"Baloo 2"',
+      color: theme.color.text.primary,
+      fontSize: theme.fontSizes.medium,
     },
-    "h1 h2": {
-      fontFamily: "Baloo 2",
+    "h1, h2": {
+      fontFamily: '"Baloo 2"',
+      color: theme.color.text.primary,
+      fontSize: theme.fontSizes.xxLarge,
+      margin: theme.spacing.large,
     },
-    "h3 h4 h5 h6": {
-      fontFamily: "Baloo 2",
+    "h3, h4, h5, h6": {
+      fontFamily: '"Baloo 2"',
+      color: theme.color.text.primary,
+      fontSize: theme.fontSizes.large,
+    },
+    input: {
+      fontFamily: '"Baloo 2"',
+      fontSize: theme.fontSizes.medium,
     },
     a: {},
     ul: {},
     li: {},
-    button: {},
+    button: {
+      fontFamily: '"Baloo 2"',
+      fontSize: theme.fontSizes.medium,
+      border: "none",
+      textDecoration: "none",
+      color: theme.color.text.primary,
+      background: theme.color.blue,
+      padding: theme.spacing.xSmall,
+      borderRadius: theme.rounding.hard,
+    },
   },
 });
 
