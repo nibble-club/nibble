@@ -2,9 +2,14 @@ import { createUseStyles } from "react-jss";
 
 import { appTheme } from "../../common/theming";
 import { AppTheme } from "../../common/theming.types";
-import { NibbleCardProps } from "./NibbleCard.types";
+import {
+  NibbleAvailableInfoFragment,
+  NibbleReservationStatus,
+  NibbleReservedInfoFragment
+} from "../../graphql/generated/types";
 
-type NibbleCardPropsWithHover = NibbleCardProps & { isHovered: boolean };
+type NibbleCardPropsWithHover = NibbleAvailableInfoFragment &
+  NibbleReservedInfoFragment & { isHovered: boolean };
 
 const getColorForAmount = (amount: number) => {
   if (amount <= 1) {
@@ -13,6 +18,18 @@ const getColorForAmount = (amount: number) => {
     return appTheme.color.text.warn;
   } else {
     return appTheme.color.text.primary;
+  }
+};
+
+const getColorForStatus = (status: NibbleReservationStatus) => {
+  switch (status) {
+    case NibbleReservationStatus.Reserved:
+      return appTheme.color.blue;
+    case NibbleReservationStatus.CancelledByRestaurant:
+    case NibbleReservationStatus.CancelledByUser:
+      return appTheme.color.text.alert;
+    default:
+      return appTheme.color.text.primary;
   }
 };
 
@@ -72,15 +89,7 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
     bottom: cardPadding,
     fontSize: theme.fontSizes.xLarge,
     lineHeight: "100%",
-    color: (props: NibbleCardPropsWithHover) => {
-      if (props.loading) {
-        return;
-      } else if (props.pickupTime) {
-        return theme.color.blue;
-      } else {
-        return getColorForAmount(props.count);
-      }
-    },
+    color: (props: NibbleCardPropsWithHover) => getColorForAmount(props.count),
     fontWeight: "700",
     textShadow: theme.shadow[0],
   },
@@ -89,10 +98,11 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
     color: theme.color.text.grayed,
   },
   pickupByTime: {
-    color: theme.color.blue,
+    color: (props: NibbleCardPropsWithHover) => getColorForStatus(props.status),
     fontSize: theme.fontSizes.large,
     lineHeight: "100%",
     fontWeight: "700",
+    maxWidth: `calc(${cardWidth} * 2 / 3)`,
   },
 }));
 

@@ -119,15 +119,15 @@ input LatLonInput {
   longitude: Float!
 }
 
-type NibbleAvailable implements NibbleCard {
+type NibbleAvailable {
   id: ID!
   name: String!
-  type: NibbleType
+  type: NibbleType!
   count: Int! # number available
   imageUrl: S3Object!
   restaurant: Restaurant!
   description: String
-  price: Int! # price in cents
+  price: Int! # price in cents for one Nibble
   availableFrom: AWSTimestamp!
   availableTo: AWSTimestamp!
 }
@@ -136,39 +136,25 @@ type NibbleCancelReservationResponse {
   oldPrice: Int!
 }
 
-interface NibbleCard {
-  id: ID!
-  name: String!
-  type: NibbleType
-  count: Int!
-  imageUrl: S3Object!
-  restaurant: Restaurant!
-  description: String
-}
-
-type NibbleCreateReservationResponse {
-  price: Int!
-}
-
 # represents Nibbles that have a reservation, either currently
 # or in the past. Nibble reservations are uniquely defined by the user ID
 # and the nibble ID, meaning that a user can only have one reservation per
 # nibble
-type NibbleReserved implements NibbleCard {
+type NibbleReserved {
   id: ID!
   name: String!
-  type: NibbleType
+  type: NibbleType!
   count: Int! # number reserved
-  price: Int! # price in cents for entire reservation
   imageUrl: S3Object!
   restaurant: Restaurant!
   description: String
+  price: Int! # price in cents for entire reservation
+  availableFrom: AWSTimestamp!
+  availableTo: AWSTimestamp!
   status: NibbleReservationStatus!
   cancelledAt: AWSTimestamp # mandatory if NibbleReservationStatus is CANCELLED*
   cancellationReason: String
   reservedAt: AWSTimestamp!
-  availableFrom: AWSTimestamp!
-  availableTo: AWSTimestamp!
 }
 
 enum NibbleRecommendationReason {
@@ -203,7 +189,7 @@ type Restaurant {
   logoUrl: S3Object!
   heroUrl: S3Object!
   disclaimer: String
-  distance(currentPos: LatLonInput): Float!
+  distance(currentPos: LatLonInput!): Float!
   nibblesAvailable: [NibbleAvailable]!
   active: Boolean!
 }
@@ -257,3 +243,5 @@ type User {
   nibblesReserved: [NibbleReserved]!
   nibblesHistory: [NibbleReserved]!
 }
+
+scalar AWSTimestamp

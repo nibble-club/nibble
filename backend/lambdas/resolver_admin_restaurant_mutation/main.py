@@ -32,67 +32,16 @@ def lambda_handler(event, context):
     logger.info("Connected to Redis")
 
     # insert restaurant into database
-    try:
-        restaurant_name = restaurant["name"]
-        restaurant_description = restaurant["description"]
-        restaurant_disclaimer = restaurant.get("disclaimer", None)
-        restaurant_logo_url = restaurant["logoUrl"]
-        restaurant_hero_url = restaurant["heroUrl"]
-        restaurant_market = restaurant["market"]
-        restaurant_street_address = restaurant["address"]["streetAddress"]
-        restaurant_locality = restaurant["address"]["locality"]
-        restaurant_dependent_locality = restaurant["address"].get(
-            "dependentLocality", None
-        )
-        restaurant_administrative_area = restaurant["address"]["administrativeArea"]
-        restaurant_country = restaurant["address"]["country"]
-        restaurant_postal_code = restaurant["address"]["postalCode"]
-        restaurant_latitude = restaurant["address"]["location"]["latitude"]
-        restaurant_longitude = restaurant["address"]["location"]["longitude"]
-        restaurant_active = restaurant["active"]
-    except KeyError:
-        raise RuntimeError("Restaurant input missing required element")
+    db_values = get_restaurant_db_mapping(restaurant)
 
     if is_create:
-        statement = restaurant_table.insert().values(
-            name=restaurant_name,
-            description=restaurant_description,
-            disclaimer=restaurant_disclaimer,
-            logo_url=restaurant_logo_url,
-            hero_url=restaurant_hero_url,
-            market=restaurant_market,
-            street_address=restaurant_street_address,
-            locality=restaurant_locality,
-            dependent_locality=restaurant_dependent_locality,
-            administrative_area=restaurant_administrative_area,
-            country=restaurant_country,
-            postal_code=restaurant_postal_code,
-            latitude=restaurant_latitude,
-            longitude=restaurant_longitude,
-            active=restaurant_active,
-        )
+        statement = restaurant_table.insert().values(**db_values)
     else:
         restaurant_id = event["arguments"]["id"]
         statement = (
             restaurant_table.update()
             .where(restaurant_table.c.id == restaurant_id)
-            .values(
-                name=restaurant_name,
-                description=restaurant_description,
-                disclaimer=restaurant_disclaimer,
-                logo_url=restaurant_logo_url,
-                hero_url=restaurant_hero_url,
-                market=restaurant_market,
-                street_address=restaurant_street_address,
-                locality=restaurant_locality,
-                dependent_locality=restaurant_dependent_locality,
-                administrative_area=restaurant_administrative_area,
-                country=restaurant_country,
-                postal_code=restaurant_postal_code,
-                latitude=restaurant_latitude,
-                longitude=restaurant_longitude,
-                active=restaurant_active,
-            )
+            .values(**db_values)
         )
 
     with engine.begin() as conn:  # transactionize SQL statements
@@ -105,36 +54,61 @@ def lambda_handler(event, context):
             # insert restaurant geolocation data into redis; updates
             # on name conflict
             pipe.geoadd(
-                redis_keys.restaurant_geo(restaurant["market"]),
-                restaurant_longitude,
-                restaurant_latitude,
+                redis_keys.restaurant_geo(db_values["market"]),
+                db_values["longitude"],
+                db_values["latitude"],
                 restaurant_id,
             )
             pipe.execute()
             logger.info("Inserted restaurant to Redis")
         # end Redis transaction
     # end SQL transaction
+    return get_restaurant_result(db_values, restaurant_id)
 
-    restaurant_result = {
+
+def get_restaurant_db_mapping(restaurant):
+    """Gets the fields to insert into the restaurant database from the event"""
+    try:
+        return {
+            "name": restaurant["name"],
+            "description": restaurant["description"],
+            "disclaimer": restaurant.get("disclaimer", None),
+            "logo_url": restaurant["logoUrl"],
+            "hero_url": restaurant["heroUrl"],
+            "market": restaurant["market"],
+            "street_address": restaurant["address"]["streetAddress"],
+            "locality": restaurant["address"]["locality"],
+            "dependent_locality": restaurant["address"].get("dependentLocality", None),
+            "administrative_area": restaurant["address"]["administrativeArea"],
+            "country": restaurant["address"]["country"],
+            "postal_code": restaurant["address"]["postalCode"],
+            "latitude": restaurant["address"]["location"]["latitude"],
+            "longitude": restaurant["address"]["location"]["longitude"],
+            "active": restaurant["active"],
+        }
+    except KeyError:
+        raise RuntimeError("Restaurant input missing required field")
+
+
+def get_restaurant_result(db_values, restaurant_id):
+    return {
         "id": restaurant_id,
-        "name": restaurant_name,
+        "name": db_values["name"],
         "address": {
-            "streetAddress": restaurant_street_address,
-            "dependentLocality": restaurant_dependent_locality,
-            "locality": restaurant_locality,
-            "administrativeArea": restaurant_administrative_area,
-            "country": restaurant_country,
-            "postalCode": restaurant_postal_code,
+            "streetAddress": db_values["streetAddress"],
+            "dependentLocality": db_values["dependent_locality"],
+            "locality": db_values["locality"],
+            "administrativeArea": db_values["administrative_area"],
+            "country": db_values["country"],
+            "postalCode": db_values["postal_code"],
             "location": {
-                "latitude": restaurant_latitude,
-                "longitude": restaurant_longitude,
+                "latitude": db_values["latitude"],
+                "longitude": db_values["longitude"],
             },
         },
-        "description": restaurant_description,
-        "logoUrl": restaurant_logo_url,
-        "heroUrl": restaurant_hero_url,
-        "disclaimer": restaurant_disclaimer,
-        "active": restaurant_active,
+        "description": db_values["description"],
+        "logoUrl": db_values["logo_url"],
+        "heroUrl": db_values["hero_url"],
+        "disclaimer": db_values["disclaimer"],
+        "active": db_values["active"],
     }
-    logger.info(restaurant_result)
-    return restaurant_result

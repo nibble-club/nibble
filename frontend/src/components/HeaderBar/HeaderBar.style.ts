@@ -31,9 +31,10 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
   search: {
     transition: theme.animation.simple,
     marginRight: (searchFocused: boolean) =>
-      searchFocused ? `calc((-1 * ${imageSize}))` : theme.spacing.large,
+      searchFocused ? `calc(-1 * ${imageSize})` : theme.spacing.large,
     flexGrow: 8,
-    maxWidth: 500,
+    maxWidth: (searchFocused: boolean) =>
+      searchFocused ? `calc(500px + ${imageSize} + ${theme.spacing.large})` : 500,
   },
   profilePic: {
     transition: theme.animation.simple,

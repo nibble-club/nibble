@@ -7,7 +7,7 @@ export const loggerLink = new ApolloLink((operation, forward) => {
       console.log("Variables:");
       console.log(operation.variables);
       console.log("Result");
-      console.log(result);
+      console.log(result.data);
       console.groupEnd();
     }
     return result;

@@ -28,7 +28,7 @@ NAME_ENV_VAR_SET := $(NAME_ENV_VAR) = "$(SOURCE_LAMBDA_PACKAGE_NAME)"
 ARTIFACT_ENV_VAR := $(SOURCE_LAMBDA_PACKAGE_NAME)_lambda_artifact
 ARTIFACT_ENV_VAR_SET := $(ARTIFACT_ENV_VAR) = "$(TARGET_LAMBDA_PACKAGE_NAME).zip"
 
-build: test compile
+build: compile test
 
 archive:
 	@echo "Uploading artifact..."

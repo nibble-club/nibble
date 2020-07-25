@@ -15,8 +15,9 @@ compile:
 		cd .. ; \
 		zip -g $(BUILDS_DIR)/$(SOURCE_LAMBDA_PACKAGE_NAME) ./*.py > /dev/null ;
 
-test:
+
+test: .
 	@echo "Installing packages for testing locally..."
 	@python3 -m pip install -r requirements.txt -q
 	@echo "Testing..."
-	# python3 -m unittest test/test_main.py
+	@python3 -m unittest test/test_main.py

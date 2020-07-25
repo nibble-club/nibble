@@ -151,11 +151,11 @@ export type MutationNibbleCompleteReservationArgs = {
   nibbleId: Scalars["ID"];
 };
 
-export type NibbleAvailable = NibbleCard & {
+export type NibbleAvailable = {
   __typename?: "NibbleAvailable";
   id: Scalars["ID"];
   name: Scalars["String"];
-  type?: Maybe<NibbleType>;
+  type: NibbleType;
   count: Scalars["Int"];
   imageUrl: S3Object;
   restaurant: Restaurant;
@@ -170,21 +170,6 @@ export type NibbleCancelReservationResponse = {
   oldPrice: Scalars["Int"];
 };
 
-export type NibbleCard = {
-  id: Scalars["ID"];
-  name: Scalars["String"];
-  type?: Maybe<NibbleType>;
-  count: Scalars["Int"];
-  imageUrl: S3Object;
-  restaurant: Restaurant;
-  description?: Maybe<Scalars["String"]>;
-};
-
-export type NibbleCreateReservationResponse = {
-  __typename?: "NibbleCreateReservationResponse";
-  price: Scalars["Int"];
-};
-
 export enum NibbleRecommendationReason {
   Distance = "Distance",
   AvailableNow = "AvailableNow",
@@ -197,22 +182,22 @@ export enum NibbleReservationStatus {
   Completed = "Completed",
 }
 
-export type NibbleReserved = NibbleCard & {
+export type NibbleReserved = {
   __typename?: "NibbleReserved";
   id: Scalars["ID"];
   name: Scalars["String"];
-  type?: Maybe<NibbleType>;
+  type: NibbleType;
   count: Scalars["Int"];
-  price: Scalars["Int"];
   imageUrl: S3Object;
   restaurant: Restaurant;
   description?: Maybe<Scalars["String"]>;
+  price: Scalars["Int"];
+  availableFrom: Scalars["AWSTimestamp"];
+  availableTo: Scalars["AWSTimestamp"];
   status: NibbleReservationStatus;
   cancelledAt?: Maybe<Scalars["AWSTimestamp"]>;
   cancellationReason?: Maybe<Scalars["String"]>;
   reservedAt: Scalars["AWSTimestamp"];
-  availableFrom: Scalars["AWSTimestamp"];
-  availableTo: Scalars["AWSTimestamp"];
 };
 
 export enum NibbleType {
@@ -294,7 +279,7 @@ export type Restaurant = {
 };
 
 export type RestaurantDistanceArgs = {
-  currentPos?: Maybe<LatLonInput>;
+  currentPos: LatLonInput;
 };
 
 export type S3Object = {
@@ -352,11 +337,36 @@ export type UserCurrentContextInput = {
   location?: Maybe<LatLonInput>;
 };
 
-export type UserQueryVariables = Exact<{
+export type NibbleAvailableInfoFragment = { __typename?: "NibbleAvailable" } & Pick<
+  NibbleAvailable,
+  "id" | "name" | "type" | "count" | "availableFrom" | "availableTo"
+> & {
+    restaurant: { __typename?: "Restaurant" } & Pick<Restaurant, "name" | "distance">;
+    imageUrl: { __typename?: "S3Object" } & Pick<S3Object, "bucket" | "region" | "key">;
+  };
+
+export type NibbleReservedInfoFragment = { __typename?: "NibbleReserved" } & Pick<
+  NibbleReserved,
+  | "id"
+  | "name"
+  | "type"
+  | "count"
+  | "availableFrom"
+  | "availableTo"
+  | "status"
+  | "cancelledAt"
+  | "cancellationReason"
+  | "reservedAt"
+> & {
+    restaurant: { __typename?: "Restaurant" } & Pick<Restaurant, "name">;
+    imageUrl: { __typename?: "S3Object" } & Pick<S3Object, "bucket" | "region" | "key">;
+  };
+
+export type UserInfoQueryVariables = Exact<{
   id: Scalars["ID"];
 }>;
 
-export type UserQuery = { __typename?: "Query" } & {
+export type UserInfoQuery = { __typename?: "Query" } & {
   userInfo: { __typename?: "User" } & Pick<
     User,
     "fullName" | "email" | "postalCode"
@@ -374,4 +384,40 @@ export type UserQuery = { __typename?: "Query" } & {
         >
       >;
     };
+};
+
+export type NibbleSearchQueryVariables = Exact<{
+  user: UserCurrentContextInput;
+  searchParameters: SearchParametersInput;
+  currentPos: LatLonInput;
+}>;
+
+export type NibbleSearchQuery = { __typename?: "Query" } & {
+  search: { __typename?: "SearchResults" } & {
+    nibbles?: Maybe<
+      Array<
+        Maybe<
+          { __typename?: "NibbleAvailable" } & Pick<
+            NibbleAvailable,
+            "id" | "name" | "type" | "count" | "price" | "availableFrom" | "availableTo"
+          > & { restaurant: { __typename?: "Restaurant" } & Pick<Restaurant, "name"> }
+        >
+      >
+    >;
+    restaurants?: Maybe<
+      Array<
+        Maybe<
+          { __typename?: "Restaurant" } & Pick<
+            Restaurant,
+            "id" | "name" | "distance"
+          > & {
+              logoUrl: { __typename?: "S3Object" } & Pick<
+                S3Object,
+                "region" | "bucket" | "key"
+              >;
+            }
+        >
+      >
+    >;
+  };
 };

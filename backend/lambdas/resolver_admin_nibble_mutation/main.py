@@ -13,9 +13,10 @@ logger.setLevel(logging.INFO)
 def lambda_handler(event, context):
     """Resolves adminCreateNibble GraphQL requests
     """
-    if event["field"] not in ("adminCreateNibble", "adminEditNibble"):
+    event_field = event["field"]
+    if event_field not in ("adminCreateNibble", "adminEditNibble"):
         raise RuntimeError(
-            "Incorrect request type {0} for admin*Nibble handler".format(event["field"])
+            "Incorrect request type {0} for admin*Nibble handler".format(event_field)
         )
 
     nibble = event["arguments"]["input"]
@@ -25,6 +26,87 @@ def lambda_handler(event, context):
     r.ping()
     logger.info("Connected to Redis")
 
+    # connect to database
+    engine = utils.get_engine()
+    print(engine)
+    nibble_table = tables.get_table_metadata(tables.NibbleTable.NIBBLE)
+
+    if event_field == "adminCreateNibble":
+        with engine.begin() as conn:  # transactionizes SQL updates
+            with r.pipeline() as pipe:  # transactionizes Redis updates
+                # update db
+                db_values = nibble_event_db_mapper(nibble)
+                result = conn.execute(
+                    nibble_table.insert().values(
+                        restaurant_id=nibble.get("restaurantId", None), **db_values
+                    )
+                )
+                nibble_id = result.inserted_primary_key[0]
+                logger.info("Inserted with PK: {0}".format(nibble_id))
+
+                # update redis
+                nibble_available_count = db_values["available_count"]
+                pipe.hset(
+                    redis_keys.NIBBLES_REMAINING, nibble_id, nibble_available_count
+                )
+                pipe.hset(
+                    redis_keys.NIBBLES_AVAILABLE, nibble_id, nibble_available_count
+                )
+                pipe.execute()
+            # end of Redis transaction
+        # end of SQL transaction
+
+    elif event_field == "adminEditNibble":
+        nibble_id = event["arguments"]["id"]
+
+        try:  # meant to catch LockErrors
+            with r.lock(
+                redis_keys.nibble_lock(nibble_id), blocking_timeout=3
+            ):  # acquire Redis lock on nibble
+                # get current counts
+                available_count = int(r.hget(redis_keys.NIBBLES_AVAILABLE, nibble_id))
+                remaining_count = int(r.hget(redis_keys.NIBBLES_REMAINING, nibble_id))
+                with engine.begin() as conn:  # transactionizes SQL calls
+                    with r.pipeline() as pipe:  # transactionizes Redis calls
+                        check_valid_nibble_update(
+                            nibble,
+                            nibble_id,
+                            conn,
+                            nibble_table,
+                            available_count,
+                            remaining_count,
+                        )
+
+                        # confirmed valid update, push db changes
+                        db_values = nibble_event_db_mapper(nibble)
+                        conn.execute(
+                            nibble_table.update()
+                            .where(nibble_table.c.id == nibble_id)
+                            .values(**db_values)
+                        )
+                        nibble_available_count = db_values["available_count"]
+                        pipe.hset(
+                            redis_keys.NIBBLES_REMAINING,
+                            nibble_id,
+                            nibble_available_count,
+                        )
+                        pipe.execute()
+                    # end of Redis pipeline
+                # end of SQL transaction
+            # end of Redis lock
+            logger.info("Updated Nibble with PK: {0}".format(event["arguments"]["id"]))
+        except LockError:
+            raise RuntimeError(
+                "Someone is currently making a reservation, try again in a moment"
+            )
+    # end of adminEditNibble block
+    return nibble_event_result_mapper(db_values, nibble_id)
+
+
+def nibble_event_db_mapper(nibble):
+    """Gets fields to insert into nibble database, along with common validation for 
+    inserts and updates
+    """
     # validate input
     if nibble["type"].upper() not in validation.VALID_NIBBLE_TYPES:
         raise RuntimeError(
@@ -42,135 +124,58 @@ def lambda_handler(event, context):
     if nibble["availableFrom"] >= nibble["availableTo"]:
         raise RuntimeError("Invalid nibble timing, expires before start")
 
-    # connect to database
-    engine = utils.get_engine()
-    nibble_table = tables.get_table_metadata(tables.NibbleTable.NIBBLE)
-
     try:
-        # restaurant id can only be null on edit requests, will throw an error below if
-        # null for create request
-        nibble_restaurant_id = nibble.get("restaurantId", None)
-        nibble_name = nibble["name"]
-        nibble_type = nibble["type"]
-        nibble_available_count = nibble["count"]
-        nibble_description = nibble.get("description", None)
-        nibble_price = nibble["price"]
-        nibble_available_from = nibble["availableFrom"]
-        nibble_available_to = nibble["availableTo"]
-        nibble_image_url = nibble["imageUrl"]
+        return {
+            "name": nibble["name"],
+            "type": nibble["type"],
+            "available_count": nibble["count"],
+            "description": nibble.get("description", None),
+            "price": nibble["price"],
+            "available_from": nibble["availableFrom"],
+            "available_to": nibble["availableTo"],
+            "image_url": nibble["imageUrl"],
+        }
     except KeyError:
         raise RuntimeError("Nibble input missing required element")
 
-    if event["field"] == "adminCreateNibble":
-        ins = nibble_table.insert().values(
-            restaurant_id=nibble_restaurant_id,
-            name=nibble_name,
-            type=nibble_type,
-            available_count=nibble_available_count,
-            description=nibble_description,
-            price=nibble_price,
-            available_from=nibble_available_from,
-            available_to=nibble_available_to,
-            image_url=nibble_image_url,
+
+def nibble_event_result_mapper(db_values, nibble_id):
+    """Creates GraphQL event result to return, based on database values inserted"""
+    return {
+        "id": nibble_id,
+        "name": db_values["name"],
+        "type": db_values["type"],
+        "count": db_values["available_count"],
+        "imageUrl": db_values["image_url"],
+        "description": db_values["description"],
+        "price": db_values["price"],
+        "availableFrom": db_values["available_from"],
+        "availableTo": db_values["available_to"],
+    }
+
+
+def check_valid_nibble_update(
+    nibble, nibble_id, conn, nibble_table, available_count, remaining_count
+):
+    """Checks if the given nibble is a valid update of the existing nibble"""
+    nibble_available_count = nibble["count"]
+    # validate remaining count
+    reserved_count = available_count - remaining_count
+    if nibble_available_count < reserved_count:
+        raise RuntimeError(
+            "Cannot set available count to {0}, there are already {1} reservations".format(
+                nibble_available_count, reserved_count
+            )
         )
 
-        with engine.begin() as conn:  # transactionizes SQL updates
-            with r.pipeline() as pipe:  # transactionizes Redis updates
-                result = conn.execute(ins)
-                nibble_id = result.inserted_primary_key[0]
-                logger.info("Inserted with PK: {0}".format(nibble_id))
-                pipe.hset(
-                    redis_keys.NIBBLES_REMAINING, nibble_id, nibble_available_count
-                )
-                pipe.hset(
-                    redis_keys.NIBBLES_AVAILABLE, nibble_id, nibble_available_count
-                )
-                pipe.execute()
-            # end of Redis transaction
-        # end of SQL transaction
+    # check if Nibble is in past
+    nibble_row = conn.execute(
+        select([nibble_table.c.available_to]).where(nibble_table.c.id == nibble_id)
+    ).fetchone()
 
-    elif event["field"] == "adminEditNibble":
-        nibble_id = event["arguments"]["id"]
+    if nibble_row is None:
+        raise RuntimeError("No Nibble exists with id {0}".format(nibble_id))
 
-        try:  # meant to catch LockErrors
-            with r.lock(
-                redis_keys.nibble_lock(nibble_id), blocking_timeout=3
-            ):  # acquire Redis lock on nibble
-                # get current counts
-                available_count = int(r.hget(redis_keys.NIBBLES_AVAILABLE, nibble_id))
-                remaining_count = int(r.hget(redis_keys.NIBBLES_REMAINING, nibble_id))
-                with engine.begin() as conn:  # transactionizes SQL calls
-                    with r.pipeline() as pipe:  # transactionizes Redis calls
-                        # validate remaining count
-                        reserved_count = available_count - remaining_count
-                        if nibble_available_count < reserved_count:
-                            raise RuntimeError(
-                                "Cannot set available count to {0}, there are already {1} reservations".format(
-                                    nibble_available_count, reserved_count
-                                )
-                            )
+    if validation.in_past(nibble_row["available_to"]):
+        raise RuntimeError("Cannot update archived Nibble; please create a new one")
 
-                        # check if Nibble is in past
-                        sel = select([nibble_table.c.available_to]).where(
-                            nibble_table.c.id == nibble_id
-                        )
-
-                        result = conn.execute(sel)
-                        nibble_row = result.fetchone()
-
-                        if nibble_row is None:
-                            raise RuntimeError(
-                                "No Nibble exists with id {0}".format(nibble_id)
-                            )
-
-                        if validation.in_past(nibble_row["available_to"]):
-                            raise RuntimeError(
-                                "Cannot update archived Nibble; please create a new one"
-                            )
-
-                        # confirmed valid update
-                        upd = (
-                            nibble_table.update()
-                            .where(nibble_table.c.id == nibble_id)
-                            .values(
-                                name=nibble_name,
-                                type=nibble_type,
-                                available_count=nibble_available_count,
-                                description=nibble_description,
-                                price=nibble_price,
-                                available_from=nibble_available_from,
-                                available_to=nibble_available_to,
-                                image_url=nibble_image_url,
-                            )
-                        )
-
-                        # push db changes
-                        conn.execute(upd)
-                        pipe.hset(
-                            redis_keys.NIBBLES_REMAINING,
-                            nibble_id,
-                            nibble_available_count,
-                        )
-                        pipe.execute()
-                    # end of Redis pipeline
-                # end of SQL transaction
-            # end of Redis lock
-            logger.info("Updated Nibble with PK: {0}".format(event["arguments"]["id"]))
-        except LockError:
-            raise RuntimeError(
-                "Someone is currently making a reservation, try again in a moment"
-            )
-    # end of adminEditNibble block
-    result = {
-        "id": nibble_id,
-        "name": nibble_name,
-        "type": nibble_type,
-        "count": nibble_available_count,
-        "imageUrl": nibble_image_url,
-        "description": nibble_description,
-        "price": nibble_price,
-        "availableFrom": nibble_available_from,
-        "availableTo": nibble_available_to,
-    }
-    logger.info(result)
-    return result
