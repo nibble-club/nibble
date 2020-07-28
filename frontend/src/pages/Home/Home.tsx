@@ -1,6 +1,6 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link, Redirect, Route, Switch } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
 
 import { useQuery } from "@apollo/client";
 import Auth from "@aws-amplify/auth";
@@ -13,14 +13,10 @@ import { UserInfoQuery } from "../../graphql/generated/types";
 import { USER_INFO } from "../../graphql/queries";
 import { QueryFor } from "../../graphql/types";
 import { userSignOut } from "../../redux/actions";
-import { RootState } from "../../redux/reducers";
 import { useStyles } from "./Home.style";
 
 const Home = () => {
-  const id = useSelector((state: RootState) => state.user.id);
-  const { loading, error, data } = useQuery(USER_INFO, {
-    variables: { id },
-  }) as QueryFor<UserInfoQuery>;
+  const { loading, error, data } = useQuery(USER_INFO) as QueryFor<UserInfoQuery>;
 
   const classes = useStyles();
   const dispatch = useDispatch();

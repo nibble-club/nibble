@@ -29,7 +29,9 @@ def lambda_handler(event, context):
         "adminCancelReservation",
     ):
         raise NibbleError(
-            "Incorrect request type {0} for admin*Nibble handler".format(event["field"])
+            "Incorrect request type {0} for nibble reservation handler".format(
+                event["field"]
+            )
         )
 
     user_id = event["arguments"]["userId"]

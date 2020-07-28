@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const USER_INFO = gql`
-  query userInfo($id: ID!) {
-    userInfo(userId: $id) {
+  query userInfo {
+    userInfo {
       fullName
       profilePicUrl {
         bucket

@@ -1,6 +1,5 @@
 import { createUseStyles } from "react-jss";
 
-import { fluidSize } from "../../common/theming";
 import { AppTheme } from "../../common/theming.types";
 import { SectionHeaderProps } from "./SectionHeader.types";
 

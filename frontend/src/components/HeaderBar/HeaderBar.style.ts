@@ -1,4 +1,3 @@
-import { relative } from "path";
 import { createUseStyles } from "react-jss";
 
 import { fluidSize } from "../../common/theming";

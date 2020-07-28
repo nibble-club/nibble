@@ -30,8 +30,6 @@ function App() {
       try {
         const user = await Auth.currentAuthenticatedUser();
         const session = await Auth.currentSession();
-        console.log(user);
-        console.log(session);
         window.localStorage.setItem(USER_TOKEN_KEY, session.getIdToken().getJwtToken());
         dispatch(
           userSignIn(
@@ -40,6 +38,10 @@ function App() {
             user.attributes["custom:admin"] === "true"
           )
         );
+        if (window.location.href.includes("/login")) {
+          console.log("Redirecting user to home page");
+          window.location.href = "/";
+        }
         setLoading(false);
       } catch (err) {
         console.log("User not authenticated");
@@ -48,10 +50,10 @@ function App() {
       }
     };
     getUser();
-  });
+  }, [dispatch]);
   const classes = useStyles();
   return loading ? (
-    <div></div>
+    <div />
   ) : (
     <div className={classes.app}>
       <Switch>
@@ -84,7 +86,8 @@ function App() {
           ) : loggedIn ? (
             <Home />
           ) : (
-            <Redirect to={{ pathname: "/login", state: { referrer: "/" } }} />
+            <div />
+            // <Redirect to={{ pathname: "/login", state: { referrer: "/" } }} />
           )}
         </Route>
       </Switch>

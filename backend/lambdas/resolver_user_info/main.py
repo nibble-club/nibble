@@ -45,5 +45,5 @@ def lambda_handler(event, context):
         "phoneNumber": user_row["phone_number"],
         "postalCode": user_row["postal_code"],
     }
-
+    logger.info(user)
     return user

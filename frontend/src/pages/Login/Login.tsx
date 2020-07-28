@@ -397,7 +397,7 @@ const Login = (props: LoginProps) => {
               <Form
                 onSubmit={async (values: SignUpValues) => {
                   try {
-                    const user = await Auth.signUp({
+                    await Auth.signUp({
                       username: values.email,
                       password: values.password,
                       attributes: {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 import { multipleClasses } from "../../common/theming";
 import { useStyles } from "./SearchBar.style";

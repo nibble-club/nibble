@@ -31,8 +31,8 @@ const withToken = setContext((_, { headers, ...context }) => {
       };
     })
     .catch(reason => {
-      console.log(reason);
-      console.log("Logging user in...");
+      console.log(`Fetching current session failed: ${reason}`);
+      console.log("Redirecting to /login");
       window.location.href = "/login";
     });
 });
