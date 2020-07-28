@@ -12,6 +12,8 @@ type Query {
     location: LatLonInput!
     paginationInput: PaginationInput!
   ): [Restaurant]!
+  # creates S3 presigned URL to upload image
+  imageUploadURL(bucket: String!, directory: String!): String!
   # checks admin id in identity
   restaurantForAdmin: Restaurant!
   restaurantInfo(restaurantId: ID!): Restaurant!

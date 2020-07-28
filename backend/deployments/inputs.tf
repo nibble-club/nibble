@@ -66,6 +66,11 @@ variable ssh_public_key_path {
 
 }
 
+# secure parameters
+data aws_ssm_parameter postgres_password {
+  name = "/environment/${var.environment_namespace}/postgres_password"
+}
+
 # lambda artifacts
 variable resolver_admin_nibble_mutation_lambda_name {
   type = string
@@ -210,7 +215,15 @@ variable resolver_nibble_reservation_lambda_release_version {
   default = ""
 }
 
-# secure parameters
-data aws_ssm_parameter postgres_password {
-  name = "/environment/${var.environment_namespace}/postgres_password"
+variable resolver_image_upload_url_lambda_name {
+  type = string
+}
+
+variable resolver_image_upload_url_lambda_artifact {
+  type = string
+}
+
+variable resolver_image_upload_url_lambda_release_version {
+  type    = string
+  default = ""
 }

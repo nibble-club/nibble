@@ -101,3 +101,16 @@ module nibble_reservation_datasource {
   assume_role_policy_json  = data.aws_iam_policy_document.appsync_assume_role.json
   permissions_boundary_arn = local.permissions_boundary_arn
 }
+
+module image_upload_url_datasource {
+  source = "./modules/appsync_lambda_data_source"
+
+  name         = "image_upload_url"
+  description  = "Data source for getting presigned S3 image upload URLs"
+  function_arn = module.resolver_image_upload_url_lambda.arn
+
+  appsync_graphql_api_id   = aws_appsync_graphql_api.api.id
+  environment_namespace    = var.environment_namespace
+  assume_role_policy_json  = data.aws_iam_policy_document.appsync_assume_role.json
+  permissions_boundary_arn = local.permissions_boundary_arn
+}
