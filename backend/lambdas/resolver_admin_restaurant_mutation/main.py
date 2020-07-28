@@ -3,28 +3,34 @@ import json
 import os
 from common import tables, utils, redis_keys
 import redis
+from common.errors import NibbleError
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+
+# connect to database
+engine = utils.get_engine()
+restaurant_table = tables.get_table_metadata(tables.NibbleTable.RESTAURANT)
+restaurant_restaurant_admin_table = tables.get_table_metadata(
+    tables.NibbleTable.RESTAURANT_RESTAURANT_ADMIN
+)
 
 
 def lambda_handler(event, context):
     """Resolves adminCreateRestaurant GraphQL requests
     """
     if event["field"] not in ("adminCreateRestaurant", "adminEditRestaurant"):
-        raise RuntimeError(
+        raise NibbleError(
             "Incorrect request type {0} for admin*Restaurant handler".format(
                 event["field"]
             )
         )
 
+    admin_id = event["identity"]["username"]
+
     is_create = event["field"] == "adminCreateRestaurant"
 
     restaurant = event["arguments"]["input"]
-
-    # connect to database
-    engine = utils.get_engine()
-    restaurant_table = tables.get_table_metadata(tables.NibbleTable.RESTAURANT)
 
     # connect to Redis
     r = redis.Redis(host=os.environ["REDIS_HOST"], port=os.environ["REDIS_PORT"])
@@ -49,6 +55,15 @@ def lambda_handler(event, context):
             result = conn.execute(statement)
             if is_create:
                 restaurant_id = result.inserted_primary_key[0]
+                try:
+                    conn.execute(
+                        restaurant_restaurant_admin_table.insert().values(
+                            restaurant_id=restaurant_id, admin_id=admin_id
+                        )
+                    )
+                except Exception:
+                    raise NibbleError("Admin already associated with a restaurant")
+
             logger.info("PK: {0}".format(restaurant_id))
 
             # insert restaurant geolocation data into redis; updates
@@ -87,7 +102,7 @@ def get_restaurant_db_mapping(restaurant):
             "active": restaurant["active"],
         }
     except KeyError:
-        raise RuntimeError("Restaurant input missing required field")
+        raise NibbleError("Restaurant input missing required field")
 
 
 def get_restaurant_result(db_values, restaurant_id):
@@ -95,7 +110,7 @@ def get_restaurant_result(db_values, restaurant_id):
         "id": restaurant_id,
         "name": db_values["name"],
         "address": {
-            "streetAddress": db_values["streetAddress"],
+            "streetAddress": db_values["street_address"],
             "dependentLocality": db_values["dependent_locality"],
             "locality": db_values["locality"],
             "administrativeArea": db_values["administrative_area"],

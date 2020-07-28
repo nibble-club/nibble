@@ -15,6 +15,13 @@ This is where you can deploy the Nibble backend.
 
 ### First Time Setup
 
+First, create a Python virtual environment:
+
+```shell script
+python3 -m pip install --user virtualenv
+python3 -m venv ~/.venv/nibble_lambdas
+```
+
 To start, get your AWS account (see the `ops` directory for instructions). Next, [install the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html).
 
 Then go [here](https://console.aws.amazon.com/iam/home#/security_credentials) to get your AWS _access key ID_ and _secret access key_. Leave the window open for the next step!
@@ -50,6 +57,8 @@ Now, in this directory, run `make init`. You should only need to run this once p
 You're all set up to deploy!
 
 ### Deploying Changes
+
+To add a lambda, add a folder to the `lambdas` folder, again following the existing examples. Then run `make build` to build the .zip and run tests, and `make archive` to upload the artifact to S3.
 
 After you've built your new code to deploy, or edited the deployment itself, run `make plan`. This will show you the plan; run `make apply` to apply it to real physical infrastructure.
 

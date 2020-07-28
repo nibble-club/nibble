@@ -12,7 +12,7 @@ import {
 
 import Auth from "@aws-amplify/auth";
 
-import { PASSWORD_REQUIRED_LENGTH } from "../../common/constants";
+import { PASSWORD_REQUIRED_LENGTH, USER_TOKEN_KEY } from "../../common/constants";
 import TextInput from "../../components/TextInput/TextInput";
 import { userSignIn } from "../../redux/actions";
 import { useStyles } from "./Login.style";
@@ -40,6 +40,11 @@ interface ResetValues {
 
 interface NewPasswordValues {
   code: string;
+  password: string;
+  confirmPassword: string;
+}
+
+interface ChangePasswordValues {
   password: string;
   confirmPassword: string;
 }
@@ -269,13 +274,74 @@ const NewPasswordForm = (
   </form>
 );
 
+const AdminChangePasswordForm = (
+  formRenderProps: FormRenderProps<ChangePasswordValues, Partial<ChangePasswordValues>>
+) => (
+  <form onSubmit={formRenderProps.handleSubmit}>
+    <div>
+      <Field<string>
+        name="password"
+        placeholder="New password"
+        type="password"
+        validate={passwordValidator}
+      >
+        {fieldRenderProps => <TextInput center={true} {...fieldRenderProps} />}
+      </Field>
+      <Field<string>
+        name="confirmPassword"
+        placeholder="Confirm new password"
+        type="password"
+        validate={matchPasswordValidator}
+      >
+        {fieldRenderProps => <TextInput center={true} {...fieldRenderProps} />}
+      </Field>
+    </div>
+    {formRenderProps.submitErrors && (
+      <div>
+        <span>{formRenderProps.submitErrors.FORM_ERROR}</span>
+      </div>
+    )}
+    <div>
+      <button
+        type="submit"
+        disabled={
+          formRenderProps.submitting ||
+          formRenderProps.pristine ||
+          (formRenderProps.values.password?.length || 0) < PASSWORD_REQUIRED_LENGTH ||
+          formRenderProps.values.confirmPassword !== formRenderProps.values.password ||
+          false
+        }
+      >
+        Submit
+      </button>
+    </div>
+  </form>
+);
+
 const Login = (props: LoginProps) => {
   const classes = useStyles();
   const history = useHistory();
   const location = useLocation();
   let { path, url } = useRouteMatch();
   const [email, setEmail] = useState("");
+  const [userObject, setUserObject] = useState(null);
   const dispatch = useDispatch();
+
+  // actions when user is logged in
+  const setLoggedIn = (session: any, email: string, userId: string, admin: boolean) => {
+    props.setLoggedIn(true);
+    window.localStorage.setItem(USER_TOKEN_KEY, session.getIdToken().getJwtToken());
+    dispatch(userSignIn(email, userId, admin));
+    const navState = location.state as NavState;
+    if (navState?.referrer) {
+      console.log(`Redirecting to referrer ${navState.referrer}`);
+      history.replace(navState.referrer);
+    } else {
+      console.log("Redirecting to home");
+      history.replace("/");
+    }
+  };
+
   return (
     <div className={classes.centerContainer}>
       <div className={classes.componentContainer}>
@@ -287,6 +353,7 @@ const Login = (props: LoginProps) => {
           />
         </div>
         <div className={classes.formContainer}>
+          {email.length > 0 && <h3 className={classes.email}>{`Email: ${email}`}</h3>}
           <Switch>
             {/* RESET PASSWORD - AFTER CODE SENT */}
             <Route path={`${path}/reset_code`}>
@@ -337,9 +404,9 @@ const Login = (props: LoginProps) => {
                         name: values.fullName,
                         email: values.email,
                         "custom:postal_code": values.postalCode,
+                        "custom:admin": "false",
                       },
                     });
-                    console.log(user);
                     setEmail(values.email);
                     history.push(`${url}/confirm_email`);
                   } catch (err) {
@@ -372,6 +439,39 @@ const Login = (props: LoginProps) => {
                 {formRenderProps => ConfirmEmailForm(formRenderProps)}
               </Form>
             </Route>
+            {/* POST SIGN IN - CREATE NEW PASSWORD (for admins) */}
+            <Route path={`${path}/change_password`}>
+              <h3>Enter a new password</h3>
+              <Form
+                onSubmit={async (values: ChangePasswordValues) => {
+                  try {
+                    const user = await Auth.completeNewPassword(
+                      userObject,
+                      values.password,
+                      {
+                        name: email,
+                        email: email,
+                        "custom:admin": "true", // must be an admin
+                      }
+                    );
+                    console.log(user);
+                    const session = await Auth.currentSession();
+                    // must have been successful
+                    setLoggedIn(
+                      session,
+                      email,
+                      user.username,
+                      true // must be an admin
+                    );
+                  } catch (err) {
+                    console.log(err);
+                    return { FORM_ERROR: err.message };
+                  }
+                }}
+              >
+                {formRenderProps => AdminChangePasswordForm(formRenderProps)}
+              </Form>
+            </Route>
             {/* LOG IN */}
             <Route exact path={path}>
               <div>
@@ -380,18 +480,22 @@ const Login = (props: LoginProps) => {
                     console.log("Submitted");
                     try {
                       const user = await Auth.signIn(values.email, values.password);
-                      // must have been successful
-                      props.setLoggedIn(true);
-                      dispatch(userSignIn(values.email, user.username));
-                      const navState = location.state as NavState;
-                      if (navState?.referrer) {
-                        console.log(`Redirecting to referrer ${navState.referrer}`);
-                        history.replace(navState.referrer);
-                      } else {
-                        console.log("Redirecting to home");
-                        history.replace("/");
+                      console.log(user);
+                      if (user.challengeName === "NEW_PASSWORD_REQUIRED") {
+                        console.log("Giving new password challenge");
+                        setUserObject(user);
+                        setEmail(values.email);
+                        history.push(`${url}/change_password`);
                       }
-                      return;
+                      console.log(user);
+                      const session = await Auth.currentSession();
+                      // must have been successful
+                      setLoggedIn(
+                        session,
+                        values.email,
+                        user.username,
+                        user.attributes["custom:admin"] === "true" // TODO: fix this
+                      );
                     } catch (err) {
                       console.log(err);
                       if (err.code === "UserNotConfirmedException") {
@@ -402,7 +506,7 @@ const Login = (props: LoginProps) => {
                       return { FORM_ERROR: err.message };
                     }
                   }}
-                  initialValues={{ email: "", password: "" }}
+                  initialValues={{ email: email, password: "" }}
                 >
                   {formRenderProps => LoginForm(formRenderProps)}
                 </Form>

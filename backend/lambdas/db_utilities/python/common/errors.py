@@ -1,0 +1,2 @@
+class NibbleError(RuntimeError):
+    pass

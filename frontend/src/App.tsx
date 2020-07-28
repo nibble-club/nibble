@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { createUseStyles } from "react-jss";
-import { useDispatch } from "react-redux";
-import { Redirect, Route, Switch } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, Redirect, Route, Switch } from "react-router-dom";
 
 import Auth from "@aws-amplify/auth";
 
@@ -10,7 +10,8 @@ import { globalTheme } from "./common/theming";
 import { AppTheme } from "./common/theming.types";
 import Home from "./pages/Home/Home";
 import Login from "./pages/Login/Login";
-import { userSignIn } from "./redux/actions";
+import { userSignIn, userSignOut } from "./redux/actions";
+import { RootState } from "./redux/reducers";
 
 const useStyles = createUseStyles((theme: AppTheme) => ({
   ...globalTheme(theme),
@@ -21,6 +22,7 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(true);
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
+  const admin = useSelector((state: RootState) => state.user.admin);
 
   // checks if user is logged in
   useEffect(() => {
@@ -28,8 +30,16 @@ function App() {
       try {
         const user = await Auth.currentAuthenticatedUser();
         const session = await Auth.currentSession();
+        console.log(user);
+        console.log(session);
         window.localStorage.setItem(USER_TOKEN_KEY, session.getIdToken().getJwtToken());
-        dispatch(userSignIn(user.attributes.email, user.username));
+        dispatch(
+          userSignIn(
+            user.attributes.email,
+            user.username,
+            user.attributes["custom:admin"] === "true"
+          )
+        );
         setLoading(false);
       } catch (err) {
         console.log("User not authenticated");
@@ -51,10 +61,27 @@ function App() {
 
         <Route path="/nibble/:id"></Route>
         <Route path="/restaurant/:id"></Route>
-        <Route path="/profile"></Route>
-        <Route path="/admin"></Route>
+        <Route path="/profile">
+          <div>Hello from profile page!</div>
+        </Route>
+        <Route path="/admin">
+          <div>
+            <div>Hello from admin page!</div>{" "}
+            <Link
+              to={{ pathname: "/login", state: { referrer: "/" } }}
+              onClick={async () => {
+                dispatch(userSignOut());
+                await Auth.signOut();
+              }}
+            >
+              Sign out
+            </Link>
+          </div>
+        </Route>
         <Route path="/">
-          {loggedIn ? (
+          {loggedIn && admin ? (
+            <Redirect to={{ pathname: "/admin" }} />
+          ) : loggedIn ? (
             <Home />
           ) : (
             <Redirect to={{ pathname: "/login", state: { referrer: "/" } }} />

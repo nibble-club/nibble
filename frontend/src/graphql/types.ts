@@ -1,6 +1,6 @@
 import { ApolloError } from "@apollo/client";
 
-export type QueryOf<T> = {
+export type QueryFor<T> = {
   loading: boolean;
   error?: ApolloError;
   data?: T;

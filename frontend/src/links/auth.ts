@@ -21,6 +21,7 @@ const withToken = setContext((_, { headers, ...context }) => {
     .then(session => {
       console.log("Got token!");
       const token = session.getIdToken().getJwtToken();
+      window.localStorage.setItem(USER_TOKEN_KEY, token);
       return {
         headers: {
           ...headers,

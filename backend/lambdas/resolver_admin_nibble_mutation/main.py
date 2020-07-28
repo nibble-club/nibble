@@ -5,9 +5,13 @@ from common import tables, utils, validation, redis_keys
 from sqlalchemy.sql import select
 import redis
 from redis.lock import LockError
+from common.errors import NibbleError
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+
+# connect to database
+engine = utils.get_engine()
 
 
 def lambda_handler(event, context):
@@ -15,7 +19,7 @@ def lambda_handler(event, context):
     """
     event_field = event["field"]
     if event_field not in ("adminCreateNibble", "adminEditNibble"):
-        raise RuntimeError(
+        raise NibbleError(
             "Incorrect request type {0} for admin*Nibble handler".format(event_field)
         )
 
@@ -26,9 +30,6 @@ def lambda_handler(event, context):
     r.ping()
     logger.info("Connected to Redis")
 
-    # connect to database
-    engine = utils.get_engine()
-    print(engine)
     nibble_table = tables.get_table_metadata(tables.NibbleTable.NIBBLE)
 
     if event_field == "adminCreateNibble":
@@ -96,7 +97,7 @@ def lambda_handler(event, context):
             # end of Redis lock
             logger.info("Updated Nibble with PK: {0}".format(event["arguments"]["id"]))
         except LockError:
-            raise RuntimeError(
+            raise NibbleError(
                 "Someone is currently making a reservation, try again in a moment"
             )
     # end of adminEditNibble block
@@ -109,20 +110,20 @@ def nibble_event_db_mapper(nibble):
     """
     # validate input
     if nibble["type"].upper() not in validation.VALID_NIBBLE_TYPES:
-        raise RuntimeError(
+        raise NibbleError(
             "Invalid nibble type {0}, not in {1}".format(
                 nibble["type"], validation.VALID_NIBBLE_TYPES
             )
         )
     if nibble["count"] < 1:
-        raise RuntimeError(
+        raise NibbleError(
             "Invalid nibble count; {0} is less than 1".format(nibble["count"])
         )
     if validation.in_past(nibble["availableTo"]):
-        raise RuntimeError("Invalid nibble availableTo time, in past")
+        raise NibbleError("Invalid nibble availableTo time, in past")
 
     if nibble["availableFrom"] >= nibble["availableTo"]:
-        raise RuntimeError("Invalid nibble timing, expires before start")
+        raise NibbleError("Invalid nibble timing, expires before start")
 
     try:
         return {
@@ -136,7 +137,7 @@ def nibble_event_db_mapper(nibble):
             "image_url": nibble["imageUrl"],
         }
     except KeyError:
-        raise RuntimeError("Nibble input missing required element")
+        raise NibbleError("Nibble input missing required element")
 
 
 def nibble_event_result_mapper(db_values, nibble_id):
@@ -162,7 +163,7 @@ def check_valid_nibble_update(
     # validate remaining count
     reserved_count = available_count - remaining_count
     if nibble_available_count < reserved_count:
-        raise RuntimeError(
+        raise NibbleError(
             "Cannot set available count to {0}, there are already {1} reservations".format(
                 nibble_available_count, reserved_count
             )
@@ -174,8 +175,8 @@ def check_valid_nibble_update(
     ).fetchone()
 
     if nibble_row is None:
-        raise RuntimeError("No Nibble exists with id {0}".format(nibble_id))
+        raise NibbleError("No Nibble exists with id {0}".format(nibble_id))
 
     if validation.in_past(nibble_row["available_to"]):
-        raise RuntimeError("Cannot update archived Nibble; please create a new one")
+        raise NibbleError("Cannot update archived Nibble; please create a new one")
 

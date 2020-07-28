@@ -3,9 +3,19 @@ import json
 import os
 from common import tables, utils, validation
 from sqlalchemy.sql import select
+from common.errors import NibbleError
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+
+# connect to database
+engine = utils.get_engine()
+nibble_table = tables.get_table_metadata(tables.NibbleTable.NIBBLE)
+restaurant_table = tables.get_table_metadata(tables.NibbleTable.RESTAURANT)
+restaurant_admin_table = tables.get_table_metadata(tables.NibbleTable.RESTAURANT_ADMIN)
+restaurant_restaurant_admin_table = tables.get_table_metadata(
+    tables.NibbleTable.RESTAURANT_RESTAURANT_ADMIN
+)
 
 
 def lambda_handler(event, context):
@@ -17,15 +27,9 @@ def lambda_handler(event, context):
     # resolver implementation
     source, field = source_info.split(".")
     if "restaurant" not in field:
-        raise RuntimeError(
+        raise NibbleError(
             "Invalid field {0} for restaurant info resolver".format(source_info)
         )
-
-    # connect to database
-    engine = utils.get_engine()
-
-    nibble_table = tables.get_table_metadata(tables.NibbleTable.NIBBLE)
-    restaurant_table = tables.get_table_metadata(tables.NibbleTable.RESTAURANT)
 
     restaurant_info_cols = [
         restaurant_table.c.id,
@@ -59,13 +63,26 @@ def lambda_handler(event, context):
             .where(nibble_table.c.id == nibble_id)
         )
     # end if source is nibble
-    elif source == "Query":
+    elif source == "Query" and field == "restaurantInfo":
         # get restaurant ID from query arguments
         restaurant_id = event["arguments"]["restaurantId"]
         s = select(restaurant_info_cols).where(restaurant_table.c.id == restaurant_id)
+    # end if source is restaurantInfo (query by ID)
+    elif source == "Query" and field == "restaurantForAdmin":
+        # get admin ID from identity arguments
+        admin_id = event["identity"]["username"]
+        admin_id_restaurant_id_mapping = (
+            select([restaurant_restaurant_admin_table.c.restaurant_id])
+            .where(restaurant_restaurant_admin_table.c.admin_id == admin_id)
+            .alias()
+        )
+        s = select(restaurant_info_cols).where(
+            restaurant_table.c.id == admin_id_restaurant_id_mapping.c.restaurant_id
+        )
+        logger.info(s)
 
     else:
-        raise RuntimeError("Invalid source {0}".format(source))
+        raise NibbleError("Invalid source {0}".format(source))
 
     with engine.connect() as conn:
         result = conn.execute(s)
@@ -73,7 +90,7 @@ def lambda_handler(event, context):
         result.close()
 
     if restaurant_row is None:
-        raise RuntimeError("No such restaurant")
+        raise NibbleError("No such restaurant")
 
     restaurant = {
         "id": restaurant_row["id"],
@@ -97,6 +114,4 @@ def lambda_handler(event, context):
             },
         },
     }
-
-    print(restaurant)
     return restaurant

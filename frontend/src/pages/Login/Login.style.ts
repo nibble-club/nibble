@@ -1,7 +1,7 @@
-import { createUseStyles } from 'react-jss';
+import { createUseStyles } from "react-jss";
 
-import { fluidSize } from '../../common/theming';
-import { AppTheme } from '../../common/theming.types';
+import { fluidSize } from "../../common/theming";
+import { AppTheme } from "../../common/theming.types";
 
 export const useStyles = createUseStyles((theme: AppTheme) => ({
   centerContainer: {
@@ -14,7 +14,7 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
   },
   componentContainer: {
     padding: theme.spacing.large,
-    width: "min(90%, 550px)",
+    width: "min(85%, 550px)",
     background: theme.color.card[0],
     borderRadius: theme.rounding.medium,
     boxShadow: theme.shadow[3],
@@ -28,6 +28,9 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
   nibbleLogo: {
     width: "80%",
     filter: `drop-shadow(${theme.shadow[1]})`,
+  },
+  email: {
+    fontWeight: "normal",
   },
   formContainer: {
     textAlign: "center",

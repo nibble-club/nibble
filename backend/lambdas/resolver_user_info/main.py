@@ -3,19 +3,20 @@ import json
 import os
 from common import tables, utils, validation
 from sqlalchemy.sql import select
+from common.errors import NibbleError
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+
+# connect to database
+engine = utils.get_engine()
 
 
 def lambda_handler(event, context):
     """Resolves requests for user info (not related to Nibble history)
     """
     logger.info(event)
-    user_id = event["arguments"]["userId"]
-
-    # connect to database
-    engine = utils.get_engine()
+    user_id = event["identity"]["username"]
     user_table = tables.get_table_metadata(tables.NibbleTable.NIBBLE_USER)
     s = select(
         [
@@ -34,7 +35,7 @@ def lambda_handler(event, context):
         result.close()
 
     if user_row is None:
-        raise RuntimeError("User ID ${0} not found".format(user_id))
+        raise NibbleError("User ID ${0} not found".format(user_id))
 
     user = {
         "id": user_id,

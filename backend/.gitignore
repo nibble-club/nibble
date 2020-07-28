@@ -4,3 +4,5 @@ lambdas/**/packages
 .gradle/
 bin/
 __pycache__/
+.hypothesis/
+.pytest_cache/

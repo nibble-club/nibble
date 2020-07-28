@@ -6,7 +6,11 @@ common_dir = "../../db_utilities/python"
 sys.path.insert(0, os.path.abspath(os.path.join(test_dir, common_dir)))
 
 import unittest
-import main
+from unittest.mock import patch
+
+with patch("common.utils.get_engine"):
+    with patch("boto3.client"):
+        import main
 
 email = "abc@xyz.com"
 name = "Maggie Baggie"

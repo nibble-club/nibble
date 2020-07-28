@@ -8,9 +8,13 @@ import redis
 from redis.lock import LockError
 from datetime import datetime
 import boto3
+from common.errors import NibbleError
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+
+# get database info
+engine = utils.get_engine()
 
 
 def lambda_handler(event, context):
@@ -24,7 +28,7 @@ def lambda_handler(event, context):
         "nibbleCancelReservation",
         "adminCancelReservation",
     ):
-        raise RuntimeError(
+        raise NibbleError(
             "Incorrect request type {0} for admin*Nibble handler".format(event["field"])
         )
 
@@ -36,8 +40,6 @@ def lambda_handler(event, context):
     r.ping()
     logger.info("Connected to Redis")
 
-    # get database info
-    engine = utils.get_engine()
     nibble_table = tables.get_table_metadata(tables.NibbleTable.NIBBLE)
     reservation_table = tables.get_table_metadata(tables.NibbleTable.NIBBLE_RESERVATION)
 
@@ -60,7 +62,7 @@ def lambda_handler(event, context):
         result = conn.execute(s)
         nibble_row = result.fetchone()
     if nibble_row is None:
-        raise RuntimeError("Invalid nibble ID {0}".format(nibble_id))
+        raise NibbleError("Invalid nibble ID {0}".format(nibble_id))
     nibble_name = nibble_row["name"]
     nibble_price = nibble_row["price"]
     nibble_available_from = nibble_row["available_from"]
@@ -70,7 +72,7 @@ def lambda_handler(event, context):
     nibble_description = nibble_row["description"]
 
     if validation.in_past(nibble_available_to):
-        raise RuntimeError("Cannot change reservation on nibble, already expired")
+        raise NibbleError("Cannot change reservation on nibble, already expired")
 
     if field == "nibbleCancelReservation" or field == "adminCancelReservation":
 
@@ -91,8 +93,14 @@ def lambda_handler(event, context):
             rows = conn.execute(select_old_reservation)
             old_reservation = rows.fetchone()
             if old_reservation is None:
-                raise RuntimeError("No such reservation to cancel")
+                raise NibbleError("No such reservation to cancel")
 
+            old_status = old_reservation["status"]
+            if old_status in (
+                utils.NibbleReservationStatus.CancelledByRestaurant.value,
+                utils.NibbleReservationStatus.CancelledByUser.value,
+            ):
+                raise NibbleError("Reservation already cancelled")
             old_count = old_reservation["reserved_count"]
             old_price = old_reservation["price"]
             new_status = (
@@ -125,8 +133,6 @@ def lambda_handler(event, context):
         sqs = boto3.client(
             service_name="sqs", endpoint_url="https://" + os.environ["ENDPOINT"]
         )
-        logger.info("Got SQS resource")
-        logger.info("Looking for queue name {0}".format(os.environ["CANCELLED_QUEUE"]))
         sqs.send_message(
             QueueUrl=os.environ["CANCELLED_QUEUE"], MessageBody=json.dumps(event),
         )
@@ -137,7 +143,7 @@ def lambda_handler(event, context):
         count = event["arguments"]["count"]
 
         if count < 1:
-            raise RuntimeError("Invalid new count, should be greater than 0")
+            raise NibbleError("Invalid new count, should be greater than 0")
 
         price = nibble_price * count
         status = utils.NibbleReservationStatus.Reserved.value
@@ -145,7 +151,7 @@ def lambda_handler(event, context):
         def create_reservation(conn, pipe, counts):
             _, remaining_count = counts
             if count > remaining_count:
-                raise RuntimeError(
+                raise NibbleError(
                     "Cannot reserve {0} nibbles, only {1} remaining".format(
                         count, remaining_count
                     )
@@ -162,18 +168,18 @@ def lambda_handler(event, context):
             if existing_reservation is not None:
                 existing_status = existing_reservation["status"]
                 if existing_status == utils.NibbleReservationStatus.Reserved.value:
-                    raise RuntimeError(
+                    raise NibbleError(
                         "A reservation already exists, try updating that one instead"
                     )
                 elif (
                     existing_status
                     == utils.NibbleReservationStatus.CancelledByRestaurant.value
                 ):
-                    raise RuntimeError(
+                    raise NibbleError(
                         "Restaurant cancelled your reservation; try a different Nibble"
                     )
                 elif existing_status == utils.NibbleReservationStatus.Completed.value:
-                    raise RuntimeError(
+                    raise NibbleError(
                         "You already reserved this Nibble; try again with a different one"
                     )
                 else:
@@ -221,7 +227,7 @@ def lambda_handler(event, context):
     elif field == "nibbleEditReservation":
         new_count = event["arguments"]["newCount"]
         if new_count < 1:
-            raise RuntimeError("Invalid new count, should be greater than 0")
+            raise NibbleError("Invalid new count, should be greater than 0")
 
         def edit_reservation(conn, pipe, counts):
             _, remaining_count = counts
@@ -240,13 +246,13 @@ def lambda_handler(event, context):
             rows = conn.execute(select_old_reservation)
             old_reservation = rows.fetchone()
             if old_reservation is None:
-                raise RuntimeError("No such reservation to update")
+                raise NibbleError("No such reservation to update")
 
             old_count = old_reservation["reserved_count"]
             nibble_name = old_reservation["nibble_name"]
             status = old_reservation["status"]
             if status != utils.NibbleReservationStatus.Reserved.value:
-                raise RuntimeError(
+                raise NibbleError(
                     "Cannot reserve nibble with status {0}".format(status)
                 )
 
@@ -263,7 +269,7 @@ def lambda_handler(event, context):
             )
             count_increased_by = new_count - old_count
             if count_increased_by > remaining_count:
-                raise RuntimeError(
+                raise NibbleError(
                     "Cannot change reservation from {0} to {1}, there are only {2} available".format(
                         old_count, new_count, remaining_count
                     )
@@ -312,7 +318,7 @@ def run_in_transaction(r, engine, nibble_id, func):
                 with r.pipeline() as pipe:  # transactionizes Redis calls
                     result = func(conn, pipe, (available_count, remaining_count))
     except LockError:
-        raise RuntimeError(
+        raise NibbleError(
             "Someone is currently making a reservation, try again in a moment"
         )
 

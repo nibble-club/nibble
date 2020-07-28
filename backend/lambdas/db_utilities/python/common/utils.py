@@ -23,6 +23,5 @@ def get_engine():
             port=os.environ["DB_PORT"],
             db_name=os.environ["DB_NAME"],
         ),
-        poolclass=StaticPool,
         isolation_level="SERIALIZABLE",
     )

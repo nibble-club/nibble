@@ -9,9 +9,9 @@ import { appTheme } from "../../common/theming";
 import HeaderBar from "../../components/HeaderBar/HeaderBar";
 import { PROFILE_PICTURE_PLACEHOLDER } from "../../components/S3Image/S3Image";
 import SectionHeader from "../../components/SectionHeader/SectionHeader";
-import { UserQuery } from "../../graphql/generated/types";
+import { UserInfoQuery } from "../../graphql/generated/types";
 import { USER_INFO } from "../../graphql/queries";
-import { QueryOf } from "../../graphql/types";
+import { QueryFor } from "../../graphql/types";
 import { userSignOut } from "../../redux/actions";
 import { RootState } from "../../redux/reducers";
 import { useStyles } from "./Home.style";
@@ -20,7 +20,7 @@ const Home = () => {
   const id = useSelector((state: RootState) => state.user.id);
   const { loading, error, data } = useQuery(USER_INFO, {
     variables: { id },
-  }) as QueryOf<UserQuery>;
+  }) as QueryFor<UserInfoQuery>;
 
   const classes = useStyles();
   const dispatch = useDispatch();

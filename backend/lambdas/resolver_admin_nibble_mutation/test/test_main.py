@@ -8,8 +8,13 @@ sys.path.insert(0, os.path.abspath(os.path.join(test_dir, common_dir)))
 import unittest
 import common.validation as validation
 from unittest.mock import Mock, patch
-import main
+
+with patch("common.utils.get_engine"):
+    import main
+
 from datetime import datetime, timedelta
+from common.errors import NibbleError
+
 
 nibble_id = "1234"
 nibble_name = "Half sushi"
@@ -56,13 +61,13 @@ class TestAdminNibbleMutation(unittest.TestCase):
     def test_db_mapper_invalid_type(self):
         invalid_type_nibble = sample_nibble.copy()
         invalid_type_nibble["type"] = "not valid"
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(NibbleError):
             main.nibble_event_db_mapper(invalid_type_nibble)
 
     def test_db_mapper_invalid_count(self):
         invalid_count_nibble = sample_nibble.copy()
         invalid_count_nibble["count"] = 0
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(NibbleError):
             main.nibble_event_db_mapper(invalid_count_nibble)
 
     def test_db_mapper_invalid_available_to(self):
@@ -70,7 +75,7 @@ class TestAdminNibbleMutation(unittest.TestCase):
         invalid_time_nibble["availableTo"] = int(
             (datetime.now() - timedelta(hours=1)).timestamp()
         )
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(NibbleError):
             main.nibble_event_db_mapper(invalid_time_nibble)
 
     def test_db_mapper_invalid_timespan(self):
@@ -81,7 +86,7 @@ class TestAdminNibbleMutation(unittest.TestCase):
         invalid_timespan_nibble["availableTo"] = int(
             (datetime.now() - timedelta(seconds=2)).timestamp()
         )
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(NibbleError):
             main.nibble_event_db_mapper(invalid_timespan_nibble)
 
     def test_update_validation_valid(self):
@@ -97,7 +102,7 @@ class TestAdminNibbleMutation(unittest.TestCase):
         self.assertTrue(True, "Succeeded without error")
 
     def test_update_validation_invalid_amount(self):
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(NibbleError):
             main.check_valid_nibble_update(
                 sample_nibble, nibble_id, self.conn_mock, self.nibble_table_mock, 10, 5,
             )
@@ -108,7 +113,7 @@ class TestAdminNibbleMutation(unittest.TestCase):
             self.conn_mock.execute.return_value.fetchone.return_value = {
                 "available_to": (datetime.now() - timedelta(hours=1)).timestamp()
             }
-            with self.assertRaises(RuntimeError):
+            with self.assertRaises(NibbleError):
                 main.check_valid_nibble_update(
                     sample_nibble,
                     nibble_id,

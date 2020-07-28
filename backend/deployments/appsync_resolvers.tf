@@ -78,6 +78,16 @@ resource aws_appsync_resolver restaurant_info {
   response_template = file("./resolver_templates/response_lambda.vm")
 }
 
+resource aws_appsync_resolver restaurant_info_for_admin {
+  api_id            = aws_appsync_graphql_api.api.id
+  kind              = "UNIT"
+  field             = "restaurantForAdmin"
+  type              = "Query"
+  data_source       = module.restaurant_datasource.name
+  request_template  = templatefile("./resolver_templates/request_lambda.vm", { field = "Query.restaurantForAdmin" })
+  response_template = file("./resolver_templates/response_lambda.vm")
+}
+
 resource aws_appsync_resolver restaurant_distance {
   api_id            = aws_appsync_graphql_api.api.id
   kind              = "UNIT"

@@ -4,6 +4,7 @@ import os
 from common import tables, utils, validation, redis_keys
 from sqlalchemy.sql import select
 from geopy import distance
+from common.errors import NibbleError
 
 
 logger = logging.getLogger()
@@ -17,7 +18,7 @@ def lambda_handler(event, context):
     field = event["field"]
     # field should be Restaurant.distance
     if field != "Restaurant.distance":
-        raise RuntimeError(
+        raise NibbleError(
             "Invalid field {0} for restaurant distance resolver".format(field)
         )
 

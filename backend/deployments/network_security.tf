@@ -105,6 +105,21 @@ resource aws_security_group_rule allow_lambda_to_sqs {
   source_security_group_id = aws_security_group.sqs_security_group.id
 }
 
+resource aws_security_group lambda_internet_access_security_group {
+  name        = "${var.environment_namespace}-lambda_internet_access_security_group"
+  description = "Used to allow Lambdas access to internet"
+  vpc_id      = data.aws_vpc.vpc.id
+  tags = {
+    Name = "${var.environment_namespace}-lambda_internet_access_security_group"
+  }
+  egress {
+    from_port   = 0
+    protocol    = "-1"
+    to_port     = 0
+    cidr_blocks = [local.ALL_IP_ADDRESSES]
+  }
+}
+
 # postgres
 resource aws_security_group postgres_security_group {
   name        = "${var.environment_namespace}-postgres_security_group"
@@ -156,4 +171,14 @@ resource aws_security_group sqs_security_group {
   }
 }
 
-
+# elasticsearch
+//resource aws_security_group elasticsearch_security_group {
+//  name = "${var.environment_namespace}-elasticsearch_security_group"
+//  description = "Allows resources to access Elasticsearch"
+//  vpc_id = data.aws_vpc.vpc.id
+//
+//  tags = {
+//    Name = "${var.environment_namespace}-elasticsearch_security_group"
+//  }
+//
+//}

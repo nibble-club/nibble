@@ -21,7 +21,7 @@ module add_user_lambda {
     DB_PASSWORD = aws_db_instance.postgres.password
   }
   vpc_config = {
-    security_group_ids = [aws_security_group.lambda_security_group.id]
+    security_group_ids = [aws_security_group.lambda_security_group.id, aws_security_group.lambda_internet_access_security_group.id]
     subnet_ids         = var.private_subnet_ids
   }
 }
@@ -45,7 +45,7 @@ data aws_iam_policy_document add_user {
       "logs:CreateLogGroup",
       "logs:CreateLogStream",
       "logs:PutLogEvents",
-      "logs:DescribeLogStream",
+      "logs:DescribeLogStreams",
     ]
     effect    = "Allow"
     resources = ["*"]
@@ -59,6 +59,15 @@ data aws_iam_policy_document add_user {
     ]
     effect    = "Allow"
     resources = ["*"]
+  }
+
+  // set user's group in cognito
+  statement {
+    actions = [
+      "cognito-idp:AdminAddUserToGroup"
+    ]
+    effect    = "Allow"
+    resources = [aws_cognito_user_pool.users.arn]
   }
 }
 
@@ -78,12 +87,4 @@ resource aws_lambda_permission user_cognito_invocation {
   function_name = module.add_user_lambda.function_name
   principal     = "cognito-idp.amazonaws.com"
   source_arn    = aws_cognito_user_pool.users.arn
-}
-
-resource aws_lambda_permission admin_cognito_invocation {
-  statement_id  = "AllowExecutionFromAdminCognito"
-  action        = "lambda:InvokeFunction"
-  function_name = module.add_user_lambda.function_name
-  principal     = "cognito-idp.amazonaws.com"
-  source_arn    = aws_cognito_user_pool.admins.arn
 }

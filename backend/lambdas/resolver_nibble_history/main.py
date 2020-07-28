@@ -2,12 +2,16 @@ import logging
 import json
 import os
 from common import tables, utils, validation, redis_keys
-from sqlalchemy.sql import select, and_
+from sqlalchemy.sql import select, and_, not_
 from datetime import datetime
+from common.errors import NibbleError
 
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+
+# get tables and build query
+engine = utils.get_engine()
 
 
 def lambda_handler(event, context):
@@ -18,15 +22,13 @@ def lambda_handler(event, context):
     source, field = source_info.split(".")
 
     if source != "User":
-        raise RuntimeError("Invalid type, expecting to resolve on User type")
+        raise NibbleError("Invalid type, expecting to resolve on User type")
     if field not in ("nibblesReserved", "nibblesHistory"):
-        raise RuntimeError("Resolving unexpected field {0} on User type".format(field))
+        raise NibbleError("Resolving unexpected field {0} on User type".format(field))
 
     # get user id from source
     user_id = event["source"]["id"]
 
-    # get tables and build query
-    engine = utils.get_engine()
     nibble_table = tables.get_table_metadata(tables.NibbleTable.NIBBLE)
     reservation_table = tables.get_table_metadata(tables.NibbleTable.NIBBLE_RESERVATION)
     current_time = int(datetime.now().timestamp())
@@ -49,21 +51,20 @@ def lambda_handler(event, context):
         reservation_table.c.cancellation_reason,
     ]
 
-    if field == "nibblesReserved":
-        time_condition = (
+    nibbles_reserved_conditions = and_(
+        (
             nibble_table.c.available_to > current_time
-        )  # we only want nibbles still in availability window...
-        status_condition = (
-            reservation_table.c.status == utils.NibbleReservationStatus.Reserved.value
-        )  # ... that are reserved, but not cancelled or completed
+        ),  # we only want nibbles still in availability window...
+        (reservation_table.c.status == utils.NibbleReservationStatus.Reserved.value),
+    )  # ... that are reserved, but not cancelled or completed
+
+    nibbles_history_conditions = not_(nibbles_reserved_conditions)
+
+    if field == "nibblesReserved":
+        nibbles_condition = nibbles_reserved_conditions
         order_field = nibble_table.c.available_to
     else:  # field = nibblesHistory
-        time_condition = (
-            nibble_table.c.available_to > 0
-        )  # we don't care about the nibble's time...
-        status_condition = (
-            reservation_table.c.status != utils.NibbleReservationStatus.Reserved.value
-        )  # ... we just want anything not yet reserved
+        nibbles_condition = nibbles_history_conditions
         order_field = reservation_table.c.reserved_at
 
     # get nibbles reserved by user, with given time condition
@@ -74,11 +75,7 @@ def lambda_handler(event, context):
                 reservation_table, nibble_table.c.id == reservation_table.c.nibble_id
             )
         )
-        .where(
-            and_(
-                reservation_table.c.user_id == user_id, time_condition, status_condition
-            )
-        )
+        .where(and_(reservation_table.c.user_id == user_id, nibbles_condition))
         .order_by(order_field)
     )
 
@@ -105,23 +102,3 @@ def lambda_handler(event, context):
 
     logger.info(nibbles)
     return nibbles
-
-
-"""
-type NibbleReserved implements NibbleCard {
-  id: ID!
-  name: String!
-  type: NibbleType
-  count: Int! # number reserved
-  price: Int! # price in cents for entire reservation
-  imageUrl: S3Object!
-  restaurant: Restaurant!
-  description: String
-  status: NibbleOrderStatus!
-  cancelledAt: AWSTimestamp # mandatory if NibbleOrderStatus is CANCELLED*
-  cancellationReason: String
-  reservedAt: AWSTimestamp!
-  availableFrom: AWSTimestamp!
-  availableTo: AWSTimestamp!
-}
-"""

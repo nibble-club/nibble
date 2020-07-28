@@ -49,7 +49,7 @@ data aws_iam_policy_document resolver_nibble_reservation {
       "logs:CreateLogGroup",
       "logs:CreateLogStream",
       "logs:PutLogEvents",
-      "logs:DescribeLogStream",
+      "logs:DescribeLogStreams",
     ]
     effect    = "Allow"
     resources = ["*"]

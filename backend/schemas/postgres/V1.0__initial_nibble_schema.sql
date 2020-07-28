@@ -32,8 +32,8 @@ CREATE TABLE restaurant_admin (
 );
 
 CREATE TABLE restaurant_restaurant_admin (
-	restaurant_id bigint NOT NULL,
-	admin_id text NOT NULL,
+	restaurant_id bigint UNIQUE NOT NULL,
+	admin_id text UNIQUE NOT NULL,
 	CONSTRAINT restaurant_restaurant_admin_pk PRIMARY KEY (admin_id, restaurant_id)
 ) WITH (
 	OIDS=FALSE

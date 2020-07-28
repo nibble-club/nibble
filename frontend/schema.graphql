@@ -1,5 +1,6 @@
 type Query {
-  userInfo(userId: ID!): User!
+  # gets user ID from identity
+  userInfo: User!
   nibblesFeatured(user: UserCurrentContextInput!): [NibbleAvailable]!
   nibbleInfo(nibbleId: ID!): NibbleAvailable!
   nibblesRecommended(user: UserCurrentContextInput!): [NibbleAvailable]!
@@ -11,8 +12,11 @@ type Query {
     location: LatLonInput!
     paginationInput: PaginationInput!
   ): [Restaurant]!
+  # checks admin id in identity
+  restaurantForAdmin: Restaurant!
   restaurantInfo(restaurantId: ID!): Restaurant!
-  recentSearch(userId: ID!): [SearchParameters]
+  # gets user ID from identity
+  recentSearches: [SearchParameters]
   search(
     user: UserCurrentContextInput!
     searchParameters: SearchParametersInput!
@@ -244,4 +248,4 @@ type User {
   nibblesHistory: [NibbleReserved]!
 }
 
-scalar AWSTimestamp
+# scalar AWSTimestamp

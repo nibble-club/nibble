@@ -8,7 +8,10 @@ sys.path.insert(0, os.path.abspath(os.path.join(test_dir, common_dir)))
 import unittest
 import common.validation as validation
 from unittest.mock import Mock, patch
-import main
+
+with patch("common.utils.get_engine"):
+    import main
+
 from datetime import datetime, timedelta
 
 

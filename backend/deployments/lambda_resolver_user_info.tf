@@ -45,7 +45,7 @@ data aws_iam_policy_document resolver_user_info {
       "logs:CreateLogGroup",
       "logs:CreateLogStream",
       "logs:PutLogEvents",
-      "logs:DescribeLogStream",
+      "logs:DescribeLogStreams",
     ]
     effect    = "Allow"
     resources = ["*"]
