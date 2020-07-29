@@ -53,4 +53,5 @@ export type AppTheme = {
     medium: string;
     large: string;
   };
+  mapboxTheme: string;
 };

@@ -4,8 +4,13 @@
   "python.linting.enabled": true,
   "cSpell.words": [
     "baloo",
+    "box",
     "docgen",
     "dropzone",
+    "geolocate",
+    "map",
+    "map box",
+    "mapboxgl",
     "rehydrated",
     "signup",
     "tfstate",

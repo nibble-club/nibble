@@ -48,6 +48,7 @@ export const appTheme: AppTheme = {
     "0px 0px 24px rgba(0, 0, 0, 0.25)",
     "0px 0px 32px rgba(0, 0, 0, 0.25)",
   ],
+  mapboxTheme: "mapbox://styles/mapbox/dark-v10",
 };
 
 export const globalTheme = (theme: AppTheme) => ({
