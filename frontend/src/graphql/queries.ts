@@ -21,6 +21,19 @@ export const USER_INFO = gql`
   }
 `;
 
+export const IMAGE_UPLOAD_URL = gql`
+  query imageUploadUrl($dest: S3ObjectDestination!) {
+    imageUploadURL(destination: $dest) {
+      presignedUrl
+      destination {
+        bucket
+        region
+        key
+      }
+    }
+  }
+`;
+
 export const SEARCH = gql`
   query nibbleSearch(
     $user: UserCurrentContextInput!

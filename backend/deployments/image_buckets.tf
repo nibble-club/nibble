@@ -1,6 +1,12 @@
 resource aws_s3_bucket user_profile_pictures {
-  bucket = replace("${var.aws_target_account_id}-${var.environment_namespace}-profile-pics", "_", "-")
+  bucket = local.user_profile_pictures_bucket
   acl    = "public-read"
+
+  cors_rule {
+    allowed_methods = ["GET", "PUT"]
+    allowed_origins = ["*"]
+    allowed_headers = ["*"]
+  }
 
   tags = {
     Environment = var.environment
@@ -8,8 +14,14 @@ resource aws_s3_bucket user_profile_pictures {
 }
 
 resource aws_s3_bucket restaurant_logos {
-  bucket = replace("${var.aws_target_account_id}-${var.environment_namespace}-restaurant-logos", "_", "-")
+  bucket = local.restaurant_logos_bucket
   acl    = "public-read"
+
+  cors_rule {
+    allowed_methods = ["GET", "PUT"]
+    allowed_origins = ["*"]
+    allowed_headers = ["*"]
+  }
 
   tags = {
     Environment = var.environment
@@ -17,8 +29,14 @@ resource aws_s3_bucket restaurant_logos {
 }
 
 resource aws_s3_bucket restaurant_heros {
-  bucket = replace("${var.aws_target_account_id}-${var.environment_namespace}-restaurant-heros", "_", "-")
+  bucket = local.restaurant_heros_bucket
   acl    = "public-read"
+
+  cors_rule {
+    allowed_methods = ["GET", "PUT"]
+    allowed_origins = ["*"]
+    allowed_headers = ["*"]
+  }
 
   tags = {
     Environment = var.environment

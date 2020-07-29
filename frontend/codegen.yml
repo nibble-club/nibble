@@ -1,5 +1,7 @@
 overwrite: true
-schema: "schema.graphql"
+schema:
+  - "schema.graphql"
+  - "schema.local.graphql"
 documents:
   - "src/graphql/queries.ts"
   - "src/graphql/fragments.ts"

@@ -13,7 +13,7 @@ type Query {
     paginationInput: PaginationInput!
   ): [Restaurant]!
   # creates S3 presigned URL to upload image
-  imageUploadURL(bucket: String!, directory: String!): String!
+  imageUploadURL(destination: S3ObjectDestination): ImageUploadDestination!
   # checks admin id in identity
   restaurantForAdmin: Restaurant!
   restaurantInfo(restaurantId: ID!): Restaurant!
@@ -115,6 +115,11 @@ type AdminDeleteNibbleResponse {
   id: ID!
 }
 
+type ImageUploadDestination {
+  presignedUrl: String!
+  destination: S3Object!
+}
+
 type LatLon {
   latitude: Float!
   longitude: Float!
@@ -206,6 +211,12 @@ type S3Object {
   key: String!
 }
 
+enum S3ObjectDestination {
+  UserProfilePictures
+  RestaurantLogos
+  RestaurantHeros
+}
+
 input S3ObjectInput {
   bucket: String!
   region: String!
@@ -249,5 +260,3 @@ type User {
   nibblesReserved: [NibbleReserved]!
   nibblesHistory: [NibbleReserved]!
 }
-
-# scalar AWSTimestamp

@@ -1,22 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 
-import { useQuery } from "@apollo/client";
+import { QueryResult, useQuery } from "@apollo/client";
 import Auth from "@aws-amplify/auth";
 
 import { appTheme } from "../../common/theming";
 import HeaderBar from "../../components/HeaderBar/HeaderBar";
-import { PROFILE_PICTURE_PLACEHOLDER } from "../../components/S3Image/S3Image";
+import S3Image, { PROFILE_PICTURE_PLACEHOLDER } from "../../components/S3Image/S3Image";
+import S3ImageUpload from "../../components/S3ImageUpload";
 import SectionHeader from "../../components/SectionHeader/SectionHeader";
-import { UserInfoQuery } from "../../graphql/generated/types";
+import { S3ObjectDestination, UserInfoQuery } from "../../graphql/generated/types";
 import { USER_INFO } from "../../graphql/queries";
-import { QueryFor } from "../../graphql/types";
 import { userSignOut } from "../../redux/actions";
 import { useStyles } from "./Home.style";
 
 const Home = () => {
-  const { loading, error, data } = useQuery(USER_INFO) as QueryFor<UserInfoQuery>;
+  const { loading, error, data } = useQuery(USER_INFO) as QueryResult<
+    UserInfoQuery,
+    null
+  >;
+
+  const [imageLoc, setImageLoc] = useState(PROFILE_PICTURE_PLACEHOLDER);
 
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -41,6 +46,11 @@ const Home = () => {
         >
           Sign out
         </Link>
+        <S3ImageUpload
+          destination={S3ObjectDestination.UserProfilePictures}
+          setImageLocation={setImageLoc}
+        />
+        <S3Image location={imageLoc} alt="test" />
       </div>
     </div>
   );

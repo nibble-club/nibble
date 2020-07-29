@@ -14,7 +14,9 @@ module resolver_image_upload_url_lambda {
   timeout            = 5
   layers             = [aws_lambda_layer_version.db_utilities.arn]
   environment = {
-    ENVIRONMENT = var.environment_namespace
+    USER_PROFILE_PICTURES_BUCKET = aws_s3_bucket.user_profile_pictures.bucket
+    RESTAURANT_LOGOS_BUCKET      = aws_s3_bucket.restaurant_logos.bucket
+    RESTAURANT_HEROS_BUCKET      = aws_s3_bucket.restaurant_heros.bucket
   }
   vpc_config = {
     security_group_ids = [aws_security_group.lambda_security_group.id]
@@ -61,8 +63,8 @@ data aws_iam_policy_document resolver_image_upload_url {
   statement {
     actions = [
       "s3:GetObject",
-      "s3:ListBucket",
       "s3:PutObject",
+      "s3:PutObjectAcl",
     ]
     effect = "Allow"
     resources = [
