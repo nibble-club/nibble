@@ -11,7 +11,8 @@ import { MapPin, MapViewProps } from "./MapView.types";
 
 mapboxgl.accessToken =
   process.env.REACT_APP_MAPBOX_ACCESS_TOKEN ||
-  "pk.eyJ1IjoibmliYmxlLWNsdWIiLCJhIjoiY2tkNnZlbGk3MXlmMjJ4bnZ3ZjZ0NnI5MSJ9.re2alqZ5LYEjYzJQLtUFwA";
+  process.env.STORYBOOK_MAPBOX_ACCESS_TOKEN ||
+  "";
 
 const INITIAL_LOCATION = { latitude: 41, longitude: -95 }; // center of US
 const PROGRAMMATIC_MAX_ZOOM = 13;
