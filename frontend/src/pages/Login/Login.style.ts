@@ -39,19 +39,10 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
       fontSize: fluidSize(10, 2),
     },
     "& button": {
-      transition: theme.animation.simple,
       margin: theme.spacing.large,
       marginBottom: theme.spacing.small,
       width: "70%",
       cursor: "pointer",
-      "&:disabled": {
-        background: theme.color.card[1],
-        color: theme.color.text.grayed,
-        cursor: "default",
-      },
-      "&:hover": {
-        boxShadow: theme.shadow[1],
-      },
     },
     "& span": {
       display: "block",

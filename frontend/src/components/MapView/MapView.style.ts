@@ -5,8 +5,8 @@ import { AppTheme } from "../../common/theming.types";
 export const useStyles = createUseStyles((theme: AppTheme) => ({
   container: {
     width: "100%",
-    height: 500,
     position: "absolute",
+    height: (height: number) => height,
   },
   mapContainer: {
     position: "absolute",
@@ -16,9 +16,12 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
     bottom: 0,
     "& .mapboxgl-ctrl-group": {
       background: "none",
-      boxShadow: theme.shadow[2],
+      boxShadow: theme.shadow[1],
     },
     "& button.mapboxgl-ctrl-geolocate": {
+      padding: 0,
+      margin: 0,
+      width: 29,
       backgroundColor: theme.color.card[0],
       transition: theme.animation.simple,
     },
@@ -26,6 +29,8 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
       backgroundColor: theme.color.card[1],
     },
     "& button.mapboxgl-ctrl-geolocate span.mapboxgl-ctrl-icon": {
+      padding: 0,
+      margin: 0,
       backgroundImage: `url("data:image/svg+xml;charset=utf-8,%3Csvg width='29' height='29' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg' fill='%23${theme.color.text.primary.replace(
         "#",
         ""
@@ -33,6 +38,19 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
     },
     "& .mapboxgl-user-location-dot, .mapboxgl-user-location-dot:before": {
       backgroundColor: theme.color.blue,
+    },
+    "& .mapboxgl-user-location-dot:before": {
+      left: 0.00001,
+      top: 0.00001,
+    },
+    "& .mapboxgl-ctrl.mapboxgl-ctrl-attrib": {
+      background: theme.color.background,
+      "& a": {
+        color: theme.color.text.grayed,
+        "&:hover": {
+          color: theme.color.text.primary,
+        },
+      },
     },
   },
   popup: {

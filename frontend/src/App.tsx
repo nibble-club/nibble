@@ -1,25 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { createUseStyles } from "react-jss";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, Redirect, Route, Switch } from "react-router-dom";
+import { Redirect, Route, Switch } from "react-router-dom";
 
 import Auth from "@aws-amplify/auth";
 
 import { USER_TOKEN_KEY } from "./common/constants";
 import { globalTheme } from "./common/theming";
 import { AppTheme } from "./common/theming.types";
+import NotificationBar from "./components/NotificationBar/NotificationBar";
+import Admin from "./pages/Admin/Admin";
 import Home from "./pages/Home/Home";
 import Login from "./pages/Login/Login";
-import { userSignIn, userSignOut } from "./redux/actions";
+import { userSignIn } from "./redux/actions";
 import { RootState } from "./redux/reducers";
 
 const useStyles = createUseStyles((theme: AppTheme) => ({
   ...globalTheme(theme),
-  app: {},
+  app: {
+    paddingBottom: `calc(10 * ${theme.spacing.large})`,
+  },
 }));
 
 function App() {
-  const [loggedIn, setLoggedIn] = useState(true);
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
   const admin = useSelector((state: RootState) => state.user.admin);
@@ -46,7 +49,6 @@ function App() {
       } catch (err) {
         console.log("User not authenticated");
         setLoading(false);
-        setLoggedIn(false);
       }
     };
     getUser();
@@ -56,9 +58,10 @@ function App() {
     <div />
   ) : (
     <div className={classes.app}>
+      <NotificationBar />
       <Switch>
         <Route path="/login">
-          <Login setLoggedIn={setLoggedIn} />
+          <Login />
         </Route>
 
         <Route path="/nibble/:id"></Route>
@@ -68,27 +71,11 @@ function App() {
         </Route>
         <Route path="/admin">
           <div>
-            <div>Hello from admin page!</div>{" "}
-            <Link
-              to={{ pathname: "/login", state: { referrer: "/" } }}
-              onClick={async () => {
-                dispatch(userSignOut());
-                await Auth.signOut();
-              }}
-            >
-              Sign out
-            </Link>
+            <Admin />
           </div>
         </Route>
         <Route path="/">
-          {loggedIn && admin ? (
-            <Redirect to={{ pathname: "/admin" }} />
-          ) : loggedIn ? (
-            <Home />
-          ) : (
-            <div />
-            // <Redirect to={{ pathname: "/login", state: { referrer: "/" } }} />
-          )}
+          {admin ? <Redirect to={{ pathname: "/admin" }} /> : <Home />}
         </Route>
       </Switch>
     </div>

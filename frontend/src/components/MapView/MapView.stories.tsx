@@ -48,7 +48,11 @@ export const MapWithPinsProps: MapViewProps = {
   ],
 };
 
-export const BlankMap = () => <MapView {...BlankMapProps} />;
+export const BlankMap = () => (
+  <div style={{ height: 500 }}>
+    <MapView {...BlankMapProps} />
+  </div>
+);
 
 export const MapWithPins = () => (
   <MapView {...MapWithPinsProps} activePin={number("Active Pin", -1)} />

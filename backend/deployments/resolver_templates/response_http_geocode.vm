@@ -1,0 +1,16 @@
+## return the body
+#set($body = $util.parseJson($ctx.result.body))
+#if($ctx.result.statusCode == 200)
+    ##if response is 200
+    #if($body.results.size() > 0)
+        #set($result = {})
+        $util.qr($result.put("latitude", $body.results[0].location.lat))
+        $util.qr($result.put("longitude", $body.results[0].location.lng))
+        $util.toJson($result)
+    #else
+        $util.error("Invalid address, no location found on map", "GeocodioError")
+    #end
+#else
+    ##if response is not 200, append the response to error block.
+    $util.error("Error in request to Geocodio", "GeocodioError", $body, $body)
+#end

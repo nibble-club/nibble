@@ -1,28 +1,18 @@
 import { gql } from "@apollo/client";
 
-export const USER_INFO = gql`
-  query userInfo {
-    userInfo {
-      fullName
-      profilePicUrl {
-        bucket
-        region
-        key
-      }
-      email
-      postalCode
-      nibblesReserved {
-        id
-        name
-        count
-        price
-      }
+import { RESTAURANT_INFO_FRAGMENT } from "./fragments";
+
+export const GEOCODE_ADDRESS = gql`
+  query GeocodeAddress($addr: AddressWithoutLocationInput!) {
+    geocodeAddress(address: $addr) {
+      latitude
+      longitude
     }
   }
 `;
 
 export const IMAGE_UPLOAD_URL = gql`
-  query imageUploadUrl($dest: S3ObjectDestination!) {
+  query ImageUploadUrl($dest: S3ObjectDestination!) {
     imageUploadURL(destination: $dest) {
       presignedUrl
       destination {
@@ -34,8 +24,17 @@ export const IMAGE_UPLOAD_URL = gql`
   }
 `;
 
+export const RESTAURANT_FOR_ADMIN = gql`
+  query RestaurantForAdmin {
+    restaurantForAdmin {
+      ...RestaurantInfo
+    }
+  }
+  ${RESTAURANT_INFO_FRAGMENT}
+`;
+
 export const SEARCH = gql`
-  query nibbleSearch(
+  query NibbleSearch(
     $user: UserCurrentContextInput!
     $searchParameters: SearchParametersInput!
     $currentPos: LatLonInput!
@@ -62,6 +61,27 @@ export const SEARCH = gql`
           bucket
           key
         }
+      }
+    }
+  }
+`;
+
+export const USER_INFO = gql`
+  query UserInfo {
+    userInfo {
+      fullName
+      profilePicUrl {
+        bucket
+        region
+        key
+      }
+      email
+      postalCode
+      nibblesReserved {
+        id
+        name
+        count
+        price
       }
     }
   }

@@ -48,7 +48,6 @@ variable vpc_endpoint_id {
 }
 
 # service-specific configurations
-
 variable maintenance_window {
   type        = string
   description = "When maintenance should be performed on resources such as RDS and ElastiCache"
@@ -69,6 +68,10 @@ variable ssh_public_key_path {
 # secure parameters
 data aws_ssm_parameter postgres_password {
   name = "/environment/${var.environment_namespace}/postgres_password"
+}
+
+data aws_ssm_parameter geocodio_api_key {
+  name = "/environment/${var.environment}/geocodio_api_key"
 }
 
 # lambda artifacts

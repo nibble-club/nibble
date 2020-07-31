@@ -6,7 +6,7 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
   container: {
     width: "100%",
     minHeight: 100,
-    minWidth: 300,
+    minWidth: 250,
     boxSizing: "border-box",
     background: theme.color.card[0],
     display: "flex",

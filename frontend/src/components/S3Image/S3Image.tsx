@@ -22,7 +22,7 @@ export const HERO_PLACEHOLDER: S3Object = {
   key: "hero",
 };
 
-const S3Image = ({ location, alt, ...rest }: S3ImageProps) => {
+const S3Image = ({ location, alt, imageRef, ...rest }: S3ImageProps) => {
   let url = `https://${location.bucket}.s3-${location.region}.amazonaws.com/${location.key}`;
   if (location.bucket === "PLACEHOLDER") {
     if (location.key === PROFILE_PICTURE_PLACEHOLDER.key) {
@@ -39,7 +39,7 @@ const S3Image = ({ location, alt, ...rest }: S3ImageProps) => {
     url = require("../../imgs/default-avatar.jpg");
   }
 
-  return <img src={url} alt={alt} {...rest} />;
+  return <img src={url} alt={alt} ref={imageRef} {...rest} />;
 };
 
 export default S3Image;

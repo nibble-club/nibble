@@ -67,7 +67,7 @@ const S3ImageUpload = ({ destination, setImageLocation }: S3ImageUploadProps) =>
   });
 
   return (
-    <div {...getRootProps({ className: classes.container })}>
+    <div {...getRootProps({ className: classes.container, id: "s3-image-upload" })}>
       <input {...getInputProps()} />
       {isDragActive ? (
         <p>Drop image here</p>

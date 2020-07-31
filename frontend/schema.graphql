@@ -12,6 +12,8 @@ type Query {
     location: LatLonInput!
     paginationInput: PaginationInput!
   ): [Restaurant]!
+  # geocodes given address
+  geocodeAddress(address: AddressWithoutLocationInput!): LatLon!
   # creates S3 presigned URL to upload image
   imageUploadURL(destination: S3ObjectDestination): ImageUploadDestination!
   # checks admin id in identity
@@ -27,7 +29,8 @@ type Query {
 
 type Mutation {
   adminCreateRestaurant(input: AdminRestaurantInput!): Restaurant!
-  adminEditRestaurant(id: ID!, input: AdminRestaurantInput!): Restaurant!
+  # id is fetched from identity
+  adminEditRestaurant(input: AdminRestaurantInput!): Restaurant!
   # restaurants are never deleted, they are only deactivated
   adminDeactivateRestaurant(id: ID!): Restaurant!
   adminCreateNibble(input: AdminNibbleInput!): NibbleAvailable!
@@ -75,6 +78,15 @@ input AddressInput {
   country: String!
   postalCode: String!
   location: LatLonInput! # geolocation should already be done
+}
+
+input AddressWithoutLocationInput {
+  streetAddress: String!
+  dependentLocality: String
+  locality: String!
+  administrativeArea: String!
+  country: String!
+  postalCode: String!
 }
 
 input AdminEditNibbleInput {

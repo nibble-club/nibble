@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import ContentLoader from "react-content-loader";
+import { useTheme } from "react-jss";
 
-import { appTheme } from "../../common/theming";
+import { AppTheme } from "../../common/theming.types";
 import { cardPadding, cardWidth, useLoadingStyles } from "./NibbleCard.style";
 
 const NibbleCardLoading = () => {
+  const appTheme = useTheme() as AppTheme;
   const [isHovered, setIsHovered] = useState(false);
 
   const classes = useLoadingStyles(isHovered);

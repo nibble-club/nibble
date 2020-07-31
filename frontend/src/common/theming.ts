@@ -49,6 +49,7 @@ export const appTheme: AppTheme = {
     "0px 0px 32px rgba(0, 0, 0, 0.25)",
   ],
   mapboxTheme: "mapbox://styles/mapbox/dark-v10",
+  headerHeight: fluidSize(80),
 };
 
 export const globalTheme = (theme: AppTheme) => ({
@@ -78,6 +79,19 @@ export const globalTheme = (theme: AppTheme) => ({
       fontFamily: '"Baloo 2"',
       fontSize: theme.fontSizes.medium,
     },
+    select: {
+      fontFamily: '"Baloo 2"',
+      fontSize: theme.fontSizes.medium,
+      backgroundColor: theme.color.card[0],
+      border: 0,
+      borderBottom: `1px solid ${theme.color.text.grayed}`,
+      paddingLeft: theme.spacing.small,
+      paddingRight: theme.spacing.small,
+      color: theme.color.text.primary,
+      "&:focus": {
+        // outline: "none",
+      },
+    },
     a: {},
     ul: {},
     li: {},
@@ -89,7 +103,19 @@ export const globalTheme = (theme: AppTheme) => ({
       color: theme.color.text.primary,
       background: theme.color.blue,
       padding: theme.spacing.xSmall,
+      paddingLeft: theme.spacing.medium,
+      paddingRight: theme.spacing.medium,
       borderRadius: theme.rounding.hard,
+      transition: theme.animation.simple,
+      cursor: "pointer",
+      "&:disabled": {
+        background: theme.color.card[1],
+        color: theme.color.text.grayed,
+        cursor: "default",
+      },
+      "&:hover": {
+        boxShadow: theme.shadow[1],
+      },
     },
   },
 });

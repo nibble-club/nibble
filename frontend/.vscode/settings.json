@@ -3,10 +3,12 @@
   "python.linting.pylintEnabled": true,
   "python.linting.enabled": true,
   "cSpell.words": [
+    "autosize",
     "baloo",
     "box",
     "docgen",
     "dropzone",
+    "geocode",
     "geolocate",
     "map",
     "map box",

@@ -1,3 +1,16 @@
+// http resolvers
+resource aws_appsync_resolver geocode_address {
+  api_id            = aws_appsync_graphql_api.api.id
+  kind              = "UNIT"
+  field             = "geocodeAddress"
+  type              = "Query"
+  data_source       = aws_appsync_datasource.geocodio_api.name
+  request_template  = templatefile("./resolver_templates/request_http_geocode.vm", { api_key = data.aws_ssm_parameter.geocodio_api_key.value })
+  response_template = file("./resolver_templates/response_http_geocode.vm")
+}
+
+
+// lambda resolvers
 resource aws_appsync_resolver admin_create_nibble {
   api_id            = aws_appsync_graphql_api.api.id
   kind              = "UNIT"

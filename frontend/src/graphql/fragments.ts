@@ -42,3 +42,36 @@ export const NIBBLE_RESERVED_INFO_FRAGMENT = gql`
     }
   }
 `;
+
+export const RESTAURANT_INFO_FRAGMENT = gql`
+  fragment RestaurantInfo on Restaurant {
+    id
+    name
+    market
+    description
+    disclaimer
+    active
+    address {
+      streetAddress
+      dependentLocality
+      locality
+      administrativeArea
+      country
+      postalCode
+      location {
+        latitude
+        longitude
+      }
+    }
+    logoUrl {
+      bucket
+      region
+      key
+    }
+    heroUrl {
+      bucket
+      key
+      region
+    }
+  }
+`;

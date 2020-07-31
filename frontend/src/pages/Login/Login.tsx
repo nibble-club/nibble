@@ -49,10 +49,6 @@ interface ChangePasswordValues {
   confirmPassword: string;
 }
 
-type LoginProps = {
-  setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
 type NavState = {
   referrer?: string;
 };
@@ -100,7 +96,7 @@ const LoginForm = (
 ) => (
   <form onSubmit={formRenderProps.handleSubmit}>
     <div>
-      <Field<string> name="email" placeholder="Email" type="text">
+      <Field<string> name="email" placeholder="Email" type="email">
         {fieldRenderProps => <TextInput center={true} {...fieldRenderProps} />}
       </Field>
     </div>
@@ -127,7 +123,7 @@ const SignUpForm = (
 ) => (
   <form onSubmit={formRenderProps.handleSubmit}>
     <div>
-      <Field<string> name="email" placeholder="Email" type="text">
+      <Field<string> name="email" placeholder="Email" type="email">
         {fieldRenderProps => <TextInput center={true} {...fieldRenderProps} />}
       </Field>
       <Field<string> name="fullName" placeholder="Full name" type="text">
@@ -213,7 +209,7 @@ const ResetPasswordForm = (
 ) => (
   <form onSubmit={formRenderProps.handleSubmit}>
     <div>
-      <Field<string> name="email" placeholder="Email" type="text">
+      <Field<string> name="email" placeholder="Email" type="email">
         {fieldRenderProps => <TextInput center={true} {...fieldRenderProps} />}
       </Field>
     </div>
@@ -318,7 +314,7 @@ const AdminChangePasswordForm = (
   </form>
 );
 
-const Login = (props: LoginProps) => {
+const Login = () => {
   const classes = useStyles();
   const history = useHistory();
   const location = useLocation();
@@ -329,7 +325,6 @@ const Login = (props: LoginProps) => {
 
   // actions when user is logged in
   const setLoggedIn = (session: any, email: string, userId: string, admin: boolean) => {
-    props.setLoggedIn(true);
     window.localStorage.setItem(USER_TOKEN_KEY, session.getIdToken().getJwtToken());
     dispatch(userSignIn(email, userId, admin));
     const navState = location.state as NavState;

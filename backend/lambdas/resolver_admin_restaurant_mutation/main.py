@@ -2,6 +2,7 @@ import logging
 import json
 import os
 from common import tables, utils, redis_keys
+from sqlalchemy.sql import select
 import redis
 from common.errors import NibbleError
 
@@ -43,10 +44,17 @@ def lambda_handler(event, context):
     if is_create:
         statement = restaurant_table.insert().values(**db_values)
     else:
-        restaurant_id = event["arguments"]["id"]
+        admin_id_restaurant_id_mapping = (
+            select([restaurant_restaurant_admin_table.c.restaurant_id])
+            .where(restaurant_restaurant_admin_table.c.admin_id == admin_id)
+            .alias()
+        )
         statement = (
             restaurant_table.update()
-            .where(restaurant_table.c.id == restaurant_id)
+            .returning(restaurant_table.c.id)
+            .where(
+                restaurant_table.c.id == admin_id_restaurant_id_mapping.c.restaurant_id
+            )
             .values(**db_values)
         )
 
@@ -63,6 +71,8 @@ def lambda_handler(event, context):
                     )
                 except Exception:
                     raise NibbleError("Admin already associated with a restaurant")
+            else:
+                restaurant_id = result.fetchone()["id"]
 
             logger.info("PK: {0}".format(restaurant_id))
 
@@ -109,6 +119,7 @@ def get_restaurant_result(db_values, restaurant_id):
     return {
         "id": restaurant_id,
         "name": db_values["name"],
+        "market": db_values["market"],
         "address": {
             "streetAddress": db_values["street_address"],
             "dependentLocality": db_values["dependent_locality"],

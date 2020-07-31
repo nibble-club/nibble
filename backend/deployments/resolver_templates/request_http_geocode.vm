@@ -1,0 +1,15 @@
+{
+    "version": "2018-05-29",
+    "method": "GET",
+    "params": {
+        "query": {
+            "street": $util.toJson($ctx.args.address.streetAddress),
+            "city": $util.toJson($ctx.args.address.locality),
+            "state": $util.toJson($ctx.args.address.administrativeArea),
+            "postal_code": $util.toJson($ctx.args.address.postalCode),
+            "country": $util.toJson($ctx.args.address.country),
+            "api_key": "${api_key}"
+        }
+    },
+    "resourcePath": "/v1.6/geocode"
+}

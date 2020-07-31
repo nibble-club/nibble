@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 
 import { appTheme } from "../../common/theming";
-import { LatLon } from "../../graphql/generated/types";
 import S3Image from "../S3Image";
 import { LOGO_PLACEHOLDER } from "../S3Image/S3Image";
 import { useStyles } from "./MapView.style";
@@ -14,7 +13,6 @@ mapboxgl.accessToken =
   process.env.STORYBOOK_MAPBOX_ACCESS_TOKEN ||
   "";
 
-const INITIAL_LOCATION = { latitude: 41, longitude: -95 }; // center of US
 const PROGRAMMATIC_MAX_ZOOM = 13;
 const BOUNDING_BOX_PADDING = 50;
 
@@ -35,7 +33,7 @@ const addPopup = (el: JSX.Element, className: string) => {
 const getBoundingBox = (pins: MapPin[]): LngLatBounds => {
   if (pins.length === 0) {
     return mapboxgl.LngLatBounds.convert([
-      [-120, 30],
+      [-130, 25],
       [-66, 50],
     ]); // bounding box for USA
   }
@@ -61,11 +59,11 @@ const getBoundingBox = (pins: MapPin[]): LngLatBounds => {
   ]);
 };
 
-const MapView = ({ pins, activePin = -1 }: MapViewProps) => {
-  const classes = useStyles();
+const MapView = ({ pins, activePin = -1, height = 500 }: MapViewProps) => {
+  const classes = useStyles(height);
   const [map, setMap] = useState<Map | null>(null);
-  const [center, setCenter] = useState<LatLon>(INITIAL_LOCATION);
-  const [zoom, setZoom] = useState(2);
+
+  const currentMarkers = useRef<mapboxgl.Marker[]>([]);
 
   const mapContainer = useRef<HTMLDivElement | null>(null);
 
@@ -78,6 +76,7 @@ const MapView = ({ pins, activePin = -1 }: MapViewProps) => {
         bounds: getBoundingBox(pins),
         fitBoundsOptions: {
           padding: BOUNDING_BOX_PADDING,
+          maxZoom: 15,
         },
       });
 
@@ -99,17 +98,6 @@ const MapView = ({ pins, activePin = -1 }: MapViewProps) => {
         // userLocation.trigger();
         map.resize();
       });
-
-      map.on("move", () => {
-        setCenter({
-          latitude: map.getCenter().lat,
-          longitude: map.getCenter().lng,
-        });
-      });
-
-      map.on("zoom", () => {
-        setZoom(map.getZoom());
-      });
     };
 
     if (!map) {
@@ -122,27 +110,34 @@ const MapView = ({ pins, activePin = -1 }: MapViewProps) => {
     if (!map) {
       return;
     }
+    currentMarkers.current.forEach(marker => {
+      marker.remove();
+    });
+    const newMarkers: mapboxgl.Marker[] = [];
     pins.forEach((pin: MapPin) =>
-      new mapboxgl.Marker({ color: appTheme.color.pink })
-        .setLngLat([pin.address.location.longitude, pin.address.location.latitude])
-        .setPopup(
-          addPopup(
-            <div className={classes.restaurantPopup}>
-              <S3Image location={LOGO_PLACEHOLDER} alt={`${pin.name} logo`} />
-              <div>
-                <p>{pin.name}</p>
-              </div>
-            </div>,
-            classes.popup
+      newMarkers.push(
+        new mapboxgl.Marker({ color: appTheme.color.pink })
+          .setLngLat([pin.address.location.longitude, pin.address.location.latitude])
+          .setPopup(
+            addPopup(
+              <div className={classes.restaurantPopup}>
+                <S3Image location={LOGO_PLACEHOLDER} alt={`${pin.name} logo`} />
+                <div>
+                  <p>{pin.name}</p>
+                </div>
+              </div>,
+              classes.popup
+            )
           )
-        )
-        .addTo(map)
+          .addTo(map)
+      )
     );
+    currentMarkers.current = newMarkers;
   }, [map, pins, classes.popup, classes.restaurantPopup]);
 
   // move map to current activePin
   useEffect(() => {
-    if (!map) {
+    if (!map || activePin === -1) {
       return;
     }
     if (0 <= activePin && activePin < pins.length) {

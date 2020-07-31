@@ -31,6 +31,15 @@ export type AddressInput = {
   location: LatLonInput;
 };
 
+export type AddressWithoutLocationInput = {
+  streetAddress: Scalars['String'];
+  dependentLocality?: Maybe<Scalars['String']>;
+  locality: Scalars['String'];
+  administrativeArea: Scalars['String'];
+  country: Scalars['String'];
+  postalCode: Scalars['String'];
+};
+
 export type AdminDeleteNibbleResponse = {
   __typename?: 'AdminDeleteNibbleResponse';
   id: Scalars['ID'];
@@ -110,7 +119,6 @@ export type MutationAdminCreateRestaurantArgs = {
 
 
 export type MutationAdminEditRestaurantArgs = {
-  id: Scalars['ID'];
   input: AdminRestaurantInput;
 };
 
@@ -237,6 +245,7 @@ export type Query = {
   nibblesRecommended: Array<Maybe<NibbleAvailable>>;
   nibblesWithProperty: Array<Maybe<NibbleAvailable>>;
   closestRestaurants: Array<Maybe<Restaurant>>;
+  geocodeAddress: LatLon;
   imageUploadURL: ImageUploadDestination;
   restaurantForAdmin: Restaurant;
   restaurantInfo: Restaurant;
@@ -269,6 +278,11 @@ export type QueryNibblesWithPropertyArgs = {
 export type QueryClosestRestaurantsArgs = {
   location: LatLonInput;
   paginationInput: PaginationInput;
+};
+
+
+export type QueryGeocodeAddressArgs = {
+  address: AddressWithoutLocationInput;
 };
 
 
@@ -392,21 +406,35 @@ export type NibbleReservedInfoFragment = (
   ) }
 );
 
-export type UserInfoQueryVariables = Exact<{ [key: string]: never; }>;
+export type RestaurantInfoFragment = (
+  { __typename?: 'Restaurant' }
+  & Pick<Restaurant, 'id' | 'name' | 'market' | 'description' | 'disclaimer' | 'active'>
+  & { address: (
+    { __typename?: 'Address' }
+    & Pick<Address, 'streetAddress' | 'dependentLocality' | 'locality' | 'administrativeArea' | 'country' | 'postalCode'>
+    & { location: (
+      { __typename?: 'LatLon' }
+      & Pick<LatLon, 'latitude' | 'longitude'>
+    ) }
+  ), logoUrl: (
+    { __typename?: 'S3Object' }
+    & Pick<S3Object, 'bucket' | 'region' | 'key'>
+  ), heroUrl: (
+    { __typename?: 'S3Object' }
+    & Pick<S3Object, 'bucket' | 'key' | 'region'>
+  ) }
+);
+
+export type GeocodeAddressQueryVariables = Exact<{
+  addr: AddressWithoutLocationInput;
+}>;
 
 
-export type UserInfoQuery = (
+export type GeocodeAddressQuery = (
   { __typename?: 'Query' }
-  & { userInfo: (
-    { __typename?: 'User' }
-    & Pick<User, 'fullName' | 'email' | 'postalCode'>
-    & { profilePicUrl: (
-      { __typename?: 'S3Object' }
-      & Pick<S3Object, 'bucket' | 'region' | 'key'>
-    ), nibblesReserved: Array<Maybe<(
-      { __typename?: 'NibbleReserved' }
-      & Pick<NibbleReserved, 'id' | 'name' | 'count' | 'price'>
-    )>> }
+  & { geocodeAddress: (
+    { __typename?: 'LatLon' }
+    & Pick<LatLon, 'latitude' | 'longitude'>
   ) }
 );
 
@@ -424,6 +452,17 @@ export type ImageUploadUrlQuery = (
       { __typename?: 'S3Object' }
       & Pick<S3Object, 'bucket' | 'region' | 'key'>
     ) }
+  ) }
+);
+
+export type RestaurantForAdminQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type RestaurantForAdminQuery = (
+  { __typename?: 'Query' }
+  & { restaurantForAdmin: (
+    { __typename?: 'Restaurant' }
+    & RestaurantInfoFragment
   ) }
 );
 
@@ -453,5 +492,23 @@ export type NibbleSearchQuery = (
         & Pick<S3Object, 'region' | 'bucket' | 'key'>
       ) }
     )>>> }
+  ) }
+);
+
+export type UserInfoQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type UserInfoQuery = (
+  { __typename?: 'Query' }
+  & { userInfo: (
+    { __typename?: 'User' }
+    & Pick<User, 'fullName' | 'email' | 'postalCode'>
+    & { profilePicUrl: (
+      { __typename?: 'S3Object' }
+      & Pick<S3Object, 'bucket' | 'region' | 'key'>
+    ), nibblesReserved: Array<Maybe<(
+      { __typename?: 'NibbleReserved' }
+      & Pick<NibbleReserved, 'id' | 'name' | 'count' | 'price'>
+    )>> }
   ) }
 );
