@@ -4,14 +4,12 @@ export const NIBBLE_AVAILABLE_INFO_FRAGMENT = gql`
   fragment NibbleAvailableInfo on NibbleAvailable {
     id
     name
-    restaurant {
-      name
-      distance(currentPos: $currentPos)
-    }
     type
     count
+    price
     availableFrom
     availableTo
+    description
     imageUrl {
       bucket
       region

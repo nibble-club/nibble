@@ -29,6 +29,8 @@ def bucket_name(s3_object_destination):
         return os.environ["RESTAURANT_LOGOS_BUCKET"]
     if s3_object_destination == "RestaurantHeros":
         return os.environ["RESTAURANT_HEROS_BUCKET"]
+    if s3_object_destination == "NibbleImages":
+        return os.environ["NIBBLE_IMAGES_BUCKET"]
     raise NibbleError("Invalid destination for S3 object")
 
 

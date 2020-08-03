@@ -34,7 +34,7 @@ type Mutation {
   # restaurants are never deleted, they are only deactivated
   adminDeactivateRestaurant(id: ID!): Restaurant!
   adminCreateNibble(input: AdminNibbleInput!): NibbleAvailable!
-  adminEditNibble(id: ID!, input: AdminEditNibbleInput!): NibbleAvailable!
+  adminEditNibble(id: ID!, input: AdminNibbleInput!): NibbleAvailable!
   adminDeleteNibble(id: ID!): AdminDeleteNibbleResponse!
   # used for restaurant to cancel reservation
   adminCancelReservation(
@@ -89,23 +89,11 @@ input AddressWithoutLocationInput {
   postalCode: String!
 }
 
-input AdminEditNibbleInput {
-  name: String!
-  type: NibbleType
-  count: Int! # number available
-  imageUrl: S3ObjectInput!
-  description: String
-  price: Int! # price in cents
-  availableFrom: AWSTimestamp!
-  availableTo: AWSTimestamp!
-}
-
 input AdminNibbleInput {
   name: String!
-  type: NibbleType
+  type: NibbleType!
   count: Int! # number available
   imageUrl: S3ObjectInput!
-  restaurantId: ID!
   description: String
   price: Int! # price in cents
   availableFrom: AWSTimestamp!
@@ -227,6 +215,7 @@ enum S3ObjectDestination {
   UserProfilePictures
   RestaurantLogos
   RestaurantHeros
+  NibbleImages
 }
 
 input S3ObjectInput {

@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-import { RESTAURANT_INFO_FRAGMENT } from "./fragments";
+import { NIBBLE_AVAILABLE_INFO_FRAGMENT, RESTAURANT_INFO_FRAGMENT } from "./fragments";
 
 export const GEOCODE_ADDRESS = gql`
   query GeocodeAddress($addr: AddressWithoutLocationInput!) {
@@ -24,13 +24,26 @@ export const IMAGE_UPLOAD_URL = gql`
   }
 `;
 
+export const NIBBLE_INFO = gql`
+  query NibbleInfo($nibbleId: ID!) {
+    nibbleInfo(nibbleId: $nibbleId) {
+      ...NibbleAvailableInfo
+    }
+  }
+  ${NIBBLE_AVAILABLE_INFO_FRAGMENT}
+`;
+
 export const RESTAURANT_FOR_ADMIN = gql`
   query RestaurantForAdmin {
     restaurantForAdmin {
       ...RestaurantInfo
+      nibblesAvailable {
+        ...NibbleAvailableInfo
+      }
     }
   }
   ${RESTAURANT_INFO_FRAGMENT}
+  ${NIBBLE_AVAILABLE_INFO_FRAGMENT}
 `;
 
 export const SEARCH = gql`

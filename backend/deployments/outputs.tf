@@ -9,3 +9,7 @@ output cognito_user_pool_id {
 output cognito_user_pool_client_id {
   value = aws_cognito_user_pool_client.users.id
 }
+
+output appsync_graphql_urls {
+  value = aws_appsync_graphql_api.api.uris
+}

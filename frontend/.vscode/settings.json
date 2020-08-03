@@ -6,17 +6,21 @@
     "autosize",
     "baloo",
     "box",
+    "covid",
     "docgen",
     "dropzone",
     "geocode",
     "geolocate",
+    "iphonex",
     "map",
     "map box",
     "mapboxgl",
     "rehydrated",
     "signup",
     "tfstate",
-    "theming"
+    "theming",
+    "unmounts",
+    "viewports"
   ],
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "eslint.validate": [

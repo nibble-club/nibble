@@ -5,7 +5,7 @@ import { AppTheme } from "../../common/theming.types";
 export const useStyles = createUseStyles((theme: AppTheme) => ({
   container: {
     width: "100%",
-    position: "absolute",
+    position: "relative",
     height: (height: number) => height,
   },
   mapContainer: {

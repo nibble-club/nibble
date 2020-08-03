@@ -12,6 +12,11 @@ logger.setLevel(logging.INFO)
 
 # connect to database
 engine = utils.get_engine()
+nibble_table = tables.get_table_metadata(tables.NibbleTable.NIBBLE)
+restaurant_restaurant_admin_table = tables.get_table_metadata(
+    tables.NibbleTable.RESTAURANT_RESTAURANT_ADMIN
+)
+restaurant_table = tables.get_table_metadata(tables.NibbleTable.RESTAURANT)
 
 
 def lambda_handler(event, context):
@@ -24,22 +29,30 @@ def lambda_handler(event, context):
         )
 
     nibble = event["arguments"]["input"]
+    admin_id = event["identity"]["username"]
+    admin_id_restaurant_id_mapping = select(
+        [restaurant_restaurant_admin_table.c.restaurant_id]
+    ).where(restaurant_restaurant_admin_table.c.admin_id == admin_id)
 
     # connect to Redis
     r = redis.Redis(host=os.environ["REDIS_HOST"], port=os.environ["REDIS_PORT"])
     r.ping()
     logger.info("Connected to Redis")
 
-    nibble_table = tables.get_table_metadata(tables.NibbleTable.NIBBLE)
-
     if event_field == "adminCreateNibble":
         with engine.begin() as conn:  # transactionizes SQL updates
             with r.pipeline() as pipe:  # transactionizes Redis updates
                 # update db
                 db_values = nibble_event_db_mapper(nibble)
+
+                # restaurant_id = conn.execute(admin_id_restaurant_id_mapping).fetchone()[
+                #     "restaurant_id"
+                # ]
+                # logger.info("Got restaurant id {0} from admin id".format(restaurant_id))
+
                 result = conn.execute(
                     nibble_table.insert().values(
-                        restaurant_id=nibble.get("restaurantId", None), **db_values
+                        restaurant_id=admin_id_restaurant_id_mapping, **db_values
                     )
                 )
                 nibble_id = result.inserted_primary_key[0]

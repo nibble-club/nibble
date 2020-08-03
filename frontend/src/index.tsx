@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { ThemeProvider } from "react-jss";
+import { ThemeProvider as JSSThemeProvider } from "react-jss";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 import { createStore } from "redux";
@@ -14,9 +14,10 @@ import {
   InMemoryCache
 } from "@apollo/client";
 import Auth from "@aws-amplify/auth";
+import { ThemeProvider as MUIThemeProvider } from "@material-ui/core";
 
 import App from "./App";
-import { appTheme } from "./common/theming";
+import { appTheme, muiTheme } from "./common/theming";
 import { authFlowLink } from "./links/auth";
 import { loggerLink } from "./links/logging";
 import { retryLink } from "./links/retry";
@@ -47,11 +48,13 @@ ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
       <BrowserRouter>
-        <ThemeProvider theme={appTheme}>
-          <ApolloProvider client={client}>
-            <App />
-          </ApolloProvider>
-        </ThemeProvider>
+        <JSSThemeProvider theme={appTheme}>
+          <MUIThemeProvider theme={muiTheme}>
+            <ApolloProvider client={client}>
+              <App />
+            </ApolloProvider>
+          </MUIThemeProvider>
+        </JSSThemeProvider>
       </BrowserRouter>
     </Provider>
   </React.StrictMode>,

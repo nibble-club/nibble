@@ -1,6 +1,6 @@
 import React from "react";
 import { addDecorator } from "@storybook/react";
-import { appTheme } from "../src/common/theming";
+import { appTheme, muiTheme } from "../src/common/theming";
 import { addParameters } from "@storybook/client-api";
 import { INITIAL_VIEWPORTS } from "@storybook/addon-viewport";
 import { MockedProvider } from "@apollo/client/testing";
@@ -13,9 +13,11 @@ import {
   IMAGE_UPLOAD_URL,
   RESTAURANT_FOR_ADMIN,
   GEOCODE_ADDRESS,
+  NIBBLE_INFO,
 } from "../src/graphql/queries";
 import { S3ObjectDestination } from "../src/graphql/generated/types";
 import { BrowserRouter } from "react-router-dom";
+import { MuiThemeProvider } from "@material-ui/core";
 
 addParameters({
   viewport: {
@@ -24,7 +26,7 @@ addParameters({
   },
 });
 
-const useStyles = createUseStyles(theme => ({
+const useStyles = createUseStyles((theme) => ({
   ...globalTheme(theme),
   app: {},
 }));
@@ -98,7 +100,27 @@ const mocks = [
       },
     },
   },
-
+  {
+    request: {
+      query: IMAGE_UPLOAD_URL,
+      variables: {
+        dest: S3ObjectDestination.NibbleImages,
+      },
+    },
+    result: {
+      data: {
+        imageUploadURL: {
+          presignedUrl:
+            "https://800344761765-dev-adchurch-nibble-images.s3.amazonaws.com/eabb01bd-46be-4b06-a9b1-44a80c9960ff",
+          destination: {
+            bucket: "800344761765-dev-adchurch-nibble-images",
+            region: "us-west-2",
+            key: "eabb01bd-46be-4b06-a9b1-44a80c9960ff",
+          },
+        },
+      },
+    },
+  },
   {
     request: {
       query: RESTAURANT_FOR_ADMIN,
@@ -166,6 +188,34 @@ const mocks = [
       },
     },
   },
+  {
+    request: {
+      query: NIBBLE_INFO,
+      variables: {},
+    },
+    response: {
+      data: {
+        nibbleInfo: {
+          availableFrom: 1596405600,
+          availableTo: 1597111200,
+          count: 1,
+          description: "Famous hoagie rolls :)",
+          id: "1",
+          imageUrl: {
+            bucket: "800344761765-dev-adchurch-restaurant-heros",
+            region: "us-west-2",
+            key: "0279bda8-1765-4b94-b2cc-13e1abf77d53.jpg",
+            __typename: "S3Object",
+          },
+          name: "Hoagie roll",
+          price: 200,
+          restaurant: { name: "Dave's Fresh Pasta", __typename: "Restaurant" },
+          type: "Ingredients",
+          __typename: "NibbleAvailable",
+        },
+      },
+    },
+  },
 ];
 
 const Theming = ({ children }) => {
@@ -173,13 +223,15 @@ const Theming = ({ children }) => {
     <MockedProvider mocks={mocks} addTypename={false}>
       <Provider store={createStore(nibbleApp)}>
         <ThemeProvider theme={appTheme}>
-          <BrowserRouter>
-            <Styling> {children} </Styling>
-          </BrowserRouter>
+          <MuiThemeProvider theme={muiTheme}>
+            <BrowserRouter>
+              <Styling> {children} </Styling>
+            </BrowserRouter>
+          </MuiThemeProvider>
         </ThemeProvider>
       </Provider>
     </MockedProvider>
   );
 };
 
-addDecorator(storyFn => <Theming>{storyFn()}</Theming>);
+addDecorator((storyFn) => <Theming>{storyFn()}</Theming>);

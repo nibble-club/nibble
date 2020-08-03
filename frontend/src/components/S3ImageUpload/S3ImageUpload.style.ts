@@ -19,6 +19,7 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
     padding: theme.spacing.medium,
     textAlign: "center",
     transition: theme.animation.simple,
+    margin: theme.spacing.medium,
     "& p": {
       margin: 0,
     },

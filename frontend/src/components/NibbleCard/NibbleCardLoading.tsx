@@ -5,7 +5,7 @@ import { useTheme } from "react-jss";
 import { AppTheme } from "../../common/theming.types";
 import { cardPadding, cardWidth, useLoadingStyles } from "./NibbleCard.style";
 
-const NibbleCardLoading = () => {
+export const NibbleCardLoading = () => {
   const appTheme = useTheme() as AppTheme;
   const [isHovered, setIsHovered] = useState(false);
 
@@ -51,5 +51,3 @@ const NibbleCardLoading = () => {
     </div>
   );
 };
-
-export default NibbleCardLoading;

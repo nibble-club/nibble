@@ -22,9 +22,10 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
   bar: {
     "& .MuiPaper-root": {
       fontFamily: '"Baloo 2"',
-      fontSize: theme.fontSizes.medium,
-      backgroundColor: messageType => getColorForMessageType(messageType, theme),
+      fontSize: theme.fontSizes.small,
+      backgroundColor: (messageType) => getColorForMessageType(messageType, theme),
       textShadow: theme.shadow[0],
+      color: theme.color.text.primary,
     },
   },
 }));

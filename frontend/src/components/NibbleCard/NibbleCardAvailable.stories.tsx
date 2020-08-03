@@ -1,7 +1,7 @@
 import React from "react";
 
 import { NibbleAvailableInfoFragment, NibbleType } from "../../graphql/generated/types";
-import NibbleCardAvailable from "./NibbleCardAvailable";
+import { NibbleCardAvailable } from "./NibbleCardAvailable";
 
 export default {
   component: NibbleCardAvailable,
@@ -9,12 +9,13 @@ export default {
   excludeStories: /.*Props$/,
 };
 
-export const symphonySushiProps: NibbleAvailableInfoFragment = {
+export const symphonySushiProps: NibbleAvailableInfoFragment & {
+  restaurantName: string;
+  restaurantDistance?: number;
+} = {
   id: "3",
-  restaurant: {
-    name: "Symphony Sushi",
-    distance: 0.2,
-  },
+  restaurantName: "Symphony Sushi",
+  restaurantDistance: 0.2,
   name: "Half sushi roll",
   type: NibbleType.Prepared,
   count: 5,
@@ -25,14 +26,16 @@ export const symphonySushiProps: NibbleAvailableInfoFragment = {
   },
   availableFrom: 1595647341,
   availableTo: 1595657341,
+  price: 300,
 };
 
-export const cheesesteakPlaceProps: NibbleAvailableInfoFragment = {
+export const cheesesteakPlaceProps: NibbleAvailableInfoFragment & {
+  restaurantName: string;
+  restaurantDistance?: number;
+} = {
   id: "4",
-  restaurant: {
-    name: "Cheesesteak Place",
-    distance: 1.2,
-  },
+  restaurantName: "Cheesesteak Place",
+  restaurantDistance: 1.2,
   name: "2 Hoagie rolls",
   type: NibbleType.Ingredients,
   count: 1,
@@ -43,6 +46,7 @@ export const cheesesteakPlaceProps: NibbleAvailableInfoFragment = {
   },
   availableFrom: 1595647341,
   availableTo: 1595657341,
+  price: 300,
 };
 
 export const SymphonySushi = () => <NibbleCardAvailable {...symphonySushiProps} />;

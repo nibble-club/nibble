@@ -8,7 +8,7 @@ import {
 import S3Image from "../S3Image";
 import { useStyles } from "./NibbleCard.style";
 
-const NibbleCardReserved = (props: NibbleReservedInfoFragment) => {
+export const NibbleCardReserved = (props: NibbleReservedInfoFragment) => {
   const [isHovered, setIsHovered] = useState(false);
   const classes = useStyles({ isHovered, ...props });
 
@@ -53,5 +53,3 @@ const NibbleCardReserved = (props: NibbleReservedInfoFragment) => {
     </div>
   );
 };
-
-export default NibbleCardReserved;

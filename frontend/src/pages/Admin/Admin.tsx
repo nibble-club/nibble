@@ -1,34 +1,29 @@
 import React from "react";
-import { useDispatch } from "react-redux";
-import { Link, Redirect, Route, Switch, useRouteMatch } from "react-router-dom";
+import { Redirect, Route, Switch, useRouteMatch } from "react-router-dom";
 
 import { QueryResult, useQuery } from "@apollo/client";
-import Auth from "@aws-amplify/auth";
 
-import AdminCreateRestaurant from "../../components/AdminCreateRestaurant";
+import AdminEditNibble from "../../components/AdminEditNibble";
+import AdminEditRestaurant from "../../components/AdminEditRestaurant";
+import AdminHome from "../../components/AdminHome";
 import HeaderBar from "../../components/HeaderBar";
 import HeroImage from "../../components/HeroImage/HeroImage";
-import {
-  HERO_PLACEHOLDER,
-  PROFILE_PICTURE_PLACEHOLDER
-} from "../../components/S3Image/S3Image";
+import { PROFILE_PICTURE_PLACEHOLDER } from "../../components/S3Image/S3Image";
 import {
   RestaurantForAdminQuery,
-  RestaurantForAdminQueryVariables
+  RestaurantForAdminQueryVariables,
+  RestaurantInfoFragment
 } from "../../graphql/generated/types";
 import { RESTAURANT_FOR_ADMIN } from "../../graphql/queries";
-import { userSignOut } from "../../redux/actions";
 import { useStyles } from "./Admin.style";
 
 const Admin = () => {
   const classes = useStyles();
-  const dispatch = useDispatch();
   let { path, url } = useRouteMatch();
 
-  const { loading, error, data } = useQuery(RESTAURANT_FOR_ADMIN) as QueryResult<
-    RestaurantForAdminQuery,
-    RestaurantForAdminQueryVariables
-  >;
+  const { loading, error, data, refetch } = useQuery(
+    RESTAURANT_FOR_ADMIN
+  ) as QueryResult<RestaurantForAdminQuery, RestaurantForAdminQueryVariables>;
 
   return (
     <div>
@@ -38,42 +33,21 @@ const Admin = () => {
       />
       <div className={classes.mainContent}>
         <Switch>
+          <Route path={`${path}/edit_nibble/:id`}>
+            <AdminEditNibble />
+          </Route>
           <Route path={`${path}/edit`}>
-            <AdminCreateRestaurant />
+            <AdminEditRestaurant onSuccess={refetch} />
           </Route>
           <Route exact path={path}>
-            {error ? (
+            {loading ? (
+              <HeroImage loading={true} />
+            ) : error ? (
               <Redirect to={{ pathname: `${url}/edit` }} />
             ) : (
-              <div>
-                <HeroImage
-                  location={data?.restaurantForAdmin.heroUrl || HERO_PLACEHOLDER}
-                />
-                <div className={classes.menu}>
-                  <div>
-                    <Link to={{ pathname: `${url}/edit` }}>
-                      <button>Edit restaurant details</button>
-                    </Link>
-                  </div>
-                  <div>
-                    <button>Create new Nibble</button>
-                  </div>
-                  <div>
-                    <button>See available Nibbles</button>
-                  </div>
-                  <div>
-                    <Link
-                      to={{ pathname: "/login", state: { referrer: "/" } }}
-                      onClick={async () => {
-                        dispatch(userSignOut());
-                        await Auth.signOut();
-                      }}
-                    >
-                      <button>Sign out</button>
-                    </Link>
-                  </div>
-                </div>
-              </div>
+              <AdminHome
+                restaurant={data?.restaurantForAdmin as RestaurantInfoFragment}
+              />
             )}
           </Route>
         </Switch>

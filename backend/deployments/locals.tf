@@ -8,4 +8,5 @@ locals {
   user_profile_pictures_bucket = replace("${var.aws_target_account_id}-${var.environment_namespace}-profile-pics", "_", "-")
   restaurant_logos_bucket      = replace("${var.aws_target_account_id}-${var.environment_namespace}-restaurant-logos", "_", "-")
   restaurant_heros_bucket      = replace("${var.aws_target_account_id}-${var.environment_namespace}-restaurant-heros", "_", "-")
+  nibble_images_bucket         = replace("${var.aws_target_account_id}-${var.environment_namespace}-nibble-images", "_", "-")
 }

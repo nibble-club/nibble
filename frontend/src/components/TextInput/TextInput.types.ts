@@ -6,5 +6,8 @@ export type TextInputProps = {
   background?: string;
   /** Text color */
   color?: string;
-  /** Width as percentage */
-} & FieldRenderProps<string, any>;
+  datetimeOptions?: {
+    disablePast?: boolean;
+    disableFuture?: boolean;
+  };
+} & FieldRenderProps<any, any>;

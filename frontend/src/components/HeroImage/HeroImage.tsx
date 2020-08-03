@@ -1,8 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
+import ContentLoader from "react-content-loader";
+import { useTheme } from "react-jss";
 import { Background, Parallax } from "react-parallax";
 
+import { AppTheme } from "../../common/theming.types";
 import S3Image from "../S3Image";
-import { useStyles } from "./HeroImage.style";
+import { HERO_HEIGHT, useStyles } from "./HeroImage.style";
 import { HeroImageProps } from "./HeroImage.types";
 
 export const PARALLAX_STRENGTH = 300;
@@ -41,15 +44,28 @@ const HeroImage = (props: HeroImageProps) => {
     imageHeight,
     imageMargin: (origImageHeight - imageHeight) / 2,
   });
+  const appTheme = useTheme() as AppTheme;
 
   return (
     <div ref={heightRef} className={classes.container}>
-      <Parallax strength={PARALLAX_STRENGTH}>
-        <div className={classes.hero} />
-        <Background>
-          <S3Image location={props.location} alt={"Hero"} className={classes.image} />
-        </Background>
-      </Parallax>
+      {props.loading ? (
+        <ContentLoader
+          animate={true}
+          backgroundColor={appTheme.color.card[0]}
+          foregroundColor={appTheme.color.card[1]}
+          speed={2}
+          className={classes.loading}
+        >
+          <rect x={0} y={0} width="100%" height={HERO_HEIGHT} />
+        </ContentLoader>
+      ) : (
+        <Parallax strength={PARALLAX_STRENGTH}>
+          <div className={classes.hero} />
+          <Background>
+            <S3Image location={props.location} alt={"Hero"} className={classes.image} />
+          </Background>
+        </Parallax>
+      )}
     </div>
   );
 };

@@ -18,7 +18,12 @@ export const getIconForType = (type: string) => {
   }
 };
 
-const NibbleCardAvailable = (props: NibbleAvailableInfoFragment) => {
+export const NibbleCardAvailable = (
+  props: NibbleAvailableInfoFragment & {
+    restaurantName: string;
+    restaurantDistance?: number;
+  }
+) => {
   const [isHovered, setIsHovered] = useState(false);
   const classes = useStyles({ isHovered, ...props });
 
@@ -31,15 +36,17 @@ const NibbleCardAvailable = (props: NibbleAvailableInfoFragment) => {
       <div>
         <S3Image className={classes.image} location={props.imageUrl} alt={props.name} />
       </div>
-      <div className={classes.restaurant}>{props.restaurant.name}</div>
+      <div className={classes.restaurant}>{props.restaurantName}</div>
       <div className={classes.name}>{props.name}</div>
       <div>
         <div>
           <div className={classes.children}>
-            <NibbleProperty
-              icon={NibblePropertyIcon.Location}
-              text={`${props.restaurant.distance} miles`}
-            />
+            {props.restaurantDistance && (
+              <NibbleProperty
+                icon={NibblePropertyIcon.Location}
+                text={`${props.restaurantDistance || 0} miles`}
+              />
+            )}
           </div>
           <div className={classes.children}>
             <NibbleProperty icon={getIconForType(props.type)} text={props.type} />
@@ -50,5 +57,3 @@ const NibbleCardAvailable = (props: NibbleAvailableInfoFragment) => {
     </div>
   );
 };
-
-export default NibbleCardAvailable;

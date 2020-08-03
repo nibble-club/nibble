@@ -6,7 +6,7 @@ import {
   NibbleReservedInfoFragment,
   NibbleType
 } from "../../graphql/generated/types";
-import NibbleCardReserved from "./NibbleCardReserved";
+import { NibbleCardReserved } from "./NibbleCardReserved";
 
 export default {
   component: NibbleCardReserved,

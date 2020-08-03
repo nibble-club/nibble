@@ -1,10 +1,9 @@
-import fetchMock from 'fetch-mock';
-import React from 'react';
-import StoryRouter from 'storybook-react-router';
+import React from "react";
+import StoryRouter from "storybook-react-router";
 
-import { action } from '@storybook/addon-actions';
+import { action } from "@storybook/addon-actions";
 
-import Login from './Login';
+import Login from "./Login";
 
 export default {
   component: Login,

@@ -17,19 +17,20 @@ const S3ImageUpload = ({ destination, setImageLocation }: S3ImageUploadProps) =>
     variables: { dest: destination },
   }) as QueryResult<ImageUploadUrlQuery, QueryImageUploadUrlArgs>;
 
-  const onUploadStart = () => {
+  const onUploadStart = useCallback(() => {
     console.log("Upload started");
-  };
+  }, []);
   const onUploadReady = useCallback(() => {
-    console.log("Upload ready");
+    console.log("Upload completed");
     if (data?.imageUploadURL.destination !== undefined) {
+      console.log("Setting image location");
       setImageLocation(data?.imageUploadURL.destination);
     }
     refetch();
   }, [data, setImageLocation, refetch]);
-  const onError = () => {
+  const onError = useCallback(() => {
     console.log("Error");
-  };
+  }, []);
 
   const onDrop = useCallback(
     async ([pendingImage]) => {
@@ -56,7 +57,7 @@ const S3ImageUpload = ({ destination, setImageLocation }: S3ImageUploadProps) =>
       }
       onUploadReady();
     },
-    [data, onUploadReady]
+    [data, onUploadReady, onError, onUploadStart]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({

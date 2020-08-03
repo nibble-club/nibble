@@ -1,7 +1,17 @@
+import { createMuiTheme } from "@material-ui/core";
+
 import { AppTheme } from "./theming.types";
 
 export const fluidSize = (baseSize: number, ratio = 1) => {
   return `calc(${baseSize}px + ${ratio} * min(1vw, 10px))`;
+};
+
+export const fluidFontSize = (baseSize: number, ratio = 1) => {
+  return `calc(${baseSize / 16}rem + ${ratio} * min(1vw, 10px))`;
+};
+
+export const fluidSizeProportional = (baseSize: number, ratio = 1) => {
+  return `min(calc(${(ratio * baseSize) / 4}vw), ${(ratio * baseSize) / 4} * 10px)`;
 };
 
 export const appTheme: AppTheme = {
@@ -24,12 +34,12 @@ export const appTheme: AppTheme = {
     simple: "all 0.3s ease-in-out 0s",
   },
   fontSizes: {
-    xSmall: fluidSize(10),
-    small: fluidSize(12),
-    medium: fluidSize(16),
-    large: fluidSize(20),
-    xLarge: fluidSize(24),
-    xxLarge: fluidSize(36),
+    xSmall: fluidFontSize(10),
+    small: fluidFontSize(12),
+    medium: fluidFontSize(16),
+    large: fluidFontSize(20),
+    xLarge: fluidFontSize(24),
+    xxLarge: fluidFontSize(36),
   },
   spacing: {
     xSmall: fluidSize(3, 0.1),
@@ -92,7 +102,9 @@ export const globalTheme = (theme: AppTheme) => ({
         // outline: "none",
       },
     },
-    a: {},
+    a: {
+      textDecoration: "none",
+    },
     ul: {},
     li: {},
     button: {
@@ -134,3 +146,39 @@ export const withTransparency = (color: string, transparency: number) => {
 export const multipleClasses = (classes: Array<string>) => {
   return classes.join(" ");
 };
+
+export const COLUMN_FLEX_BOX = {
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
+};
+
+export const muiTheme = createMuiTheme({
+  palette: {
+    primary: {
+      main: appTheme.color.blue,
+    },
+    secondary: {
+      main: appTheme.color.green,
+    },
+    error: {
+      main: appTheme.color.text.alert,
+    },
+    warning: {
+      main: appTheme.color.text.warn,
+    },
+    text: {
+      primary: appTheme.color.text.primary,
+      disabled: appTheme.color.text.grayed,
+    },
+    background: {
+      paper: appTheme.color.card[0],
+      default: appTheme.color.background,
+    },
+    type: "dark",
+  },
+  typography: {
+    fontFamily: '"Baloo 2"',
+  },
+});

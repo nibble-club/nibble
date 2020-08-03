@@ -1,6 +1,6 @@
 import React from "react";
 
-import NibbleCardLoading from "./NibbleCardLoading";
+import { NibbleCardLoading } from "./NibbleCardLoading";
 
 export default {
   component: NibbleCardLoading,

@@ -15,9 +15,8 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
     border: theme.color.card[0],
     fontSize: theme.fontSizes.medium,
     borderBottom: (props: TextInputProps) =>
-      (props.input.value.length || 0) > 0
-        ? `1px solid ${theme.color.text.primary}`
-        : `1px solid ${theme.color.text.grayed}`,
+      (props.input?.value && `1px solid ${theme.color.text.primary}`) ||
+      `1px solid ${theme.color.text.grayed}`,
     transition: theme.animation.simple,
     fontFamily: '"Baloo 2"',
     "&:focus": {
@@ -31,6 +30,5 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
   },
   textarea: {
     transition: theme.animation.simple,
-    marginBottom: 0,
   },
 }));

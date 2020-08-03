@@ -2,7 +2,7 @@ import { createUseStyles } from "react-jss";
 
 import { AppTheme } from "../../common/theming.types";
 
-const HERO_HEIGHT = "35vh";
+export const HERO_HEIGHT = "35vh";
 
 export const useStyles = createUseStyles((theme: AppTheme) => ({
   container: {
@@ -16,5 +16,9 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
   image: {
     marginTop: ({ imageMargin }) => imageMargin,
     height: ({ imageHeight }) => imageHeight,
+  },
+  loading: {
+    width: "100vw",
+    height: HERO_HEIGHT,
   },
 }));

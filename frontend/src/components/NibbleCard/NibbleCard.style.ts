@@ -46,6 +46,7 @@ const commonContainerStyles = (theme: AppTheme) => ({
   borderRadius: theme.rounding.medium,
   padding: cardPadding,
   transition: theme.animation.simple,
+  margin: theme.spacing.medium,
 });
 
 export const useStyles = createUseStyles((theme: AppTheme) => ({

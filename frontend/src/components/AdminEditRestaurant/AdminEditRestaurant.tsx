@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
-import ContentLoader from "react-content-loader";
 import { Field, Form } from "react-final-form";
-import { useTheme } from "react-jss";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 
@@ -13,7 +11,6 @@ import {
   useQuery
 } from "@apollo/client";
 
-import { AppTheme } from "../../common/theming.types";
 import {
   AdminRestaurantInput,
   GeocodeAddressQuery,
@@ -21,8 +18,7 @@ import {
   LatLonInput,
   RestaurantForAdminQuery,
   RestaurantForAdminQueryVariables,
-  S3ObjectDestination,
-  S3ObjectInput
+  S3ObjectDestination
 } from "../../graphql/generated/types";
 import {
   ADMIN_CREATE_RESTAURANT,
@@ -30,17 +26,24 @@ import {
 } from "../../graphql/mutations";
 import { GEOCODE_ADDRESS, RESTAURANT_FOR_ADMIN } from "../../graphql/queries";
 import { MessageType, showMessage } from "../../redux/actions";
+import FormSection from "../FormSection";
 import LabeledInput from "../LabeledInput/LabeledInput";
+import LoadingForm from "../LoadingForm/LoadingForm";
+import LoadingOverlay from "../LoadingOverlay";
 import MapView from "../MapView";
-import S3Image, { HERO_PLACEHOLDER, LOGO_PLACEHOLDER } from "../S3Image/S3Image";
+import { HERO_PLACEHOLDER, LOGO_PLACEHOLDER } from "../S3Image/S3Image";
 import S3ImageUpload from "../S3ImageUpload";
 import TextInput from "../TextInput/TextInput";
 import {
   MARKETS,
   STATES,
   VALID_STATES_BY_MARKET
-} from "./AdminCreateRestaurant.constants";
-import { useStyles } from "./AdminCreateRestaurant.style";
+} from "./AdminEditRestaurant.constants";
+import { useStyles } from "./AdminEditRestaurant.style";
+
+type AdminEditRestaurantProps = {
+  onSuccess?: Function;
+};
 
 interface RestaurantDetailValues {
   addressStreetAddress: string;
@@ -51,14 +54,13 @@ interface RestaurantDetailValues {
   name: string;
   market: string;
   description: string;
-  logoUrl: S3ObjectInput;
-  heroUrl: S3ObjectInput;
   disclaimer?: string;
   /** Used for validating the form with the button, to avoid submitting the entire form */
   noSubmit?: boolean;
 }
 
 const getInitialValues = (data: RestaurantForAdminQuery | undefined) => {
+  console.log("Getting initial values");
   return {
     addressStreetAddress: data?.restaurantForAdmin.address.streetAddress || "",
     addressLocality: data?.restaurantForAdmin.address.locality || "",
@@ -70,14 +72,11 @@ const getInitialValues = (data: RestaurantForAdminQuery | undefined) => {
     market: data?.restaurantForAdmin.market || "",
     description: data?.restaurantForAdmin.description || "",
     disclaimer: data?.restaurantForAdmin.disclaimer || "",
-    logoUrl: data?.restaurantForAdmin.logoUrl || LOGO_PLACEHOLDER,
-    heroUrl: data?.restaurantForAdmin.heroUrl || HERO_PLACEHOLDER,
   };
 };
 
 const validateValues = (values: RestaurantDetailValues) => {
-  // check address
-  const errors: Partial<RestaurantDetailValues> = {};
+  const errors: any = {};
   // restaurant info values
   if (!values.name) {
     errors.name = "Required";
@@ -125,8 +124,7 @@ const validateValues = (values: RestaurantDetailValues) => {
   return Object.keys(errors).length ? errors : {};
 };
 
-const AdminCreateRestaurant = () => {
-  const appTheme = useTheme() as AppTheme;
+const AdminEditRestaurant = (props: AdminEditRestaurantProps) => {
   const classes = useStyles();
 
   const history = useHistory();
@@ -212,13 +210,23 @@ const AdminCreateRestaurant = () => {
         await createRestaurant({ variables: { input } });
       }
       console.log("Done updating restaurant");
-      dispatch(showMessage("Successfully updated restaurant!", MessageType.Success));
+      dispatch(
+        showMessage(
+          `Successfully ${isUpdate ? "updated" : "created"} restaurant!`,
+          MessageType.Success
+        )
+      );
       history.push("/admin");
+      if (props.onSuccess) {
+        props.onSuccess();
+      }
       return {};
     } catch (err) {
-      console.log(err.message);
-      console.log(typeof err.message);
-      dispatch(showMessage("Error updating restaurant", MessageType.Error));
+      dispatch(
+        showMessage(`Error updating restaurant: ${err.message}`, MessageType.Error)
+      );
+
+      console.log(err);
       return { FORM_ERROR: err.message };
     }
   };
@@ -229,35 +237,13 @@ const AdminCreateRestaurant = () => {
       initialValues={getInitialValues(data)}
       validate={validateValues}
     >
-      {formRenderProps => {
+      {(formRenderProps) => {
         return (
           <div className={classes.container}>
+            <LoadingOverlay show={createLoading || editLoading} />
+
             {loading ? (
-              <div>
-                <h2>Loading...</h2>
-                {[1, 2].map((_, index) => (
-                  <div className={classes.loading} key={index.toString()}>
-                    <ContentLoader
-                      animate={true}
-                      backgroundColor={appTheme.color.card[0]}
-                      foregroundColor={appTheme.color.card[1]}
-                      speed={2}
-                    >
-                      {[1, 2, 3, 4, 5].map((_, index) => (
-                        <rect
-                          key={index.toString()}
-                          x={0}
-                          y={85 * index}
-                          rx={appTheme.rounding.medium}
-                          ry={appTheme.rounding.medium}
-                          width="100%"
-                          height={60}
-                        />
-                      ))}
-                    </ContentLoader>
-                  </div>
-                ))}
-              </div>
+              <LoadingForm />
             ) : (
               <form onSubmit={formRenderProps.handleSubmit}>
                 <div className={classes.formContainer}>
@@ -267,23 +253,36 @@ const AdminCreateRestaurant = () => {
                       : "Create your restaurant"}
                   </h2>
 
-                  <div className={classes.restaurantInfoForm}>
+                  <FormSection>
                     <h3>Basic Information</h3>
                     <Field<string> name="name" placeholder="" type="text">
-                      {fieldRenderProps => (
-                        <LabeledInput label={"Restaurant Name:"} inputWidth={40}>
+                      {(fieldRenderProps) => (
+                        <LabeledInput
+                          label={"Restaurant Name:"}
+                          inputWidth={40}
+                          explanation={
+                            "Just your restaurant's name, no description yet"
+                          }
+                          error={fieldRenderProps.meta.error}
+                          showError={
+                            fieldRenderProps.meta.touched && fieldRenderProps.meta.error
+                          }
+                        >
                           <TextInput center={false} {...fieldRenderProps} />
-                          <p className={classes.explanation}>
-                            Just your restaurant's name, no description yet
-                          </p>
-                          {fieldRenderProps.meta.touched &&
-                            fieldRenderProps.meta.error && (
-                              <span>{fieldRenderProps.meta.error}</span>
-                            )}
                         </LabeledInput>
                       )}
                     </Field>
-                    <LabeledInput label="Market:">
+                    <LabeledInput
+                      label="Market:"
+                      explanation={
+                        "You will only show up for users in your selected market."
+                      }
+                      error={formRenderProps.errors.market}
+                      showError={
+                        formRenderProps.form.getFieldState("market")?.touched &&
+                        formRenderProps.errors.market
+                      }
+                    >
                       <Field
                         name="market"
                         component="select"
@@ -294,36 +293,31 @@ const AdminCreateRestaurant = () => {
                         }
                       >
                         <option />
-                        {MARKETS.map(name => (
+                        {MARKETS.map((name) => (
                           <option key={name} value={name}>
                             {name}
                           </option>
                         ))}
                       </Field>
-                      <p className={classes.explanation}>
-                        You will only show up for users in your selected market.
-                      </p>
-                      {formRenderProps.form.getFieldState("market")?.touched &&
-                        formRenderProps.errors.market && (
-                          <span>{formRenderProps.errors.market}</span>
-                        )}
                     </LabeledInput>
                     <Field<string>
                       name="description"
                       placeholder="Give a quick, exciting description of your restaurant"
                       type="textarea"
                     >
-                      {fieldRenderProps => (
-                        <LabeledInput label={"Description:"} inputWidth={50}>
+                      {(fieldRenderProps) => (
+                        <LabeledInput
+                          label={"Description:"}
+                          inputWidth={50}
+                          explanation={
+                            "Shown at the top of your restaurant's page - this is your space to shine! Maximum 500 characters."
+                          }
+                          error={fieldRenderProps.meta.error}
+                          showError={
+                            fieldRenderProps.meta.touched && fieldRenderProps.meta.error
+                          }
+                        >
                           <TextInput center={false} {...fieldRenderProps} />
-                          <p className={classes.explanation}>
-                            Shown at the top of your restaurant's page - this is your
-                            space to shine! Maximum 500 characters.
-                          </p>
-                          {fieldRenderProps.meta.touched &&
-                            fieldRenderProps.meta.error && (
-                              <span>{fieldRenderProps.meta.error}</span>
-                            )}
                         </LabeledInput>
                       )}
                     </Field>
@@ -332,96 +326,77 @@ const AdminCreateRestaurant = () => {
                       placeholder='e.g. "Covid-19 may affect normal operating hours"'
                       type="textarea"
                     >
-                      {fieldRenderProps => (
-                        <LabeledInput label={"Disclaimer:"} inputWidth={50}>
+                      {(fieldRenderProps) => (
+                        <LabeledInput
+                          label={"Disclaimer:"}
+                          inputWidth={50}
+                          explanation={
+                            "Shown at the bottom of your restaurant's page - tell customers any potentially important information."
+                          }
+                          error={fieldRenderProps.meta.error}
+                          showError={
+                            fieldRenderProps.meta.touched && fieldRenderProps.meta.error
+                          }
+                        >
                           <TextInput center={false} {...fieldRenderProps} />
-                          <p className={classes.explanation}>
-                            Shown at the bottom of your restaurant's page - tell
-                            customers any potentially important information.
-                          </p>
-                          {fieldRenderProps.meta.touched &&
-                            fieldRenderProps.meta.error && (
-                              <span>{fieldRenderProps.meta.error}</span>
-                            )}
                         </LabeledInput>
                       )}
                     </Field>
-                  </div>
+                  </FormSection>
 
-                  <div className={classes.brandingForm}>
+                  <FormSection>
                     <h3>Branding</h3>
-                    <Field<string> name="logoUrl">
-                      {fieldRenderProps => (
-                        <LabeledInput label={"Logo:"} inputWidth={60}>
-                          <div className={classes.imagePreviewContainer}>
-                            <div>
-                              <S3ImageUpload
-                                setImageLocation={setLogoLocation}
-                                destination={S3ObjectDestination.RestaurantLogos}
-                              />
-                              <p className={classes.explanation}>
-                                Add your restaurant logo here. Should be a square image.
-                              </p>
-                            </div>
-                            <div className={classes.previewContainer}>
-                              <p>Preview:</p>
-                              <S3Image
-                                location={logoLocation}
-                                alt="Your restaurant's logo"
-                                className={classes.logoPreview}
-                              />
-                            </div>
-                          </div>
-                          {fieldRenderProps.meta.touched &&
-                            fieldRenderProps.meta.error && (
-                              <span>{fieldRenderProps.meta.error}</span>
-                            )}
-                        </LabeledInput>
-                      )}
-                    </Field>
-                    <Field<string> name="heroUrl">
-                      {fieldRenderProps => (
-                        <LabeledInput label={"Hero Image:"} inputWidth={50}>
-                          <div className={classes.imagePreviewContainer}>
-                            <S3ImageUpload
-                              setImageLocation={setHeroLocation}
-                              destination={S3ObjectDestination.RestaurantHeros}
-                            />
-                            <p className={classes.explanation}>
-                              Displayed at the top of your restaurant's page.
-                            </p>
-                            <div className={classes.previewContainer}>
-                              <p>Preview:</p>
-                              <S3Image
-                                location={heroLocation}
-                                alt="Your restaurant's hero image. Should be 3:2 aspect ratio."
-                                className={classes.heroPreview}
-                              />
-                            </div>
-                          </div>
-                          {fieldRenderProps.meta.touched &&
-                            fieldRenderProps.meta.error && (
-                              <span>{fieldRenderProps.meta.error}</span>
-                            )}
-                        </LabeledInput>
-                      )}
-                    </Field>
-                  </div>
+                    <LabeledInput
+                      label={"Logo:"}
+                      inputWidth={60}
+                      explanation="Add your restaurant logo here. Should be a square image."
+                      imageToPreview={{
+                        location: logoLocation,
+                        width: 100,
+                        height: 100,
+                      }}
+                      alignLabelTop={true}
+                    >
+                      <S3ImageUpload
+                        setImageLocation={setLogoLocation}
+                        destination={S3ObjectDestination.RestaurantLogos}
+                      />
+                    </LabeledInput>
+                    <LabeledInput
+                      label={"Hero Image:"}
+                      inputWidth={60}
+                      explanation="Your restaurant's hero image. Should be 3:2 aspect ratio. This is shown at the top of your restaurant's page."
+                      imageToPreview={{
+                        location: heroLocation,
+                        width: 225,
+                        height: 150,
+                      }}
+                      alignLabelTop={true}
+                    >
+                      <S3ImageUpload
+                        setImageLocation={setHeroLocation}
+                        destination={S3ObjectDestination.RestaurantHeros}
+                      />
+                    </LabeledInput>
+                  </FormSection>
 
-                  <div className={classes.addressForm}>
+                  <FormSection>
                     <h3>Address</h3>
                     <Field<string>
                       name="addressStreetAddress"
                       placeholder="e.g. 820 Post St."
                       type="text"
                     >
-                      {fieldRenderProps => (
-                        <LabeledInput label={"Street Address:"} inputWidth={35}>
+                      {(fieldRenderProps) => (
+                        <LabeledInput
+                          label={"Street Address:"}
+                          inputWidth={35}
+                          error={fieldRenderProps.meta.error}
+                          showError={
+                            fieldRenderProps.meta.touched && fieldRenderProps.meta.error
+                          }
+                        >
                           <TextInput center={false} {...fieldRenderProps} />
-                          {fieldRenderProps.meta.touched &&
-                            fieldRenderProps.meta.error && (
-                              <span>{fieldRenderProps.meta.error}</span>
-                            )}
                         </LabeledInput>
                       )}
                     </Field>
@@ -430,17 +405,29 @@ const AdminCreateRestaurant = () => {
                       placeholder="e.g. San Francisco"
                       type="text"
                     >
-                      {fieldRenderProps => (
-                        <LabeledInput label={"City:"} inputWidth={20}>
+                      {(fieldRenderProps) => (
+                        <LabeledInput
+                          label={"City:"}
+                          inputWidth={20}
+                          error={fieldRenderProps.meta.error}
+                          showError={
+                            fieldRenderProps.meta.touched && fieldRenderProps.meta.error
+                          }
+                        >
                           <TextInput center={false} {...fieldRenderProps} />
-                          {fieldRenderProps.meta.touched &&
-                            fieldRenderProps.meta.error && (
-                              <span>{fieldRenderProps.meta.error}</span>
-                            )}
                         </LabeledInput>
                       )}
                     </Field>
-                    <LabeledInput label="State:">
+                    <LabeledInput
+                      label="State:"
+                      error={formRenderProps.errors.addressAdministrativeArea}
+                      showError={
+                        (formRenderProps.form.getFieldState("addressAdministrativeArea")
+                          ?.touched ||
+                          formRenderProps.form.getFieldState("market")?.touched) &&
+                        formRenderProps.errors.addressAdministrativeArea
+                      }
+                    >
                       <Field
                         name="addressAdministrativeArea"
                         component="select"
@@ -451,17 +438,21 @@ const AdminCreateRestaurant = () => {
                         }
                       >
                         <option />
-                        {STATES.map(name => (
+                        {STATES.map((name) => (
                           <option key={name} value={name}>
                             {name}
                           </option>
                         ))}
                       </Field>
-                      {formRenderProps.errors.addressAdministrativeArea && (
-                        <span>{formRenderProps.errors.addressAdministrativeArea}</span>
-                      )}
                     </LabeledInput>
-                    <LabeledInput label="Country:">
+                    <LabeledInput
+                      label="Country:"
+                      error={formRenderProps.errors.addressCountry}
+                      showError={
+                        formRenderProps.form.getFieldState("addressCountry")?.touched &&
+                        formRenderProps.errors.addressAdministrativeArea
+                      }
+                    >
                       <Field
                         name="addressCountry"
                         component="select"
@@ -475,13 +466,17 @@ const AdminCreateRestaurant = () => {
                       placeholder="e.g. 94109"
                       type="text"
                     >
-                      {fieldRenderProps => (
-                        <LabeledInput label={"Postal Code:"} inputWidth={20}>
+                      {(fieldRenderProps) => (
+                        <LabeledInput
+                          label={"Postal Code:"}
+                          inputWidth={20}
+                          explanation={"5 digit ZIP code"}
+                          error={fieldRenderProps.meta.error}
+                          showError={
+                            fieldRenderProps.meta.touched && fieldRenderProps.meta.error
+                          }
+                        >
                           <TextInput center={false} {...fieldRenderProps} />
-                          {fieldRenderProps.meta.touched &&
-                            fieldRenderProps.meta.error && (
-                              <span>{fieldRenderProps.meta.error}</span>
-                            )}
                         </LabeledInput>
                       )}
                     </Field>
@@ -512,7 +507,7 @@ const AdminCreateRestaurant = () => {
                     >
                       Validate restaurant location
                     </button>
-                    <div className={classes.mapViewContainer}>
+                    <div>
                       {geocodeAddressResult.error && (
                         <span>{geocodeAddressResult.error.message}</span>
                       )}
@@ -536,15 +531,9 @@ const AdminCreateRestaurant = () => {
                         height={500}
                       />
                     </div>
-                  </div>
+                  </FormSection>
                   {/* End of address form */}
-                  {formRenderProps.submitErrors && (
-                    <div>
-                      <span id="form-error">
-                        {formRenderProps.submitErrors.FORM_ERROR}
-                      </span>
-                    </div>
-                  )}
+
                   <div>
                     <button
                       type="submit"
@@ -572,4 +561,4 @@ const AdminCreateRestaurant = () => {
   );
 };
 
-export default AdminCreateRestaurant;
+export default AdminEditRestaurant;

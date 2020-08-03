@@ -17,6 +17,7 @@ module resolver_image_upload_url_lambda {
     USER_PROFILE_PICTURES_BUCKET = aws_s3_bucket.user_profile_pictures.bucket
     RESTAURANT_LOGOS_BUCKET      = aws_s3_bucket.restaurant_logos.bucket
     RESTAURANT_HEROS_BUCKET      = aws_s3_bucket.restaurant_heros.bucket
+    NIBBLE_IMAGES_BUCKET         = aws_s3_bucket.nibble_images.bucket
   }
   vpc_config = {
     security_group_ids = [aws_security_group.lambda_security_group.id]
@@ -74,6 +75,8 @@ data aws_iam_policy_document resolver_image_upload_url {
       "${aws_s3_bucket.restaurant_logos.arn}/*",
       aws_s3_bucket.user_profile_pictures.arn,
       "${aws_s3_bucket.user_profile_pictures.arn}/*",
+      aws_s3_bucket.nibble_images.arn,
+      "${aws_s3_bucket.nibble_images.arn}/*",
     ]
   }
 }

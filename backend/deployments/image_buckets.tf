@@ -42,3 +42,18 @@ resource aws_s3_bucket restaurant_heros {
     Environment = var.environment
   }
 }
+
+resource aws_s3_bucket nibble_images {
+  bucket = local.nibble_images_bucket
+  acl    = "public-read"
+
+  cors_rule {
+    allowed_methods = ["GET", "PUT"]
+    allowed_origins = ["*"]
+    allowed_headers = ["*"]
+  }
+
+  tags = {
+    Environment = var.environment
+  }
+}
