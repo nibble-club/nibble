@@ -59,6 +59,16 @@ variable postgres_instance_class {
   description = "Instance class type to use for Postgres RDS DB"
 }
 
+variable elasticsearch_instance_class {
+  type        = string
+  description = "Instance class type to use for Elasticsearch domain data nodes"
+}
+
+variable elasticsearch_master_instance_class {
+  type        = string
+  description = "Instance class type to use for Elasticsearch domain dedicated master nodes"
+}
+
 variable ssh_public_key_path {
   type        = string
   description = "Path to public key for key pair to use for SSH connection. See https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html for instructions."
@@ -126,6 +136,20 @@ variable migrate_database_lambda_release_version {
   type    = string
   default = ""
 }
+
+variable migrate_elasticsearch_lambda_name {
+  type = string
+}
+
+variable migrate_elasticsearch_lambda_artifact {
+  type = string
+}
+
+variable migrate_elasticsearch_lambda_release_version {
+  type    = string
+  default = ""
+}
+
 
 variable db_utilities_lambda_name {
   type = string

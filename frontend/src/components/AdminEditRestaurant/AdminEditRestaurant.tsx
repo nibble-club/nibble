@@ -60,7 +60,6 @@ interface RestaurantDetailValues {
 }
 
 const getInitialValues = (data: RestaurantForAdminQuery | undefined) => {
-  console.log("Getting initial values");
   return {
     addressStreetAddress: data?.restaurantForAdmin.address.streetAddress || "",
     addressLocality: data?.restaurantForAdmin.address.locality || "",

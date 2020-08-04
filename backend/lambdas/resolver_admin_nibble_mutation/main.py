@@ -45,11 +45,6 @@ def lambda_handler(event, context):
                 # update db
                 db_values = nibble_event_db_mapper(nibble)
 
-                # restaurant_id = conn.execute(admin_id_restaurant_id_mapping).fetchone()[
-                #     "restaurant_id"
-                # ]
-                # logger.info("Got restaurant id {0} from admin id".format(restaurant_id))
-
                 result = conn.execute(
                     nibble_table.insert().values(
                         restaurant_id=admin_id_restaurant_id_mapping, **db_values

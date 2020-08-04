@@ -1,10 +1,15 @@
-import logging
 import json
+import logging
 import os
-from common import tables, utils, redis_keys
-from sqlalchemy.sql import select
+
 import redis
+from elasticsearch import Elasticsearch, RequestsHttpConnection
+from requests_aws4auth import AWS4Auth
+
+
+from common import redis_keys, tables, utils, es_indices
 from common.errors import NibbleError
+from sqlalchemy.sql import select
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -14,6 +19,30 @@ engine = utils.get_engine()
 restaurant_table = tables.get_table_metadata(tables.NibbleTable.RESTAURANT)
 restaurant_restaurant_admin_table = tables.get_table_metadata(
     tables.NibbleTable.RESTAURANT_RESTAURANT_ADMIN
+)
+
+# connect to Redis
+r = redis.Redis(host=os.environ["REDIS_HOST"], port=os.environ["REDIS_PORT"])
+
+# connect to Elasticsearch
+tracer = logging.getLogger("elasticsearch.trace")
+tracer.setLevel(logging.INFO)
+logging.getLogger("elasticsearch").setLevel(logging.INFO)
+
+auth = AWS4Auth(
+    os.environ["AWS_ACCESS_KEY_ID"],
+    os.environ["AWS_SECRET_ACCESS_KEY"],
+    os.environ["AWS_REGION"],
+    "es",
+    session_token=os.environ["AWS_SESSION_TOKEN"],
+)
+
+es = Elasticsearch(
+    hosts=[{"host": os.environ["ELASTICSEARCH_ENDPOINT"], "port": 443}],
+    http_auth=auth,
+    use_ssl=True,
+    verify_certs=True,
+    connection_class=RequestsHttpConnection,
 )
 
 
@@ -28,13 +57,9 @@ def lambda_handler(event, context):
         )
 
     admin_id = event["identity"]["username"]
-
     is_create = event["field"] == "adminCreateRestaurant"
-
     restaurant = event["arguments"]["input"]
 
-    # connect to Redis
-    r = redis.Redis(host=os.environ["REDIS_HOST"], port=os.environ["REDIS_PORT"])
     r.ping()
     logger.info("Connected to Redis")
 
@@ -86,6 +111,15 @@ def lambda_handler(event, context):
             )
             pipe.execute()
             logger.info("Inserted restaurant to Redis")
+
+            logger.info("Adding record to Elasticsearch")
+            index_result = es.index(
+                index=es_indices.RESTAURANT_INDEX,
+                id=restaurant_id,
+                body=get_restaurant_es_document(db_values),
+            )
+            logger.info(index_result)
+            logger.info("Indexed restaurant in Elasticsearch")
         # end Redis transaction
     # end SQL transaction
     return get_restaurant_result(db_values, restaurant_id)
@@ -137,4 +171,21 @@ def get_restaurant_result(db_values, restaurant_id):
         "heroUrl": db_values["hero_url"],
         "disclaimer": db_values["disclaimer"],
         "active": db_values["active"],
+    }
+
+
+def get_restaurant_es_document(db_values):
+    return {
+        "name": db_values["name"],
+        "description": db_values["description"],
+        "disclaimer": db_values["disclaimer"],
+        "active": db_values["active"],
+        "address": {
+            "streetAddress": db_values["street_address"],
+            "locality": db_values["locality"],
+            "administrativeArea": db_values["administrative_area"],
+            "country": db_values["country"],
+            "postalCode": db_values["postal_code"],
+            "location": {"lat": db_values["latitude"], "lon": db_values["longitude"],},
+        },
     }

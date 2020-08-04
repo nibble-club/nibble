@@ -83,3 +83,17 @@ else
 		--query 'LogResult' \
 		--output text /dev/null | base64 -d
 endif
+
+migrate-elasticsearch-schemas:
+	@echo "Migrating Elasticsearch schemas..."
+ifeq ($(DEPLOY_ENV),dev)
+	@aws lambda invoke --function-name $(DEPLOY_ENV)_$(PERSONAL_WORKSPACE)-migrate_elasticsearch \
+		--log-type Tail \
+		--query 'LogResult' \
+		--output text /dev/null | base64 -d
+else
+	@aws lambda invoke --function-name $(DEPLOY_ENV)-migrate_elasticsearch \
+		--log-type Tail \
+		--query 'LogResult' \
+		--output text /dev/null | base64 -d
+endif

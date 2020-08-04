@@ -42,6 +42,18 @@ resource aws_security_group_rule allow_ssh_to_redis {
   source_security_group_id = aws_security_group.redis_security_group.id
 }
 
+resource aws_security_group_rule allow_ssh_to_elasticsearch {
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  type              = "egress"
+  description       = "SSH to Elasticsearch permission"
+  security_group_id = aws_security_group.ssh_security_group.id
+  # actually destination
+  source_security_group_id = aws_security_group.elasticsearch_security_group.id
+}
+
+
 resource aws_security_group_rule allow_ssh_to_internet {
   from_port         = 0
   protocol          = "-1"
@@ -103,6 +115,17 @@ resource aws_security_group_rule allow_lambda_to_sqs {
   security_group_id = aws_security_group.lambda_security_group.id
   # actually destination
   source_security_group_id = aws_security_group.sqs_security_group.id
+}
+
+resource aws_security_group_rule allow_lambda_to_elasticsearch {
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  type              = "egress"
+  description       = "Lambda to Elasticsearch permission"
+  security_group_id = aws_security_group.lambda_security_group.id
+  # actually destination
+  source_security_group_id = aws_security_group.elasticsearch_security_group.id
 }
 
 resource aws_security_group lambda_internet_access_security_group {
@@ -172,13 +195,19 @@ resource aws_security_group sqs_security_group {
 }
 
 # elasticsearch
-//resource aws_security_group elasticsearch_security_group {
-//  name = "${var.environment_namespace}-elasticsearch_security_group"
-//  description = "Allows resources to access Elasticsearch"
-//  vpc_id = data.aws_vpc.vpc.id
-//
-//  tags = {
-//    Name = "${var.environment_namespace}-elasticsearch_security_group"
-//  }
-//
-//}
+resource aws_security_group elasticsearch_security_group {
+  name        = "${var.environment_namespace}-elasticsearch_security_group"
+  description = "Allows resources to access Elasticsearch"
+  vpc_id      = data.aws_vpc.vpc.id
+  ingress {
+    from_port       = 443
+    protocol        = "tcp"
+    to_port         = 443
+    description     = "Allow access from Lambdas"
+    security_groups = [aws_security_group.lambda_security_group.id, aws_security_group.ssh_security_group.id]
+  }
+
+  tags = {
+    Name = "${var.environment_namespace}-elasticsearch_security_group"
+  }
+}

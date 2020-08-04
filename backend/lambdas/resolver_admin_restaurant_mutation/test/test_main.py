@@ -10,7 +10,20 @@ import common.validation as validation
 from unittest.mock import Mock, patch
 
 with patch("common.utils.get_engine"):
-    import main
+    with patch(
+        "os.environ",
+        {
+            "AWS_REGION": "us-west-2",
+            "REDIS_HOST": "localhost",
+            "REDIS_PORT": 6379,
+            "AWS_ACCESS_KEY_ID": "ASIA",
+            "AWS_SECRET_ACCESS_KEY": "secret",
+            "ELASTICSEARCH_ENDPOINT": "host.us-west-2.es.amazonaws.com",
+            "AWS_SESSION_TOKEN": "token",
+        },
+    ):
+        with patch("elasticsearch.Elasticsearch"):
+            import main
 
 from datetime import datetime, timedelta
 
