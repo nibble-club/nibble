@@ -110,7 +110,7 @@ const MapView = ({ pins, activePin = -1, height = 500 }: MapViewProps) => {
     if (!map) {
       return;
     }
-    currentMarkers.current.forEach(marker => {
+    currentMarkers.current.forEach((marker) => {
       marker.remove();
     });
     const newMarkers: mapboxgl.Marker[] = [];
@@ -121,7 +121,10 @@ const MapView = ({ pins, activePin = -1, height = 500 }: MapViewProps) => {
           .setPopup(
             addPopup(
               <div className={classes.restaurantPopup}>
-                <S3Image location={LOGO_PLACEHOLDER} alt={`${pin.name} logo`} />
+                <S3Image
+                  location={pin.logoUrl || LOGO_PLACEHOLDER}
+                  alt={`${pin.name} logo`}
+                />
                 <div>
                   <p>{pin.name}</p>
                 </div>
@@ -156,7 +159,7 @@ const MapView = ({ pins, activePin = -1, height = 500 }: MapViewProps) => {
 
   return (
     <div className={classes.container}>
-      <div className={classes.mapContainer} ref={el => (mapContainer.current = el)} />
+      <div className={classes.mapContainer} ref={(el) => (mapContainer.current = el)} />
     </div>
   );
 };

@@ -46,14 +46,30 @@ def lambda_handler(event, context):
                         "description": {"type": "text"},
                         "disclaimer": {"type": "text", "index": False},
                         "active": {"type": "boolean"},
+                        "market": {"type": "keyword"},
                         "address": {
                             "properties": {
                                 "streetAddress": {"type": "text"},
+                                "dependentLocality": {"type": "text"},
                                 "locality": {"type": "text"},
                                 "administrativeArea": {"type": "text"},
                                 "country": {"type": "text"},
                                 "postalCode": {"type": "keyword"},
                                 "location": {"type": "geo_point"},
+                            }
+                        },
+                        "logoUrl": {
+                            "properties": {
+                                "bucket": {"type": "keyword"},
+                                "region": {"type": "keyword"},
+                                "key": {"type": "keyword"},
+                            }
+                        },
+                        "heroUrl": {
+                            "properties": {
+                                "bucket": {"type": "keyword"},
+                                "region": {"type": "keyword"},
+                                "key": {"type": "keyword"},
                             }
                         },
                     }
@@ -83,6 +99,13 @@ def lambda_handler(event, context):
                         "restaurantId": {"type": "keyword"},
                         "availableFrom": {"type": "date", "format": "epoch_second"},
                         "availableTo": {"type": "date", "format": "epoch_second"},
+                        "imageUrl": {
+                            "properties": {
+                                "bucket": {"type": "keyword"},
+                                "region": {"type": "keyword"},
+                                "key": {"type": "keyword"},
+                            }
+                        },
                     }
                 }
             },

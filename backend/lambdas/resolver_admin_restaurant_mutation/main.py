@@ -157,14 +157,22 @@ def get_restaurant_es_document(db_values):
     return {
         "name": db_values["name"],
         "description": db_values["description"],
-        "disclaimer": db_values["disclaimer"],
+        "disclaimer": ""
+        if db_values["disclaimer"] is None
+        else db_values["disclaimer"],
         "active": db_values["active"],
+        "market": db_values["market"],
         "address": {
             "streetAddress": db_values["street_address"],
+            "dependentLocality": ""
+            if db_values["dependent_locality"] is None
+            else db_values["dependent_locality"],
             "locality": db_values["locality"],
             "administrativeArea": db_values["administrative_area"],
             "country": db_values["country"],
             "postalCode": db_values["postal_code"],
             "location": {"lat": db_values["latitude"], "lon": db_values["longitude"],},
         },
+        "logoUrl": db_values["logo_url"],
+        "heroUrl": db_values["hero_url"],
     }

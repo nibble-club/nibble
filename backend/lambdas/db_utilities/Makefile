@@ -1,4 +1,4 @@
-LAMBDA_CODE_HASH := $(shell find ./python/common -maxdepth 1 -type f \( -name "*.py" -o -name "requirements.txt" \) -print0 | sort -z | xargs -0 sha1sum | sha1sum | awk '{print substr($$1, 1, 10)}')
+LAMBDA_CODE_HASH := $(shell find ./python/common . -maxdepth 1 -type f \( -name "*.py" -o -name "requirements.txt" \) -print0 | sort -z | xargs -0 sha1sum | sha1sum | awk '{print substr($$1, 1, 10)}')
 
 include $(shell git rev-parse --show-toplevel)/backend/lambdas/lambda.mk
 

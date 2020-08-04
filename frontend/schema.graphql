@@ -8,14 +8,19 @@ type Query {
     user: UserCurrentContextInput!
     property: NibbleRecommendationReason!
   ): [NibbleAvailable]!
+  # note that this returns restaurant distance for free,
+  # without making an extra request. maxDistance unit is miles
   closestRestaurants(
     location: LatLonInput!
     paginationInput: PaginationInput!
-  ): [Restaurant]!
+    maxDistance: Float!
+  ): ClosestRestaurantsResults!
   # geocodes given address
   geocodeAddress(address: AddressWithoutLocationInput!): LatLon!
   # creates S3 presigned URL to upload image
   imageUploadURL(destination: S3ObjectDestination): ImageUploadDestination!
+  # gets lat lon for users who don't allow location access
+  locationForPostalCode(postalCode: String!): LatLon!
   # checks admin id in identity
   restaurantForAdmin: Restaurant!
   restaurantInfo(restaurantId: ID!): Restaurant!
@@ -113,6 +118,11 @@ input AdminRestaurantInput {
 
 type AdminDeleteNibbleResponse {
   id: ID!
+}
+
+type ClosestRestaurantsResults {
+  restaurants: [Restaurant!]!
+  totalResults: Int!
 }
 
 type ImageUploadDestination {

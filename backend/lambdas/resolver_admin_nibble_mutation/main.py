@@ -220,6 +220,7 @@ def add_to_elasticsearch(db_values, nibble_id, restaurant_id):
             "price": db_values["price"],
             "availableFrom": db_values["available_from"],
             "availableTo": db_values["available_to"],
+            "imageUrl": db_values["image_url"],
         },
     )
     logger.info(index_result)

@@ -522,6 +522,7 @@ const AdminEditRestaurant = (props: AdminEditRestaurantProps) => {
                                     formRenderProps.values.name ||
                                     data?.restaurantForAdmin.name ||
                                     "Your Restaurant",
+                                  logoUrl: logoLocation,
                                 },
                               ]
                             : []

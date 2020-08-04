@@ -254,3 +254,16 @@ variable resolver_image_upload_url_lambda_release_version {
   type    = string
   default = ""
 }
+
+variable resolver_closest_restaurants_lambda_name {
+  type = string
+}
+
+variable resolver_closest_restaurants_lambda_artifact {
+  type = string
+}
+
+variable resolver_closest_restaurants_lambda_release_version {
+  type    = string
+  default = ""
+}

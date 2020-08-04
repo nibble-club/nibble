@@ -7,11 +7,15 @@ import Auth from "@aws-amplify/auth";
 
 import { appTheme } from "../../common/theming";
 import HeaderBar from "../../components/HeaderBar/HeaderBar";
-import S3Image, { PROFILE_PICTURE_PLACEHOLDER } from "../../components/S3Image/S3Image";
-import S3ImageUpload from "../../components/S3ImageUpload";
+import MapView from "../../components/MapView";
+import { PROFILE_PICTURE_PLACEHOLDER } from "../../components/S3Image/S3Image";
 import SectionHeader from "../../components/SectionHeader/SectionHeader";
-import { S3ObjectDestination, UserInfoQuery } from "../../graphql/generated/types";
-import { USER_INFO } from "../../graphql/queries";
+import {
+  ClosestRestaurantsQuery,
+  ClosestRestaurantsQueryVariables,
+  UserInfoQuery
+} from "../../graphql/generated/types";
+import { CLOSEST_RESTAURANTS, USER_INFO } from "../../graphql/queries";
 import { userSignOut } from "../../redux/actions";
 import { useStyles } from "./Home.style";
 
@@ -21,7 +25,19 @@ const Home = () => {
     null
   >;
 
-  const [imageLoc, setImageLoc] = useState(PROFILE_PICTURE_PLACEHOLDER);
+  const { data: restaurantData } = useQuery(CLOSEST_RESTAURANTS, {
+    variables: {
+      location: {
+        latitude: 42.3854646,
+        longitude: -71.094187,
+      },
+      paginationInput: {
+        offset: 40,
+        limit: 20,
+      },
+      maxDistance: 3.5,
+    },
+  }) as QueryResult<ClosestRestaurantsQuery, ClosestRestaurantsQueryVariables>;
 
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -46,11 +62,9 @@ const Home = () => {
         >
           Sign out
         </Link>
-        <S3ImageUpload
-          destination={S3ObjectDestination.UserProfilePictures}
-          setImageLocation={setImageLoc}
+        <MapView
+          pins={restaurantData ? restaurantData.closestRestaurants.restaurants : []}
         />
-        <S3Image location={imageLoc} alt="test" />
       </div>
     </div>
   );

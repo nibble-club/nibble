@@ -2,6 +2,27 @@ import { gql } from "@apollo/client";
 
 import { NIBBLE_AVAILABLE_INFO_FRAGMENT, RESTAURANT_INFO_FRAGMENT } from "./fragments";
 
+export const CLOSEST_RESTAURANTS = gql`
+  query ClosestRestaurants(
+    $location: LatLonInput!
+    $paginationInput: PaginationInput!
+    $maxDistance: Float!
+  ) {
+    closestRestaurants(
+      location: $location
+      paginationInput: $paginationInput
+      maxDistance: $maxDistance
+    ) {
+      totalResults
+      restaurants {
+        distance(currentPos: $location)
+        ...RestaurantInfo
+      }
+    }
+  }
+  ${RESTAURANT_INFO_FRAGMENT}
+`;
+
 export const GEOCODE_ADDRESS = gql`
   query GeocodeAddress($addr: AddressWithoutLocationInput!) {
     geocodeAddress(address: $addr) {

@@ -200,3 +200,13 @@ resource aws_appsync_resolver image_upload_url {
   request_template  = templatefile("./resolver_templates/request_lambda.vm", { field = "imageUploadURL" })
   response_template = file("./resolver_templates/response_lambda.vm")
 }
+
+resource aws_appsync_resolver closest_restaurants {
+  api_id            = aws_appsync_graphql_api.api.id
+  kind              = "UNIT"
+  field             = "closestRestaurants"
+  type              = "Query"
+  data_source       = module.closest_restaurants_datasource.name
+  request_template  = templatefile("./resolver_templates/request_lambda.vm", { field = "closestRestaurants" })
+  response_template = file("./resolver_templates/response_lambda.vm")
+}
