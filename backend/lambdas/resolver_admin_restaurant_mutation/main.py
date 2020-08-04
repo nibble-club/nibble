@@ -3,13 +3,10 @@ import logging
 import os
 
 import redis
-from elasticsearch import Elasticsearch, RequestsHttpConnection
-from requests_aws4auth import AWS4Auth
-
-
-from common import redis_keys, tables, utils, es_indices
-from common.errors import NibbleError
 from sqlalchemy.sql import select
+
+from common import es_indices, redis_keys, tables, utils
+from common.errors import NibbleError
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -25,29 +22,11 @@ restaurant_restaurant_admin_table = tables.get_table_metadata(
 r = redis.Redis(host=os.environ["REDIS_HOST"], port=os.environ["REDIS_PORT"])
 
 # connect to Elasticsearch
-tracer = logging.getLogger("elasticsearch.trace")
-tracer.setLevel(logging.INFO)
-logging.getLogger("elasticsearch").setLevel(logging.INFO)
-
-auth = AWS4Auth(
-    os.environ["AWS_ACCESS_KEY_ID"],
-    os.environ["AWS_SECRET_ACCESS_KEY"],
-    os.environ["AWS_REGION"],
-    "es",
-    session_token=os.environ["AWS_SESSION_TOKEN"],
-)
-
-es = Elasticsearch(
-    hosts=[{"host": os.environ["ELASTICSEARCH_ENDPOINT"], "port": 443}],
-    http_auth=auth,
-    use_ssl=True,
-    verify_certs=True,
-    connection_class=RequestsHttpConnection,
-)
+es = es_indices.get_es_client()
 
 
 def lambda_handler(event, context):
-    """Resolves adminCreateRestaurant GraphQL requests
+    """Resolves adminCreateRestaurant and adminEditRestaurant GraphQL requests
     """
     if event["field"] not in ("adminCreateRestaurant", "adminEditRestaurant"):
         raise NibbleError(
@@ -101,6 +80,15 @@ def lambda_handler(event, context):
 
             logger.info("PK: {0}".format(restaurant_id))
 
+            logger.info("Adding record to Elasticsearch")
+            index_result = es.index(
+                index=es_indices.RESTAURANT_INDEX,
+                id=restaurant_id,
+                body=get_restaurant_es_document(db_values),
+            )
+            logger.info(index_result)
+            logger.info("Indexed restaurant in Elasticsearch")
+
             # insert restaurant geolocation data into redis; updates
             # on name conflict
             pipe.geoadd(
@@ -111,15 +99,6 @@ def lambda_handler(event, context):
             )
             pipe.execute()
             logger.info("Inserted restaurant to Redis")
-
-            logger.info("Adding record to Elasticsearch")
-            index_result = es.index(
-                index=es_indices.RESTAURANT_INDEX,
-                id=restaurant_id,
-                body=get_restaurant_es_document(db_values),
-            )
-            logger.info(index_result)
-            logger.info("Indexed restaurant in Elasticsearch")
         # end Redis transaction
     # end SQL transaction
     return get_restaurant_result(db_values, restaurant_id)

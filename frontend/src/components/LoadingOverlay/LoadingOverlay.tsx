@@ -22,24 +22,35 @@ const LoadingOverlay = (props: LoadingOverlayProps) => {
     });
   });
 
-  const hideOverlay = useRef(() => {
-    setOpacity(false);
-    delay(500).then(() => {
-      if (isMounted) {
-        setDisplay(false);
-      }
-    });
-  });
+  const hideOverlay = useRef(() => {});
 
   // avoids memory leaks by preventing state updates after component unmounts
   useEffect(() => {
     setIsMounted(true);
 
+    showOverlay.current = () => {
+      setDisplay(true);
+      delay(500).then(() => {
+        if (isMounted) {
+          setOpacity(true);
+        }
+      });
+    };
+
+    hideOverlay.current = () => {
+      setOpacity(false);
+      delay(500).then(() => {
+        if (isMounted) {
+          setDisplay(false);
+        }
+      });
+    };
+
     return () => {
       showOverlay.current = () => {};
       hideOverlay.current = () => {};
     };
-  }, []);
+  }, [isMounted]);
 
   useEffect(() => {
     if (props.show) {

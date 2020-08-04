@@ -14,13 +14,14 @@ module resolver_admin_nibble_mutation_lambda {
   timeout            = 10
   layers             = [aws_lambda_layer_version.db_utilities.arn]
   environment = {
-    DB_HOST     = aws_db_instance.postgres.address
-    DB_PORT     = aws_db_instance.postgres.port
-    DB_NAME     = aws_db_instance.postgres.name
-    DB_USERNAME = aws_db_instance.postgres.username
-    DB_PASSWORD = aws_db_instance.postgres.password
-    REDIS_HOST  = aws_elasticache_cluster.redis.cache_nodes[0].address
-    REDIS_PORT  = aws_elasticache_cluster.redis.cache_nodes[0].port
+    DB_HOST                = aws_db_instance.postgres.address
+    DB_PORT                = aws_db_instance.postgres.port
+    DB_NAME                = aws_db_instance.postgres.name
+    DB_USERNAME            = aws_db_instance.postgres.username
+    DB_PASSWORD            = aws_db_instance.postgres.password
+    REDIS_HOST             = aws_elasticache_cluster.redis.cache_nodes[0].address
+    REDIS_PORT             = aws_elasticache_cluster.redis.cache_nodes[0].port
+    ELASTICSEARCH_ENDPOINT = aws_elasticsearch_domain.elasticsearch.endpoint
   }
   vpc_config = {
     security_group_ids = [aws_security_group.lambda_security_group.id]

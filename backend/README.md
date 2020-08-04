@@ -72,7 +72,7 @@ Currently, if you need to store a secret (e.g. the Postgres password), you will 
 
 ### Schemas
 
-If you've updated schemas, then call `make sync-*-schemas` (replace `*` with the name of the schema, e.g. `postgres`). This will put the schemas in an S3 bucket, but do nothing else yet. You'll need to call `make migrate-*-schemas` to actually migrate those schemas.
+If you've updated schemas, then call `make sync-*-schemas` (replace `*` with the name of the schema, e.g. `postgres`; this step is not necessary for Elasticsearch). This will put the schemas in an S3 bucket, but do nothing else yet. You'll need to call `make migrate-*-schemas` to actually migrate those schemas.
 
 ### SSH Access
 
@@ -103,3 +103,27 @@ sudo flyway clean
 ```
 
 That command will completely wipe your database. Obviously do not use this command on any real data!!
+
+### Elasticsearch Access
+
+Because the Elasticsearch instance is in your VPC, it's difficult (but still possible) to access it. If you _really_ need to, here's how:
+
+1. In your hosts file (on Windows, that's at `C:\Windows\System32\drivers\etc\hosts`); on Mac and Linux, it's at `/etc/hosts` (wow so much easier)), add the following line:
+
+   ```text
+   127.0.0.1         [YOUR ELASTICSEARCH ENDPOINT]
+   ```
+
+   (for example, my Elasticsearch endpoint is `vpc-dev-adchurch-elasticsearch-6yqskxqq4ttomtf2l6umepixou.us-west-2.es.amazonaws.com`)
+
+   This is necessary for signing requests later; AWS will not sign requests to `localhost`, so you need to associate the address of your Elasticsearch domain with it here. Don't worry, this won't mess with your web browsing; the address is not accessible from the public internet anyway.
+
+2. Assuming you have completed the above steps for SSH access (if not go do that), run the following command:
+
+   ```shell
+   ssh -i "~/.ssh/dev-ssh_key_pair.pem" ubuntu@[enter address here] -N -L 9200:[YOUR ELASTICSEARCH ENDPOINT]:443
+   ```
+
+   This will create an SSH tunnel, forwarding requests to `localhost:9200` to your Elasticsearch endpoint at port 443. It's using the EC2 instance to SSH through, which has the permissions to access the Elasticsearch domain (unlike your local machine).
+
+3. In an ideal world (or if you set your personal Elasticsearch instance to fully open access), you would be able to just navigate to `localhost:9200` in your browser and see information. But unless you have enabled fully open access, you'll need to _sign your requests_. Luckily that's quite easy to do in Python; see the `scripts/inspect_es.py` file for an example to work from. Feel free to use this file to query away at Elasticsearch as you need to. It works because it signs every request with your current credentials, which should be your `nibble-deploy` profile.

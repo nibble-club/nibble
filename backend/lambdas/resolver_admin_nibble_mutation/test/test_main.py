@@ -10,7 +10,8 @@ import common.validation as validation
 from unittest.mock import Mock, patch
 
 with patch("common.utils.get_engine"):
-    import main
+    with patch("common.es_indices.get_es_client"):
+        import main
 
 from datetime import datetime, timedelta
 from common.errors import NibbleError

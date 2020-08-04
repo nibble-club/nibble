@@ -59,15 +59,18 @@ resource aws_elasticsearch_domain_policy elasticsearch {
 }
 
 data aws_iam_policy_document elasticsearch_access {
+  // lambda access
   statement {
     effect = "Allow"
     principals {
-      identifiers = [aws_iam_role.resolver_admin_restaurant_mutation.arn]
-      type        = "AWS"
+      identifiers = [
+        aws_iam_role.resolver_admin_restaurant_mutation.arn,
+        aws_iam_role.resolver_admin_nibble_mutation.arn,
+      ]
+      type = "AWS"
     }
-    actions = ["es:ESHttp*"]
+    actions = ["es:ESHttpPut"]
     resources = [
-      aws_elasticsearch_domain.elasticsearch.arn,
       "${aws_elasticsearch_domain.elasticsearch.arn}/*"
     ]
   }
@@ -85,7 +88,6 @@ data aws_iam_policy_document elasticsearch_access {
     }
     resources = [
       "${aws_elasticsearch_domain.elasticsearch.arn}/*"
-
     ]
   }
 

@@ -1,7 +1,7 @@
 import logging
 import json
 import os
-from common import tables, utils, validation, redis_keys
+from common import tables, utils, validation, redis_keys, es_indices
 from sqlalchemy.sql import select
 import redis
 from redis.lock import LockError
@@ -17,6 +17,9 @@ restaurant_restaurant_admin_table = tables.get_table_metadata(
     tables.NibbleTable.RESTAURANT_RESTAURANT_ADMIN
 )
 restaurant_table = tables.get_table_metadata(tables.NibbleTable.RESTAURANT)
+
+# connect to Elasticsearch
+es = es_indices.get_es_client()
 
 
 def lambda_handler(event, context):
@@ -46,12 +49,19 @@ def lambda_handler(event, context):
                 db_values = nibble_event_db_mapper(nibble)
 
                 result = conn.execute(
-                    nibble_table.insert().values(
-                        restaurant_id=admin_id_restaurant_id_mapping, **db_values
-                    )
+                    nibble_table.insert()
+                    .returning(nibble_table.c.restaurant_id)
+                    .values(restaurant_id=admin_id_restaurant_id_mapping, **db_values)
                 )
                 nibble_id = result.inserted_primary_key[0]
-                logger.info("Inserted with PK: {0}".format(nibble_id))
+                restaurant_id = result.fetchone()["restaurant_id"]
+                logger.info(
+                    "Inserted with PK {0} at restaurant ID {1}".format(
+                        nibble_id, restaurant_id
+                    )
+                )
+                # update elasticsearch
+                add_to_elasticsearch(db_values, nibble_id, restaurant_id)
 
                 # update redis
                 nibble_available_count = db_values["available_count"]
@@ -88,12 +98,19 @@ def lambda_handler(event, context):
 
                         # confirmed valid update, push db changes
                         db_values = nibble_event_db_mapper(nibble)
-                        conn.execute(
+                        result = conn.execute(
                             nibble_table.update()
+                            .returning(nibble_table.c.restaurant_id)
                             .where(nibble_table.c.id == nibble_id)
                             .values(**db_values)
                         )
                         nibble_available_count = db_values["available_count"]
+                        restaurant_id = result.fetchone()["restaurant_id"]
+
+                        # update elasticsearch
+                        add_to_elasticsearch(db_values, nibble_id, restaurant_id)
+
+                        # update redis
                         pipe.hset(
                             redis_keys.NIBBLES_REMAINING,
                             nibble_id,
@@ -187,4 +204,24 @@ def check_valid_nibble_update(
 
     if validation.in_past(nibble_row["available_to"]):
         raise NibbleError("Cannot update archived Nibble; please create a new one")
+
+
+def add_to_elasticsearch(db_values, nibble_id, restaurant_id):
+    logger.info("Adding record to Elasticsearch")
+    index_result = es.index(
+        index=es_indices.NIBBLE_INDEX,
+        id=nibble_id,
+        body={
+            "name": db_values["name"],
+            "type": db_values["type"],
+            "count": db_values["available_count"],
+            "restaurantId": restaurant_id,
+            "description": db_values["description"],
+            "price": db_values["price"],
+            "availableFrom": db_values["available_from"],
+            "availableTo": db_values["available_to"],
+        },
+    )
+    logger.info(index_result)
+    logger.info("Indexed Nibble in Elasticsearch")
 
