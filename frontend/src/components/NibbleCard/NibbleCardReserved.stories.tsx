@@ -10,7 +10,7 @@ import { NibbleCardReserved } from "./NibbleCardReserved";
 
 export default {
   component: NibbleCardReserved,
-  title: "Nibble Card - Reserved",
+  title: "NibbleCardReserved",
   excludeStories: /.*Props$/,
 };
 
@@ -27,19 +27,10 @@ export const symphonySushiReservedProps: NibbleReservedInfoFragment = {
     region: "",
     key: "hero",
   },
-  availableFrom: moment
-    .utc()
-    .subtract(7, "h")
-    .unix(),
-  availableTo: moment
-    .utc()
-    .add(1, "h")
-    .unix(),
+  availableFrom: moment.utc().subtract(7, "h").unix(),
+  availableTo: moment.utc().add(1, "h").unix(),
   status: NibbleReservationStatus.Reserved,
-  reservedAt: moment
-    .utc()
-    .subtract(3, "h")
-    .unix(),
+  reservedAt: moment.utc().subtract(3, "h").unix(),
 };
 
 export const symphonySushiCompletedProps: NibbleReservedInfoFragment = {
@@ -51,11 +42,7 @@ export const symphonySushiCancelledProps: NibbleReservedInfoFragment = {
   ...symphonySushiReservedProps,
   status: NibbleReservationStatus.CancelledByUser,
   cancellationReason: "bad",
-  cancelledAt: moment
-    .utc()
-    .subtract(20, "m")
-    .subtract(5, "s")
-    .unix(),
+  cancelledAt: moment.utc().subtract(20, "m").subtract(5, "s").unix(),
 };
 
 export const SymphonySushiReserved = () => (

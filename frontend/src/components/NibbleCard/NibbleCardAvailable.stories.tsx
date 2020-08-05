@@ -5,7 +5,7 @@ import { NibbleCardAvailable } from "./NibbleCardAvailable";
 
 export default {
   component: NibbleCardAvailable,
-  title: "Nibble Card - Available",
+  title: "NibbleCardAvailable",
   excludeStories: /.*Props$/,
 };
 

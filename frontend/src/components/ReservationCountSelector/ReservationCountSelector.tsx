@@ -4,7 +4,7 @@ import { useStyles } from "./ReservationCountSelector.style";
 import { ReservationCountSelectorProps } from "./ReservationCountSelector.types";
 
 const ReservationCountSelector = (props: ReservationCountSelectorProps) => {
-  const classes = useStyles(props);
+  const classes = useStyles();
 
   return (
     <div className={classes.container}>

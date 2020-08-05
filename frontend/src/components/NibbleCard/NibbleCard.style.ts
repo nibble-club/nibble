@@ -11,10 +11,10 @@ import {
 type NibbleCardPropsWithHover = NibbleAvailableInfoFragment &
   NibbleReservedInfoFragment & { isHovered: boolean };
 
-const getColorForAmount = (amount: number) => {
+export const getColorForAmount = (amount: number) => {
   if (amount <= 1) {
     return appTheme.color.text.alert;
-  } else if (amount < 3) {
+  } else if (amount <= 3) {
     return appTheme.color.text.warn;
   } else {
     return appTheme.color.text.primary;
