@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import ContentLoader from "react-content-loader";
 import { useTheme } from "react-jss";
 
-import { AppTheme } from "../../common/theming.types";
+import { AppTheme } from "../../common/theming/theming.types";
 import { cardPadding, cardWidth, useLoadingStyles } from "./NibbleCard.style";
 
 export const NibbleCardLoading = () => {

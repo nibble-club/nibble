@@ -5,7 +5,7 @@ import { Field, Form } from "react-final-form";
 import { useDispatch } from "react-redux";
 import { useHistory, useParams } from "react-router-dom";
 
-import { QueryTuple, useLazyQuery, useMutation } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 
 import {
   AdminNibbleInput,
@@ -109,9 +109,12 @@ const AdminEditNibble = (props: AdminEditNibbleProps) => {
 
   const isCreate = !id || id === "new";
 
-  const [getNibbleInfo, { loading, error, data }] = useLazyQuery(NIBBLE_INFO, {
+  const [getNibbleInfo, { loading, error, data }] = useLazyQuery<
+    NibbleInfoQuery,
+    NibbleInfoQueryVariables
+  >(NIBBLE_INFO, {
     variables: { nibbleId: id },
-  }) as QueryTuple<NibbleInfoQuery, NibbleInfoQueryVariables>;
+  });
 
   if (!isCreate && !loading && !error && !data) {
     getNibbleInfo();

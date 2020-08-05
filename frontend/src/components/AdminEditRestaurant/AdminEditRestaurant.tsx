@@ -3,13 +3,7 @@ import { Field, Form } from "react-final-form";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 
-import {
-  QueryResult,
-  QueryTuple,
-  useLazyQuery,
-  useMutation,
-  useQuery
-} from "@apollo/client";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 
 import {
   AdminRestaurantInput,
@@ -133,19 +127,20 @@ const AdminEditRestaurant = (props: AdminEditRestaurantProps) => {
   const [logoLocation, setLogoLocation] = useState(LOGO_PLACEHOLDER);
   const [heroLocation, setHeroLocation] = useState(HERO_PLACEHOLDER);
 
-  const { loading, error, data } = useQuery(RESTAURANT_FOR_ADMIN) as QueryResult<
+  const { loading, error, data } = useQuery<
     RestaurantForAdminQuery,
     RestaurantForAdminQueryVariables
-  >;
+  >(RESTAURANT_FOR_ADMIN);
 
   useEffect(() => {
     setLogoLocation(data?.restaurantForAdmin.logoUrl || LOGO_PLACEHOLDER);
     setHeroLocation(data?.restaurantForAdmin.heroUrl || HERO_PLACEHOLDER);
   }, [data]);
 
-  const [getGeocode, geocodeAddressResult] = useLazyQuery(
-    GEOCODE_ADDRESS
-  ) as QueryTuple<GeocodeAddressQuery, GeocodeAddressQueryVariables>;
+  const [getGeocode, geocodeAddressResult] = useLazyQuery<
+    GeocodeAddressQuery,
+    GeocodeAddressQueryVariables
+  >(GEOCODE_ADDRESS);
 
   const isUpdate = !error;
 

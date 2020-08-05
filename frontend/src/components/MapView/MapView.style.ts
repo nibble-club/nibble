@@ -1,6 +1,6 @@
 import { createUseStyles } from "react-jss";
 
-import { AppTheme } from "../../common/theming.types";
+import { AppTheme } from "../../common/theming/theming.types";
 
 export const useStyles = createUseStyles((theme: AppTheme) => ({
   container: {
@@ -82,6 +82,8 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
       margin: 0,
       fontFamily: '"Baloo 2"',
       fontSize: theme.fontSizes.medium,
+      lineHeight: 1.1,
+      textAlign: "center",
     },
     filter: `drop-shadow(${theme.shadow[1]})`,
     "& .mapboxgl-popup-content": {

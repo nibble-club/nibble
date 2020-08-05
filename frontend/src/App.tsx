@@ -1,3 +1,4 @@
+import mapboxgl from "mapbox-gl";
 import React, { useEffect, useState } from "react";
 import { createUseStyles } from "react-jss";
 import { useDispatch, useSelector } from "react-redux";
@@ -6,13 +7,13 @@ import { Redirect, Route, Switch } from "react-router-dom";
 import Auth from "@aws-amplify/auth";
 
 import { USER_TOKEN_KEY } from "./common/constants";
-import { globalTheme } from "./common/theming";
-import { AppTheme } from "./common/theming.types";
+import { globalTheme } from "./common/theming/theming";
+import { AppTheme } from "./common/theming/theming.types";
 import NotificationBar from "./components/NotificationBar/NotificationBar";
 import Admin from "./pages/Admin/Admin";
 import Home from "./pages/Home/Home";
 import Login from "./pages/Login/Login";
-import { userSignIn } from "./redux/actions";
+import { userPostalCode, userSignIn } from "./redux/actions";
 import { RootState } from "./redux/reducers";
 
 const useStyles = createUseStyles((theme: AppTheme) => ({
@@ -41,11 +42,13 @@ function App() {
             user.attributes["custom:admin"] === "true"
           )
         );
+        dispatch(userPostalCode(user.attributes["custom:postal_code"]));
         if (window.location.href.includes("/login")) {
           console.log("Redirecting user to home page");
           window.location.href = "/";
         }
         setLoading(false);
+        mapboxgl.prewarm();
       } catch (err) {
         console.log("User not authenticated");
         setLoading(false);

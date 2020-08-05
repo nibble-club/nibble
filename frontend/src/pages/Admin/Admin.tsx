@@ -1,7 +1,7 @@
 import React from "react";
 import { Redirect, Route, Switch, useRouteMatch } from "react-router-dom";
 
-import { QueryResult, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 
 import AdminEditNibble from "../../components/AdminEditNibble";
 import AdminEditRestaurant from "../../components/AdminEditRestaurant";
@@ -21,9 +21,10 @@ const Admin = () => {
   const classes = useStyles();
   let { path, url } = useRouteMatch();
 
-  const { loading, error, data, refetch } = useQuery(
-    RESTAURANT_FOR_ADMIN
-  ) as QueryResult<RestaurantForAdminQuery, RestaurantForAdminQueryVariables>;
+  const { loading, error, data, refetch } = useQuery<
+    RestaurantForAdminQuery,
+    RestaurantForAdminQueryVariables
+  >(RESTAURANT_FOR_ADMIN);
 
   return (
     <div>

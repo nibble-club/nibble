@@ -45,6 +45,15 @@ export const IMAGE_UPLOAD_URL = gql`
   }
 `;
 
+export const LOCATION_FOR_POSTAL_CODE = gql`
+  query LocationForPostalCode($postalCode: String!) {
+    locationForPostalCode(postalCode: $postalCode) {
+      latitude
+      longitude
+    }
+  }
+`;
+
 export const NIBBLE_INFO = gql`
   query NibbleInfo($nibbleId: ID!) {
     nibbleInfo(nibbleId: $nibbleId) {

@@ -1,6 +1,6 @@
 import React from "react";
 
-import { multipleClasses } from "../../common/theming";
+import { multipleClasses } from "../../common/theming/theming";
 import { useStyles } from "./SearchBar.style";
 import { SearchBarProps } from "./SearchBar.types";
 

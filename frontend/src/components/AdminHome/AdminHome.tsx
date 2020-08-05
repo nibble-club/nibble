@@ -3,7 +3,7 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { Link, useRouteMatch } from "react-router-dom";
 
-import { QueryResult, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import Auth from "@aws-amplify/auth";
 
 import HeroImage from "../../components/HeroImage/HeroImage";
@@ -22,10 +22,10 @@ const AdminHome = (props: AdminHomeProps) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   let { url } = useRouteMatch();
-  const { loading, error, data } = useQuery(RESTAURANT_FOR_ADMIN) as QueryResult<
+  const { loading, error, data } = useQuery<
     RestaurantForAdminQuery,
     RestaurantForAdminQueryVariables
-  >;
+  >(RESTAURANT_FOR_ADMIN);
 
   return (
     <div>

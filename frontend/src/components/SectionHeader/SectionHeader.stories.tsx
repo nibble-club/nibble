@@ -1,6 +1,6 @@
 import React from "react";
 
-import { appTheme } from "../../common/theming";
+import { appTheme } from "../../common/theming/theming";
 import SectionHeader from "./SectionHeader";
 
 export default {

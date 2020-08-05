@@ -1,7 +1,7 @@
 import { createUseStyles } from "react-jss";
 
-import { appTheme } from "../../common/theming";
-import { AppTheme } from "../../common/theming.types";
+import { appTheme } from "../../common/theming/theming";
+import { AppTheme } from "../../common/theming/theming.types";
 import {
   NibbleAvailableInfoFragment,
   NibbleReservationStatus,

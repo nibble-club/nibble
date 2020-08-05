@@ -1,6 +1,6 @@
 import { createUseStyles } from "react-jss";
 
-import { AppTheme } from "../../common/theming.types";
+import { AppTheme } from "../../common/theming/theming.types";
 import { MessageType } from "../../redux/actions";
 
 const getColorForMessageType = (messageType: MessageType, appTheme: AppTheme) => {

@@ -17,7 +17,7 @@ import Auth from "@aws-amplify/auth";
 import { ThemeProvider as MUIThemeProvider } from "@material-ui/core";
 
 import App from "./App";
-import { appTheme, muiTheme } from "./common/theming";
+import { appTheme, muiTheme } from "./common/theming/theming";
 import { authFlowLink } from "./links/auth";
 import { loggerLink } from "./links/logging";
 import { retryLink } from "./links/retry";

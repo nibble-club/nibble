@@ -154,6 +154,13 @@ export const COLUMN_FLEX_BOX = {
   alignItems: "center",
 };
 
+export const ROW_FLEX_BOX = {
+  display: "flex",
+  flexDirection: "row",
+  justifyContent: "center",
+  alignItems: "center",
+};
+
 export const muiTheme = createMuiTheme({
   palette: {
     primary: {

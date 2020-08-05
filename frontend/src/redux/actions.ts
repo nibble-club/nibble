@@ -1,9 +1,14 @@
+import { LatLon } from "../graphql/generated/types";
+
 // action types
 export const USER_SIGN_IN = "USER_SIGN_IN";
 export const USER_SIGN_OUT = "USER_SIGN_OUT";
 
 export const SHOW_MESSAGE = "SHOW_MESSAGE";
 export const HIDE_MESSAGE = "HIDE_MESSAGE";
+
+export const USER_POSTAL_CODE = "USER_POSTAL_CODE";
+export const USER_LOCATION = "USER_LOCATION";
 
 export enum MessageType {
   Error,
@@ -28,4 +33,12 @@ export function showMessage(message: string, messageType: MessageType) {
 
 export function hideMessage() {
   return { type: HIDE_MESSAGE };
+}
+
+export function userPostalCode(postalCode: string) {
+  return { type: USER_POSTAL_CODE, postalCode };
+}
+
+export function userLocation(location: LatLon) {
+  return { type: USER_LOCATION, location };
 }

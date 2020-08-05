@@ -1,7 +1,7 @@
 import { createUseStyles } from "react-jss";
 
-import { appTheme, withTransparency } from "../../common/theming";
-import { AppTheme } from "../../common/theming.types";
+import { appTheme, withTransparency } from "../../common/theming/theming";
+import { AppTheme } from "../../common/theming/theming.types";
 
 export const useStyles = createUseStyles((theme: AppTheme) => ({
   spinner: {

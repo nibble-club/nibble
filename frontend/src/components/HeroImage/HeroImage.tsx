@@ -3,7 +3,7 @@ import ContentLoader from "react-content-loader";
 import { useTheme } from "react-jss";
 import { Background, Parallax } from "react-parallax";
 
-import { AppTheme } from "../../common/theming.types";
+import { AppTheme } from "../../common/theming/theming.types";
 import S3Image from "../S3Image";
 import { HERO_HEIGHT, useStyles } from "./HeroImage.style";
 import { HeroImageProps } from "./HeroImage.types";

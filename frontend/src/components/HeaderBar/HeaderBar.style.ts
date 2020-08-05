@@ -1,7 +1,7 @@
 import { createUseStyles } from "react-jss";
 
-import { fluidSize } from "../../common/theming";
-import { AppTheme } from "../../common/theming.types";
+import { fluidSize } from "../../common/theming/theming";
+import { AppTheme } from "../../common/theming/theming.types";
 
 const imageSize = fluidSize(36, 2);
 const logoWidth = fluidSize(32, 2);

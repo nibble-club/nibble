@@ -2,7 +2,7 @@ import React from "react";
 import ContentLoader from "react-content-loader";
 import { useTheme } from "react-jss";
 
-import { AppTheme } from "../../common/theming.types";
+import { AppTheme } from "../../common/theming/theming.types";
 import { useStyles } from "./LoadingForm.style";
 
 const LoadingForm = () => {

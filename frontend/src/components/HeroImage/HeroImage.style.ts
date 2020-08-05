@@ -1,6 +1,6 @@
 import { createUseStyles } from "react-jss";
 
-import { AppTheme } from "../../common/theming.types";
+import { AppTheme } from "../../common/theming/theming.types";
 
 export const HERO_HEIGHT = "35vh";
 

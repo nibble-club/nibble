@@ -1,18 +1,12 @@
 import React from "react";
 import { createUseStyles } from "react-jss";
 
-import { appTheme, multipleClasses } from "../../common/theming";
-import { AppTheme } from "../../common/theming.types";
-import {
-  NibblePropertyIcon,
-  NibblePropertyProps,
-} from "./NibbleProperty.types";
+import { appTheme, multipleClasses } from "../../common/theming/theming";
+import { AppTheme } from "../../common/theming/theming.types";
+import { NibblePropertyIcon, NibblePropertyProps } from "./NibbleProperty.types";
 
 const colorForIcon = (icon: NibblePropertyIcon) => {
-  if (
-    icon === NibblePropertyIcon.Ingredients ||
-    icon === NibblePropertyIcon.Time
-  ) {
+  if (icon === NibblePropertyIcon.Ingredients || icon === NibblePropertyIcon.Time) {
     return appTheme.color.blue;
   } else if (icon === NibblePropertyIcon.Prepared) {
     return appTheme.color.pink;
@@ -61,12 +55,7 @@ const NibbleProperty = (props: NibblePropertyProps) => {
   return (
     <div className={classes.container}>
       <div className={classes.icon}>
-        <i
-          className={multipleClasses([
-            "material-icons-outlined",
-            classes.iconFont,
-          ])}
-        >
+        <i className={multipleClasses(["material-icons-outlined", classes.iconFont])}>
           {props.icon}
         </i>
       </div>

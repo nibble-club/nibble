@@ -2,7 +2,7 @@ import mapboxgl, { LngLatBounds, Map } from "mapbox-gl";
 import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 
-import { appTheme } from "../../common/theming";
+import { appTheme } from "../../common/theming/theming";
 import S3Image from "../S3Image";
 import { LOGO_PLACEHOLDER } from "../S3Image/S3Image";
 import { useStyles } from "./MapView.style";
@@ -62,6 +62,7 @@ const getBoundingBox = (pins: MapPin[]): LngLatBounds => {
 const MapView = ({ pins, activePin = -1, height = 500 }: MapViewProps) => {
   const classes = useStyles(height);
   const [map, setMap] = useState<Map | null>(null);
+  const [pinsChanged, setPinsChanged] = useState(false);
 
   const currentMarkers = useRef<mapboxgl.Marker[]>([]);
 
@@ -105,14 +106,40 @@ const MapView = ({ pins, activePin = -1, height = 500 }: MapViewProps) => {
     }
   }, [map, pins]);
 
-  // add pins to map
+  // detect pin change
+  const pinsStr = JSON.stringify(
+    pins.map((pin) => ({
+      location: pin.address.location,
+      name: pin.name,
+      logo: pin.logoUrl,
+    }))
+  );
+  useEffect(() => {
+    console.log(pinsStr);
+    setPinsChanged(true);
+  }, [pinsStr]);
+
+  // add pins to map, on pin change only, once map is loaded
   useEffect(() => {
     if (!map) {
+      console.log("Map not initialized");
       return;
     }
+    if (!pinsChanged) {
+      console.log("Pins haven't changed");
+      return;
+    }
+    if (!map.loaded() || !map.areTilesLoaded() || !map.isStyleLoaded()) {
+      console.log("Map not loaded");
+      return;
+    }
+    console.log("Adding");
+    setPinsChanged(false);
     currentMarkers.current.forEach((marker) => {
       marker.remove();
     });
+    if (currentMarkers.current.length > 0)
+      console.log(`Removed ${currentMarkers.current.length} markers`);
     const newMarkers: mapboxgl.Marker[] = [];
     pins.forEach((pin: MapPin) =>
       newMarkers.push(
@@ -124,6 +151,7 @@ const MapView = ({ pins, activePin = -1, height = 500 }: MapViewProps) => {
                 <S3Image
                   location={pin.logoUrl || LOGO_PLACEHOLDER}
                   alt={`${pin.name} logo`}
+                  key={pin.name}
                 />
                 <div>
                   <p>{pin.name}</p>
@@ -135,8 +163,11 @@ const MapView = ({ pins, activePin = -1, height = 500 }: MapViewProps) => {
           .addTo(map)
       )
     );
+    if (newMarkers.length > 0) console.log(`Added ${newMarkers.length} markers`);
     currentMarkers.current = newMarkers;
-  }, [map, pins, classes.popup, classes.restaurantPopup]);
+    map.fitBounds(getBoundingBox(pins), { padding: BOUNDING_BOX_PADDING });
+    map.triggerRepaint();
+  }, [pins, pinsChanged, map, classes.popup, classes.restaurantPopup]);
 
   // move map to current activePin
   useEffect(() => {

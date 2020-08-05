@@ -1,11 +1,11 @@
 import React, { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 
-import { QueryResult, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 
 import {
   ImageUploadUrlQuery,
-  QueryImageUploadUrlArgs
+  ImageUploadUrlQueryVariables
 } from "../../graphql/generated/types";
 import { IMAGE_UPLOAD_URL } from "../../graphql/queries";
 import { useStyles } from "./S3ImageUpload.style";
@@ -13,9 +13,12 @@ import { S3ImageUploadProps } from "./S3ImageUpload.types";
 
 const S3ImageUpload = ({ destination, setImageLocation }: S3ImageUploadProps) => {
   const classes = useStyles();
-  const { loading, error, data, refetch } = useQuery(IMAGE_UPLOAD_URL, {
+  const { loading, error, data, refetch } = useQuery<
+    ImageUploadUrlQuery,
+    ImageUploadUrlQueryVariables
+  >(IMAGE_UPLOAD_URL, {
     variables: { dest: destination },
-  }) as QueryResult<ImageUploadUrlQuery, QueryImageUploadUrlArgs>;
+  });
 
   const onUploadStart = useCallback(() => {
     console.log("Upload started");

@@ -1,7 +1,7 @@
 import { createUseStyles } from "react-jss";
 
-import { fluidSizeProportional } from "../../common/theming";
-import { AppTheme } from "../../common/theming.types";
+import { fluidSizeProportional } from "../../common/theming/theming";
+import { AppTheme } from "../../common/theming/theming.types";
 
 export const useStyles = createUseStyles((theme: AppTheme) => ({
   container: {

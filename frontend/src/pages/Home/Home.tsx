@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 
-import { QueryResult, useQuery } from "@apollo/client";
+import { useLazyQuery, useQuery } from "@apollo/client";
 import Auth from "@aws-amplify/auth";
 
-import { appTheme } from "../../common/theming";
+import useLocation from "../../common/hooks/useLocation";
+import { appTheme } from "../../common/theming/theming";
 import HeaderBar from "../../components/HeaderBar/HeaderBar";
 import MapView from "../../components/MapView";
 import { PROFILE_PICTURE_PLACEHOLDER } from "../../components/S3Image/S3Image";
@@ -13,31 +14,36 @@ import SectionHeader from "../../components/SectionHeader/SectionHeader";
 import {
   ClosestRestaurantsQuery,
   ClosestRestaurantsQueryVariables,
-  UserInfoQuery
+  UserInfoQuery,
+  UserInfoQueryVariables
 } from "../../graphql/generated/types";
 import { CLOSEST_RESTAURANTS, USER_INFO } from "../../graphql/queries";
 import { userSignOut } from "../../redux/actions";
 import { useStyles } from "./Home.style";
 
 const Home = () => {
-  const { loading, error, data } = useQuery(USER_INFO) as QueryResult<
-    UserInfoQuery,
-    null
-  >;
+  const { loading, error, data } = useQuery<UserInfoQuery, UserInfoQueryVariables>(
+    USER_INFO
+  );
 
-  const { data: restaurantData } = useQuery(CLOSEST_RESTAURANTS, {
-    variables: {
-      location: {
-        latitude: 42.3854646,
-        longitude: -71.094187,
-      },
-      paginationInput: {
-        offset: 40,
-        limit: 20,
-      },
-      maxDistance: 3.5,
-    },
-  }) as QueryResult<ClosestRestaurantsQuery, ClosestRestaurantsQueryVariables>;
+  const { location, loading: locationLoading } = useLocation();
+
+  const [fetchRestaurants, { data: restaurantData }] = useLazyQuery<
+    ClosestRestaurantsQuery,
+    ClosestRestaurantsQueryVariables
+  >(CLOSEST_RESTAURANTS);
+
+  useEffect(() => {
+    if (!locationLoading && location) {
+      fetchRestaurants({
+        variables: {
+          location,
+          paginationInput: { offset: 0, limit: 10 },
+          maxDistance: 2.5,
+        },
+      });
+    }
+  }, [locationLoading, location, fetchRestaurants]);
 
   const classes = useStyles();
   const dispatch = useDispatch();

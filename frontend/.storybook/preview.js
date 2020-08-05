@@ -1,11 +1,10 @@
 import React from "react";
 import { addDecorator } from "@storybook/react";
-import { appTheme, muiTheme } from "../src/common/theming";
+import { appTheme, muiTheme, globalTheme } from "../src/common/theming/theming";
 import { addParameters } from "@storybook/client-api";
 import { INITIAL_VIEWPORTS } from "@storybook/addon-viewport";
 import { MockedProvider } from "@apollo/client/testing";
 import { ThemeProvider, createUseStyles } from "react-jss";
-import { globalTheme } from "../src/common/theming";
 import { Provider } from "react-redux";
 import { createStore } from "redux";
 import nibbleApp from "../src/redux/reducers";

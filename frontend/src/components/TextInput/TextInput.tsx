@@ -5,7 +5,7 @@ import MomentUtils from "@date-io/moment";
 import { TextFieldProps } from "@material-ui/core";
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 
-import { multipleClasses } from "../../common/theming";
+import { multipleClasses } from "../../common/theming/theming";
 import { useStyles } from "./TextInput.style";
 import { TextInputProps } from "./TextInput.types";
 

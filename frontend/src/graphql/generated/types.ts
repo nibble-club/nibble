@@ -474,6 +474,19 @@ export type ImageUploadUrlQuery = (
   ) }
 );
 
+export type LocationForPostalCodeQueryVariables = Exact<{
+  postalCode: Scalars['String'];
+}>;
+
+
+export type LocationForPostalCodeQuery = (
+  { __typename?: 'Query' }
+  & { locationForPostalCode: (
+    { __typename?: 'LatLon' }
+    & Pick<LatLon, 'latitude' | 'longitude'>
+  ) }
+);
+
 export type NibbleInfoQueryVariables = Exact<{
   nibbleId: Scalars['ID'];
 }>;
