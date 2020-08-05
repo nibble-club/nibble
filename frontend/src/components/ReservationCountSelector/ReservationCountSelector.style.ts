@@ -3,6 +3,11 @@ import { createUseStyles } from "react-jss";
 import { COLUMN_FLEX_BOX, fluidSize, ROW_FLEX_BOX } from "../../common/theming/theming";
 import { AppTheme } from "../../common/theming/theming.types";
 
+const disabledButtonStyle = (theme: AppTheme) => ({
+  background: theme.color.text.grayed,
+  color: theme.color.text.primary,
+});
+
 export const useStyles = createUseStyles((theme: AppTheme) => ({
   container: {
     ...COLUMN_FLEX_BOX,
@@ -19,16 +24,22 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
       lineHeight: 0,
       "&:focus": {
         outline: 0,
-        boxShadow: `0 0 0 2pt ${theme.color.text.primary}`,
+        boxShadow: `0 0 0 1px ${theme.color.text.primary}`,
       },
     },
     "& #minus": {
       background: theme.color.text.alert,
       marginRight: `calc(2 * ${theme.spacing.large})`,
+      "&:disabled": {
+        ...disabledButtonStyle(theme),
+      },
     },
     "& #plus": {
       background: theme.color.green,
       marginLeft: `calc(2 * ${theme.spacing.large})`,
+      "&:disabled": {
+        ...disabledButtonStyle(theme),
+      },
     },
   },
   number: {
@@ -36,6 +47,8 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
     margin: theme.spacing.medium,
     fontWeight: "bold",
     lineHeight: 1,
+    width: fluidSize(50),
+    textAlign: "center",
   },
   remaining: {
     color: theme.color.text.grayed,
@@ -45,11 +58,9 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
   "@media (max-width: 620px)": {
     buttons: {
       "& #minus": {
-        background: theme.color.text.alert,
         marginRight: theme.spacing.large,
       },
       "& #plus": {
-        background: theme.color.green,
         marginLeft: theme.spacing.large,
       },
     },

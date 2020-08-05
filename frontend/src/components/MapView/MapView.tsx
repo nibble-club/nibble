@@ -16,7 +16,7 @@ mapboxgl.accessToken =
 const PROGRAMMATIC_MAX_ZOOM = 13;
 const BOUNDING_BOX_PADDING = 50;
 
-// utility function to render react element as popup; apparently needs to be simple content
+// utility function to render react element as popup
 const addPopup = (el: JSX.Element, className: string) => {
   const placeholder = document.createElement("div");
   ReactDOM.render(el, placeholder);
@@ -97,7 +97,7 @@ const MapView = ({ pins, activePin = -1, height = 500 }: MapViewProps) => {
       map.on("load", () => {
         setMap(map);
         // userLocation.trigger();
-        map.resize();
+        // map.resize();
       });
     };
 
@@ -115,31 +115,34 @@ const MapView = ({ pins, activePin = -1, height = 500 }: MapViewProps) => {
     }))
   );
   useEffect(() => {
-    console.log(pinsStr);
-    setPinsChanged(true);
+    // need to do it with timeout because there's a LOT of weirdness with adding
+    // markers right when the map is loading; if you try, half the time the map doesn't
+    // even move, half the time they load but are strangely invisible, and half
+    // the time it works just fine and makes you think you're crazy. This timeout
+    // seems to work well on normal connections, fast 3G, and slow 3G; may need to revisit
+    // it in the future.
+    setTimeout(() => {
+      setPinsChanged(true);
+    }, 3000);
   }, [pinsStr]);
 
   // add pins to map, on pin change only, once map is loaded
   useEffect(() => {
     if (!map) {
-      console.log("Map not initialized");
       return;
     }
     if (!pinsChanged) {
-      console.log("Pins haven't changed");
       return;
     }
-    if (!map.loaded() || !map.areTilesLoaded() || !map.isStyleLoaded()) {
-      console.log("Map not loaded");
+    if (!map.loaded() || !map.isStyleLoaded()) {
       return;
     }
-    console.log("Adding");
     setPinsChanged(false);
     currentMarkers.current.forEach((marker) => {
       marker.remove();
     });
-    if (currentMarkers.current.length > 0)
-      console.log(`Removed ${currentMarkers.current.length} markers`);
+    // if (currentMarkers.current.length > 0)
+    //   console.log(`Removed ${currentMarkers.current.length} markers`);
     const newMarkers: mapboxgl.Marker[] = [];
     pins.forEach((pin: MapPin) =>
       newMarkers.push(
@@ -163,7 +166,7 @@ const MapView = ({ pins, activePin = -1, height = 500 }: MapViewProps) => {
           .addTo(map)
       )
     );
-    if (newMarkers.length > 0) console.log(`Added ${newMarkers.length} markers`);
+    // if (newMarkers.length > 0) console.log(`Added ${newMarkers.length} markers`);
     currentMarkers.current = newMarkers;
     map.fitBounds(getBoundingBox(pins), { padding: BOUNDING_BOX_PADDING });
     map.triggerRepaint();
