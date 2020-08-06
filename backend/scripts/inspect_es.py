@@ -28,43 +28,43 @@ es = Elasticsearch(
 # es.indices.delete("restaurant")
 # es.indices.delete("nibble")
 
-term = "Italian"
+term = "Pasta"
 max_distance = 2.4
 
-s = (
-    Search(using=es, index="restaurant")
-    # .query(
-    #     "multi_match", query=term, fields=["name^5", "description"], fuzziness="AUTO"
-    # )
-    .filter("term", active=True)
-    .filter(
-        "geo_distance",
-        **{
-            "distance": f"{max_distance}miles",
-            "distance_type": "plane",
-            "address.location": {"lat": 42.3854646, "lon": -71.094187},
-        },
-    )
-    .sort(
-        {
-            "_geo_distance": {
-                "address.location": {"lat": 42.3854646, "lon": -71.094187},
-                "order": "asc",
-                "unit": "miles",
-                "distance_type": "plane",
-            }
-        }
-    )
-)
-
 # s = (
-#     Search(using=es, index="nibble")
-#     .query(
-#         "multi_match", query=term, fields=["name^5", "description"], fuzziness="AUTO"
+#     Search(using=es, index="restaurant")
+#     # .query(
+#     #     "multi_match", query=term, fields=["name^5", "description"], fuzziness="AUTO"
+#     # )
+#     .filter("term", active=True)
+#     .filter(
+#         "geo_distance",
+#         **{
+#             "distance": f"{max_distance}miles",
+#             "distance_type": "plane",
+#             "address.location": {"lat": 42.3854646, "lon": -71.094187},
+#         },
 #     )
-#     .filter("range", **{"availableTo": {"gte": "now"}})
-#     .filter("range", **{"availableFrom": {"lte": "now"}})
+#     .sort(
+#         {
+#             "_geo_distance": {
+#                 "address.location": {"lat": 42.3854646, "lon": -71.094187},
+#                 "order": "asc",
+#                 "unit": "miles",
+#                 "distance_type": "plane",
+#             }
+#         }
+#     )
 # )
+
+s = (
+    Search(using=es, index="nibble")
+    .query(
+        "multi_match", query=term, fields=["name^5", "description"], fuzziness="AUTO"
+    )
+    .filter("range", **{"availableTo": {"gte": "now"}})
+    .filter("range", **{"availableFrom": {"lte": "now"}})
+)
 
 
 print(s.to_dict())
@@ -75,22 +75,22 @@ print(response.to_dict())
 
 print(response.hits.total.value)
 
-# for hit in response:
-#     print(hit)
-#     print(hit.meta.sort[0])
-#     print(hit.meta.id)
-#     print(hit.name)
-#     print(hit.market)
-#     print(hit.address)
-#     print(hit.address.streetAddress)
-#     print(hit.address.dependentLocality)
-#     print(hit.address.locality)
-#     print(hit.address.administrativeArea)
-#     print(hit.address.country)
-#     print(hit.address.postalCode)
-#     print(hit.address.location.lat)
-#     print(hit.logoUrl.to_dict())
-#     print(hit.address.location.lon)
-#     print(hit.description)
-#     print(hit.disclaimer)
-#     print(hit.active)
+for hit in response:
+    print(hit)
+    # print(hit.meta.sort[0])
+    print(hit.meta.id)
+    print(hit.name)
+    # print(hit.market)
+    # print(hit.address)
+    # print(hit.address.streetAddress)
+    # print(hit.address.dependentLocality)
+    # print(hit.address.locality)
+    # print(hit.address.administrativeArea)
+    # print(hit.address.country)
+    # print(hit.address.postalCode)
+    # print(hit.address.location.lat)
+    # print(hit.logoUrl.to_dict())
+    # print(hit.address.location.lon)
+    print(hit.description)
+    # print(hit.disclaimer)
+    # print(hit.active)

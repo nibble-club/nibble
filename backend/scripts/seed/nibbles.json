@@ -1,0 +1,58 @@
+[
+    {
+        "name": "Pasta salad",
+        "type": "Prepared",
+        "count": 5,
+        "imageName": "pasta.jpg",
+        "description": "A serving of our famous pasta salad - exact variety TBD.",
+        "price": 300
+    },
+    {
+        "name": "Grilled cheese",
+        "type": "Prepared",
+        "count": 3,
+        "imageName": "grilled-cheese.jpg",
+        "description": "One grilled cheese sandwich, made with a mix of cheddar, muenster, and jack cheeses.",
+        "price": 500
+    },
+    {
+        "name": "Blueberry muffin",
+        "type": "Prepared",
+        "count": 15,
+        "imageName": "blueberry-muffin.jpg",
+        "description": "Baked either today or yesterday - a customer favorite!",
+        "price": 100
+    },
+    {
+        "name": "Rice & beans",
+        "type": "Ingredients",
+        "count": 11,
+        "imageName": "rice-beans.jpg",
+        "description": "We have lots of leftover rice and beans, so we'll give you the ingredients. They go great with anything",
+        "price": 249
+    },
+    {
+        "name": "Sandwich",
+        "type": "Prepared",
+        "count": 3,
+        "imageName": "sandwich.jpg",
+        "description": "One sandwich, exact variety to be determined when you swing by to pick it up. First come first serve",
+        "price": 249
+    },
+    {
+        "name": "Sushi ingredients",
+        "type": "Ingredients",
+        "count": 2,
+        "imageName": "sushi.jpg",
+        "description": "Ingredients to roll your own sushi - rice, cucumber, avocado, seaweed, and some assortment of proteins",
+        "price": 499
+    },
+    {
+        "name": "Mystery",
+        "type": "Mystery",
+        "count": 19,
+        "imageName": "PLACEHOLDER",
+        "description": "One half meal's worth of food - come by and see what you can get today!",
+        "price": 0
+    }
+]

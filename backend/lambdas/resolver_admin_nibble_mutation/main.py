@@ -50,11 +50,12 @@ def lambda_handler(event, context):
 
                 result = conn.execute(
                     nibble_table.insert()
-                    .returning(nibble_table.c.restaurant_id)
+                    .returning(nibble_table.c.restaurant_id, nibble_table.c.id)
                     .values(restaurant_id=admin_id_restaurant_id_mapping, **db_values)
                 )
-                nibble_id = result.inserted_primary_key[0]
-                restaurant_id = result.fetchone()["restaurant_id"]
+                row = result.fetchone()
+                nibble_id = row["id"]
+                restaurant_id = row["restaurant_id"]
                 logger.info(
                     "Inserted with PK {0} at restaurant ID {1}".format(
                         nibble_id, restaurant_id

@@ -17,12 +17,12 @@ logo_bucket = f"{account_id}-{environment_namespace}-restaurant-logos".replace("
 
 # configuration
 upload_images = False
-new_users = True
+new_users = False
 
 
 def upload_logo(url, place_id):
     if upload_images:
-        file_name = f"imgs/{place_id}_logo.jpg"
+        file_name = f"imgs/restaurants/{place_id}_logo.jpg"
 
         if not os.path.isfile(file_name):
             # download and write image file
@@ -56,7 +56,7 @@ def upload_logo(url, place_id):
 
 def upload_hero_image(photo_reference, place_id):
     if upload_images:
-        file_name = f"imgs/{place_id}.jpg"
+        file_name = f"imgs/restaurants/{place_id}.jpg"
         if not os.path.isfile(file_name):
             # download and write image file
             photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=1000&photoreference={photo_reference}&key={os.environ['GOOGLE_API_KEY']}"
@@ -137,6 +137,7 @@ def main():
                 ],
                 TemporaryPassword="TempPassword6969!!!",
                 DesiredDeliveryMediums=["EMAIL"],
+                MessageAction="SUPPRESS",
             )
             admin_usernames.append(response["User"]["Username"])
             print(f"Added user {admin_usernames[-1]}")

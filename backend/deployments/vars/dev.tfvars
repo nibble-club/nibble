@@ -18,7 +18,7 @@ elasticsearch_master_instance_class = "t2.small.elasticsearch"
 ssh_public_key_path = "~/.ssh/dev-ssh_key_pair.pub"
 
 resolver_admin_nibble_mutation_lambda_name = "resolver_admin_nibble_mutation"
-resolver_admin_nibble_mutation_lambda_artifact = "resolver_admin_nibble_mutation-242baa6fe9.zip"
+resolver_admin_nibble_mutation_lambda_artifact = "resolver_admin_nibble_mutation-7b10a15d60.zip"
 migrate_database_lambda_name = "migrate_database"
 migrate_database_lambda_artifact = "migrate_database-d936d73da0.zip"
 resolver_admin_restaurant_mutation_lambda_name = "resolver_admin_restaurant_mutation"
