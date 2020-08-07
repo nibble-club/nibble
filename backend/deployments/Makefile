@@ -97,3 +97,14 @@ else
 		--query 'LogResult' \
 		--output text /dev/null | base64 -d
 endif
+
+# seed data
+seed-admins-and-restaurants:
+	@echo "Seeding admins and restaurants..."
+	@cd $(shell git rev-parse --show-toplevel)/backend/scripts/seed ; \
+		python3 seed_admins_restaurants.py
+
+seed-nibbles:
+	@echo "Seeding nibbles..."
+	@cd $(shell git rev-parse --show-toplevel)/backend/scripts/seed ; \
+		python3 seed_nibbles.py

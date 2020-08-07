@@ -28,11 +28,11 @@ Auth.configure({
   mandatorySignIn: true,
   region: process.env.REACT_APP_AWS_REGION,
   userPoolId: process.env.REACT_APP_COGNITO_USER_POOL_ID,
-  userPoolWebClientId: process.env.REACT_APP_COGNITO_CLIENT_ID,
+  userPoolWebClientId: process.env.REACT_APP_COGNITO_USER_POOL_CLIENT_ID,
 });
 
 const httpLink = createHttpLink({
-  uri: process.env.REACT_APP_GRAPHQL_ENDPOINT,
+  uri: process.env.REACT_APP_APPSYNC_GRAPHQL_ENDPOINT,
 });
 
 const link = from([retryLink, authFlowLink, loggerLink, httpLink]);

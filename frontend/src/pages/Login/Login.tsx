@@ -97,12 +97,12 @@ const LoginForm = (
   <form onSubmit={formRenderProps.handleSubmit}>
     <div>
       <Field<string> name="email" placeholder="Email" type="email">
-        {fieldRenderProps => <TextInput center={true} {...fieldRenderProps} />}
+        {(fieldRenderProps) => <TextInput center={true} {...fieldRenderProps} />}
       </Field>
     </div>
     <div>
       <Field<string> name="password" placeholder="Password" type="password">
-        {fieldRenderProps => <TextInput center={true} {...fieldRenderProps} />}
+        {(fieldRenderProps) => <TextInput center={true} {...fieldRenderProps} />}
       </Field>
     </div>
     {formRenderProps.submitErrors && (
@@ -124,13 +124,13 @@ const SignUpForm = (
   <form onSubmit={formRenderProps.handleSubmit}>
     <div>
       <Field<string> name="email" placeholder="Email" type="email">
-        {fieldRenderProps => <TextInput center={true} {...fieldRenderProps} />}
+        {(fieldRenderProps) => <TextInput center={true} {...fieldRenderProps} />}
       </Field>
       <Field<string> name="fullName" placeholder="Full name" type="text">
-        {fieldRenderProps => <TextInput center={true} {...fieldRenderProps} />}
+        {(fieldRenderProps) => <TextInput center={true} {...fieldRenderProps} />}
       </Field>
       <Field<string> name="postalCode" placeholder="Postal code" type="text">
-        {fieldRenderProps => <TextInput center={true} {...fieldRenderProps} />}
+        {(fieldRenderProps) => <TextInput center={true} {...fieldRenderProps} />}
       </Field>
       <Field<string>
         name="password"
@@ -138,7 +138,7 @@ const SignUpForm = (
         type="password"
         validate={passwordValidator}
       >
-        {fieldRenderProps => (
+        {(fieldRenderProps) => (
           <div>
             <TextInput center={true} {...fieldRenderProps} />
             {fieldRenderProps.meta.error && fieldRenderProps.meta.touched && (
@@ -153,7 +153,7 @@ const SignUpForm = (
         type="password"
         validate={matchPasswordValidator}
       >
-        {fieldRenderProps => (
+        {(fieldRenderProps) => (
           <div>
             <TextInput center={true} {...fieldRenderProps} />
             {fieldRenderProps.meta.error && fieldRenderProps.meta.touched && (
@@ -190,7 +190,7 @@ const ConfirmEmailForm = (
   <form onSubmit={formRenderProps.handleSubmit}>
     <div>
       <Field<string> name="code" placeholder="Code" type="text">
-        {fieldRenderProps => <TextInput center={true} {...fieldRenderProps} />}
+        {(fieldRenderProps) => <TextInput center={true} {...fieldRenderProps} />}
       </Field>
     </div>
     <div>
@@ -210,7 +210,7 @@ const ResetPasswordForm = (
   <form onSubmit={formRenderProps.handleSubmit}>
     <div>
       <Field<string> name="email" placeholder="Email" type="email">
-        {fieldRenderProps => <TextInput center={true} {...fieldRenderProps} />}
+        {(fieldRenderProps) => <TextInput center={true} {...fieldRenderProps} />}
       </Field>
     </div>
     <div>
@@ -234,17 +234,17 @@ const NewPasswordForm = (
   <form onSubmit={formRenderProps.handleSubmit}>
     <div>
       <Field<string> name="code" placeholder="Code" type="text">
-        {fieldRenderProps => <TextInput center={true} {...fieldRenderProps} />}
+        {(fieldRenderProps) => <TextInput center={true} {...fieldRenderProps} />}
       </Field>
       <Field<string> name="password" placeholder="New password" type="password">
-        {fieldRenderProps => <TextInput center={true} {...fieldRenderProps} />}
+        {(fieldRenderProps) => <TextInput center={true} {...fieldRenderProps} />}
       </Field>
       <Field<string>
         name="confirmPassword"
         placeholder="Confirm new password"
         type="password"
       >
-        {fieldRenderProps => <TextInput center={true} {...fieldRenderProps} />}
+        {(fieldRenderProps) => <TextInput center={true} {...fieldRenderProps} />}
       </Field>
     </div>
     {formRenderProps.submitErrors && (
@@ -281,7 +281,7 @@ const AdminChangePasswordForm = (
         type="password"
         validate={passwordValidator}
       >
-        {fieldRenderProps => <TextInput center={true} {...fieldRenderProps} />}
+        {(fieldRenderProps) => <TextInput center={true} {...fieldRenderProps} />}
       </Field>
       <Field<string>
         name="confirmPassword"
@@ -289,7 +289,7 @@ const AdminChangePasswordForm = (
         type="password"
         validate={matchPasswordValidator}
       >
-        {fieldRenderProps => <TextInput center={true} {...fieldRenderProps} />}
+        {(fieldRenderProps) => <TextInput center={true} {...fieldRenderProps} />}
       </Field>
     </div>
     {formRenderProps.submitErrors && (
@@ -369,7 +369,7 @@ const Login = () => {
                 }}
                 initialValues={{ code: "", password: "", confirmPassword: "" }}
               >
-                {formRenderProps => NewPasswordForm(formRenderProps)}
+                {(formRenderProps) => NewPasswordForm(formRenderProps)}
               </Form>
             </Route>
             {/* RESET PASSWORD - ENTER EMAIL */}
@@ -383,7 +383,7 @@ const Login = () => {
                 }}
                 initialValues={{ email: "" }}
               >
-                {formRenderProps => ResetPasswordForm(formRenderProps)}
+                {(formRenderProps) => ResetPasswordForm(formRenderProps)}
               </Form>
             </Route>
             {/* SIGN UP */}
@@ -410,7 +410,7 @@ const Login = () => {
                   }
                 }}
               >
-                {formRenderProps => SignUpForm(formRenderProps)}
+                {(formRenderProps) => SignUpForm(formRenderProps)}
               </Form>
             </Route>
             {/* POST SIGN UP - CONFIRM EMAIL */}
@@ -431,7 +431,7 @@ const Login = () => {
                   }
                 }}
               >
-                {formRenderProps => ConfirmEmailForm(formRenderProps)}
+                {(formRenderProps) => ConfirmEmailForm(formRenderProps)}
               </Form>
             </Route>
             {/* POST SIGN IN - CREATE NEW PASSWORD (for admins) */}
@@ -464,7 +464,7 @@ const Login = () => {
                   }
                 }}
               >
-                {formRenderProps => AdminChangePasswordForm(formRenderProps)}
+                {(formRenderProps) => AdminChangePasswordForm(formRenderProps)}
               </Form>
             </Route>
             {/* LOG IN */}
@@ -475,14 +475,12 @@ const Login = () => {
                     console.log("Submitted");
                     try {
                       const user = await Auth.signIn(values.email, values.password);
-                      console.log(user);
                       if (user.challengeName === "NEW_PASSWORD_REQUIRED") {
                         console.log("Giving new password challenge");
                         setUserObject(user);
                         setEmail(values.email);
                         history.push(`${url}/change_password`);
                       }
-                      console.log(user);
                       const session = await Auth.currentSession();
                       // must have been successful
                       setLoggedIn(
@@ -503,7 +501,7 @@ const Login = () => {
                   }}
                   initialValues={{ email: email, password: "" }}
                 >
-                  {formRenderProps => LoginForm(formRenderProps)}
+                  {(formRenderProps) => LoginForm(formRenderProps)}
                 </Form>
                 <div className={classes.forgotPassword}>
                   <Link to={{ pathname: `${url}/signup` }}>Sign up</Link>|

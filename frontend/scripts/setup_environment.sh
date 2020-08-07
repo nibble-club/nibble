@@ -3,7 +3,7 @@
 # reset
 echo "" > .env
 
-echo 'HTTPS="true"' >> .env
+echo 'HTTPS="false"' >> .env
 
 if [ -z "$DEPLOY_ENV" ]
 then
@@ -15,4 +15,6 @@ fi
 
 cat environments/${DEPLOY_ENV}.env >> .env
 echo "" >> .env
-cat environments/${DEPLOY_ENV}.secret.env >> .env
+python3 scripts/get_backend_env_vars.py
+echo "" >> .env
+python3 scripts/get_secret_env_vars.py

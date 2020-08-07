@@ -1,95 +1,124 @@
+import base64
+import getpass
 import json
+import logging
 import os
+import shutil
 import uuid
 
-import requests
 import boto3
-import shutil
+import git
+import requests
+from botocore.errorfactory import ClientError
 
-environment_namespace = "dev_adchurch"
-account_id = "800344761765"
-region = "us-west-2"
+# set up logging
+repo = git.Repo(os.getcwd(), search_parent_directories=True)
+nibble_home_dir = repo.working_tree_dir
+logging_dir = os.path.join(nibble_home_dir, "var", "log")
+if not os.path.exists(logging_dir):
+    os.makedirs(logging_dir)
+logging_file = os.path.join(logging_dir, "seed_admins_restaurants.log")
+logging.basicConfig(
+    filename=logging_file,
+    filemode="w",
+    level=logging.INFO,
+    format="%(levelname)s: %(message)s",
+)
 
-cognito_user_pool = "us-west-2_j9CKKHThV"
+# set up config
+whoami = getpass.getuser()
+environment = os.environ["DEPLOY_ENV"]
+environment_namespace = (
+    f"{environment}_{whoami}" if environment == "dev" else environment
+)
+account_id = os.environ["AWS_TARGET_ACCOUNT_ID"]
+region = os.environ["AWS_REGION"]
 
 hero_bucket = f"{account_id}-{environment_namespace}-restaurant-heros".replace("_", "-")
 logo_bucket = f"{account_id}-{environment_namespace}-restaurant-logos".replace("_", "-")
 
-# configuration
-upload_images = False
-new_users = False
-
 
 def upload_logo(url, place_id):
-    if upload_images:
-        file_name = f"imgs/restaurants/{place_id}_logo.jpg"
+    file_name = f"imgs/restaurants/{place_id}_logo.jpg"
+    key = f"seeding/{place_id}.jpg"
 
-        if not os.path.isfile(file_name):
-            # download and write image file
-            print(f"Downloading {file_name}")
-            r = requests.get(url, stream=True)
-            if r.status_code == 200:
-                with open(file_name, "wb") as f:
-                    shutil.copyfileobj(r.raw, f)
-            else:
-                raise RuntimeError("Failed request")
+    if not os.path.isfile(file_name):
+        # download and write image file
+        print(f"Downloading {file_name}")
+        logging.warn(f"Downloading {file_name}")
+        r = requests.get(url, stream=True)
+        if r.status_code == 200:
+            with open(file_name, "wb") as f:
+                shutil.copyfileobj(r.raw, f)
+        else:
+            raise RuntimeError("Failed request")
 
-        s3_client = boto3.client("s3")
+    s3_client = boto3.client("s3")
+    try:
+        s3_client.head_object(Bucket=logo_bucket, Key=key)
+        print(f"Checked     {file_name}")
+        logging.info(f"{file_name} exists on S3")
+    except ClientError:
         try:
             s3_client.upload_file(
-                file_name,
-                logo_bucket,
-                f"seeding/{place_id}.jpg",
-                ExtraArgs={"ACL": "public-read"},
+                file_name, logo_bucket, key, ExtraArgs={"ACL": "public-read"},
             )
             print(f"Uploaded    {file_name}")
+            logging.info(f"Uploaded {file_name} to S3")
         except:
             print("Error uploading")
+            logging.error(f"Error uploading {file_name}")
             raise RuntimeError()
 
     return {
         "bucket": logo_bucket,
         "region": "us-west-2",
-        "key": f"seeding/{place_id}.jpg",
+        "key": key,
     }
 
 
 def upload_hero_image(photo_reference, place_id):
-    if upload_images:
-        file_name = f"imgs/restaurants/{place_id}.jpg"
-        if not os.path.isfile(file_name):
-            # download and write image file
-            photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=1000&photoreference={photo_reference}&key={os.environ['GOOGLE_API_KEY']}"
-            print(f"Downloading {file_name}")
-            r = requests.get(photo_url, stream=True)
-            if r.status_code == 200:
-                with open(file_name, "wb") as f:
-                    shutil.copyfileobj(r.raw, f)
-            else:
-                raise RuntimeError("Failed request")
+    file_name = f"imgs/restaurants/{place_id}.jpg"
+    key = f"seeding/{place_id}.jpg"
+    if not os.path.isfile(file_name):
+        # download and write image file
+        photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=1000&photoreference={photo_reference}&key={os.environ['GOOGLE_API_KEY']}"
+        print(f"Downloading {file_name}")
+        logging.warn(f"Downloading {file_name}")
+        r = requests.get(photo_url, stream=True)
+        if r.status_code == 200:
+            with open(file_name, "wb") as f:
+                shutil.copyfileobj(r.raw, f)
+        else:
+            raise RuntimeError("Failed request")
 
-        s3_client = boto3.client("s3")
+    s3_client = boto3.client("s3")
+    try:
+        s3_client.head_object(Bucket=hero_bucket, Key=key)
+        print(f"Checked     {file_name}")
+        logging.info(f"{file_name} exists on S3")
+    except ClientError:
         try:
             s3_client.upload_file(
-                file_name,
-                hero_bucket,
-                f"seeding/{place_id}.jpg",
-                ExtraArgs={"ACL": "public-read"},
+                file_name, hero_bucket, key, ExtraArgs={"ACL": "public-read"},
             )
             print(f"Uploaded    {file_name}")
+            logging.info(f"Uploaded {file_name} to S3")
         except:
             print("Error uploading")
+            logging.error(f"Error uploading {file_name}")
             raise RuntimeError("Error uploading to S3")
 
     return {
         "bucket": hero_bucket,
         "region": "us-west-2",
-        "key": f"seeding/{place_id}.jpg",
+        "key": key,
     }
 
 
 def main():
-    with open("google.json", "r") as google:
+    print(f"Logs: {logging_file}")
+    with open("data/google.json", "r") as google:
         restaurants = json.load(google)
 
     # collect restaurant payloads from Google info
@@ -123,7 +152,19 @@ def main():
         )
 
     # create admin Cognito users, one for each restaurant
-    if new_users:
+    if not os.path.isfile("var/usernames.json"):
+        print("Creating new admin users")
+        logging.warn("No usernames.json file found, creating new Cognito admin users")
+        # get user pool ID from SSM
+        ssm_client = boto3.client("ssm", region_name=region)
+        ssm_path = (
+            f"/environment/{environment_namespace}/frontend_config/cognito_user_pool_id"
+        )
+        response = ssm_client.get_parameter(Name=ssm_path, WithDecryption=True)
+
+        cognito_user_pool = response["Parameter"]["Value"]
+        logging.info(f"Got Cognito user pool ID {cognito_user_pool} from SSM")
+
         admin_usernames = []
         cognito_client = boto3.client("cognito-idp", region_name=region)
         for _ in restaurant_payloads:
@@ -141,10 +182,13 @@ def main():
             )
             admin_usernames.append(response["User"]["Username"])
             print(f"Added user {admin_usernames[-1]}")
-        with open("usernames.json", "w") as f:
+            logging.info(f"Added user {admin_usernames[-1]}")
+        with open("var/usernames.json", "w") as f:
             json.dump(admin_usernames, f)
     else:
-        with open("usernames.json", "r") as f:
+        print("Using existing admin users")
+        logging.info("Using existing admin users from usernames.json")
+        with open("var/usernames.json", "r") as f:
             admin_usernames = json.load(f)
 
     client = boto3.client("lambda", region_name=region)
@@ -160,12 +204,18 @@ def main():
                     "arguments": {"input": payload},
                 }
             ),
+            LogType="Tail",
         )
+        logging.info(f"Lambda invoked for username {username}")
+        logging.info(base64.b64decode(response["LogResult"]).decode("utf-8"))
+
         if response["StatusCode"] != 200:
             print("Lambda invocation failed")
+            logging.error("Lambda invocation failed")
             print(response)
             raise RuntimeError()
         print(f"Added restaurant {payload['name']}")
+        logging.info(f"Added restaurant {payload['name']}")
 
 
 if __name__ == "__main__":
