@@ -19,7 +19,7 @@ First, create a Python virtual environment:
 
 ```shell script
 python3 -m pip install --user virtualenv
-python3 -m venv ~/.venv/nibble_lambdas
+python3 -m venv ~/.venv/nibble
 ```
 
 To start, get your AWS account (see the `ops` directory for instructions). Next, [install the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html).

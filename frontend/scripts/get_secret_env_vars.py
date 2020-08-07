@@ -39,7 +39,7 @@ def main():
         Path=ssm_path, Recursive=False, WithDecryption=True
     )
     logging.info("Got parameters:")
-    logging.info(p["Name"] for p in response["Parameters"])
+    logging.info([p["Name"] for p in response["Parameters"]])
 
     with open(os.path.join(nibble_home_dir, "frontend", ".env"), "a") as f:
         for param in response["Parameters"]:
