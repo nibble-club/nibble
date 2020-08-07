@@ -38,7 +38,7 @@ Default output format [None]: json
 
 This configures the `nibble-bootstrap` profile.
 
-Then move to the correct account directory, and start in the `bootstrap` directory. There, run the `make local-plan` command, then `make local`, which should run Terraform. This will create the Terraform backend (S3 bucket and DynamoDB table). It will give you the name of the bucket and tables; save those values, they will be useful for putting in the `local-dev-env` files in `backend`. This should only happen once!
+Then move to the correct account directory, and start in the `bootstrap` directory. There, run the `make local-plan` command, then `make local`, which should run Terraform. This will create the Terraform backend (S3 bucket and DynamoDB table). It will give you the name of the bucket and tables; save those values, they will be useful for putting in the `local-dev-env` files. This should only happen once!
 
 Next move to the `access` directory. Set environment variables with your desired region (for the backend) and profile (should be `nibble-bootstrap`), and run `make init`. Then run `make plan` and `make apply` there. This will set up the appropriate policies as well as a permissions boundary. Ideally you will only ever need to run this once.
 

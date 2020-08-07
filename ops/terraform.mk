@@ -4,7 +4,7 @@ AWS_PROFILE ?= nibble-deploy
 PIPELINE_NAME := $(shell basename $(shell pwd))
 
 # check for correct environment
-ERROR_MESSAGE = "is not set - try sourcing the appropriate file from the local-dev-env directory in the backend directory"
+ERROR_MESSAGE = "is not set - try sourcing the appropriate file from the local-dev-env directory"
 ifeq ($(DEPLOY_ENV),)
 $(error "DEPLOY_ENV $(ERROR_MESSAGE)")
 endif

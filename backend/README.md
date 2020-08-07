@@ -40,7 +40,7 @@ This configures the `nibble` profile.
 
 Next, you'll probably want to switch to a useful role in the console. Click this link to [assume your developer role in `nibble-development`](https://signin.aws.amazon.com/switchrole?roleName=job-function/development/developer&account=nibble-development) in the console.
 
-Next, source the pertinent file in the `backend/local-dev-env` directory (probably `dev.env`). You'll need to do this each time you have a new shell.
+Next, source the pertinent file in the `local-dev-env` directory (probably `dev.env`). You'll need to do this each time you have a new shell.
 
 Now you need to make an RSA key to access the EC2 instance, useful for debugging. Run the following command:
 
