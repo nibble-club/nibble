@@ -38,7 +38,15 @@ Default output format [None]: json
 
 This configures the `nibble` profile.
 
-Next, you'll probably want to switch to a useful role in the console. Click this link to [assume your developer role in `nibble-development`](https://signin.aws.amazon.com/switchrole?roleName=job-function/development/developer&account=nibble-development) in the console.
+Now you'll install the ops tools which will make life much easier:
+
+```shell script
+pip3 install -e [nibble dir]/ops/nibble_tools
+```
+
+This sets up the `aws_mfa` command you'll use later.
+
+Next, you'll probably want to switch to a useful role in the online AWS console. Click this link to [assume your developer role in `nibble-development`](https://signin.aws.amazon.com/switchrole?roleName=job-function/development/developer&account=nibble-development) in the console.
 
 Next, source the pertinent file in the `local-dev-env` directory (probably `dev.env`). You'll need to do this each time you have a new shell.
 
@@ -50,7 +58,7 @@ cp ~/.ssh/dev-ssh_key_pair ~/.ssh/dev-ssh_key_pair.pem
 chmod 400 ~/.ssh/dev-ssh_key_pair.pem
 ```
 
-The final step is to assume your role in `nibble-development` from the command line. Do do this, call the `aws_mfa.py` script in the `ops` directory, with 1 argument: your current MFA code. This will create a new profile locally called `nibble-deploy`, in which you are authenticated with MFA (which allows you to do most things) have assumed the deployment role. It only lasts for 8 hours, so you'll need to do this once (or twice) a day.
+The final step is to assume your role in `nibble-development` from the command line. Do do this, call `aws_mfa` with 1 argument: your current MFA code (this will work as long as you ran the `pip3 install` command above). This will create a new profile locally called `nibble-deploy`, in which you are authenticated with MFA (which allows you to do most things) have assumed the deployment role. It only lasts for 8 hours, so you'll need to do this once (or twice) a day.
 
 Now, in this directory, run `make init`. You should only need to run this once per machine (unless you delete your local .terraform directory). This sets you up locally in your own workspace, so your changes will not affect other people's work.
 

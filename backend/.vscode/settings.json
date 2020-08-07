@@ -1,6 +1,7 @@
 {
   "cSpell.words": [
     "botocore",
+    "chmod",
     "dbname",
     "geopy",
     "hget",
@@ -8,9 +9,15 @@
     "hset",
     "lpush",
     "ltrim",
+    "pgpassword",
     "postgres",
+    "psql",
     "psycopg",
-    "serializable"
+    "serializable",
+    "ssh",
+    "ssh'ed",
+    "venv",
+    "virtualenv"
   ],
   "python.autoComplete.extraPaths": [
     "${workspaceFolder}/lambdas/db_utilities/python"

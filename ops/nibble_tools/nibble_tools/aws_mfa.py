@@ -2,13 +2,14 @@
 Takes an MFA code, and sets up a profile that lasts for 8 hours in ~/.aws
 """
 
-import sys
-import boto3
 import configparser
 import os
+import sys
 import types
-from datetime import datetime, timezone, timedelta
 import uuid
+from datetime import datetime, timedelta, timezone
+
+import boto3
 
 original_profile = "nibble"
 mfa_profile = "nibble-deploy"
@@ -22,8 +23,7 @@ accounts = {
 }
 
 
-def main():
-    args = sys.argv[1:]
+def aws_mfa(args):
     assert (
         len(args) > 0 and len(args) <= 3
     ), "Arguments: mfa_code [target_account_name] [target_role_name], e.g. 123456 nibble-development admin/full-access"
@@ -85,7 +85,7 @@ def main():
         )
     user = types.SimpleNamespace(**user["User"])
     # user_id = user.Arn
-    user_name = user.UserName
+    # user_name = user.UserName
 
     # get account info
     aws_sts_client = session.client("sts")
@@ -103,7 +103,7 @@ def main():
     if not hasattr(mfa_device, "SerialNumber"):
         raise EnvironmentError("MFA device does not have serial number")
     serial_number = mfa_device.SerialNumber
-    user_name = mfa_device.UserName
+    # user_name = mfa_device.UserName
 
     # get credentials
     target_role = "arn:aws:iam::{0}:role/{1}".format(target_account, target_role_name)
@@ -148,4 +148,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    aws_mfa(sys.argv[1:])
