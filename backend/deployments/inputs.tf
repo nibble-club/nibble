@@ -267,3 +267,16 @@ variable resolver_closest_restaurants_lambda_release_version {
   type    = string
   default = ""
 }
+
+variable resolver_search_lambda_name {
+  type = string
+}
+
+variable resolver_search_lambda_artifact {
+  type = string
+}
+
+variable resolver_search_lambda_release_version {
+  type    = string
+  default = ""
+}

@@ -210,3 +210,13 @@ resource aws_appsync_resolver closest_restaurants {
   request_template  = templatefile("./resolver_templates/request_lambda.vm", { field = "closestRestaurants" })
   response_template = file("./resolver_templates/response_lambda.vm")
 }
+
+resource aws_appsync_resolver search {
+  api_id            = aws_appsync_graphql_api.api.id
+  kind              = "UNIT"
+  field             = "search"
+  type              = "Query"
+  data_source       = module.search_datasource.name
+  request_template  = templatefile("./resolver_templates/request_lambda.vm", { field = "search" })
+  response_template = file("./resolver_templates/response_lambda.vm")
+}

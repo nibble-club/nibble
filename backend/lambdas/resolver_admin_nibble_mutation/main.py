@@ -18,6 +18,8 @@ restaurant_restaurant_admin_table = tables.get_table_metadata(
 )
 restaurant_table = tables.get_table_metadata(tables.NibbleTable.RESTAURANT)
 
+r = redis.Redis(host=os.environ["REDIS_HOST"], port=os.environ["REDIS_PORT"])
+
 # connect to Elasticsearch
 es = es_indices.get_es_client()
 
@@ -38,7 +40,6 @@ def lambda_handler(event, context):
     ).where(restaurant_restaurant_admin_table.c.admin_id == admin_id)
 
     # connect to Redis
-    r = redis.Redis(host=os.environ["REDIS_HOST"], port=os.environ["REDIS_PORT"])
     r.ping()
     logger.info("Connected to Redis")
 

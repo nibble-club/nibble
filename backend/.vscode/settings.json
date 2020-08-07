@@ -6,6 +6,8 @@
     "hget",
     "hincrby",
     "hset",
+    "lpush",
+    "ltrim",
     "postgres",
     "psycopg",
     "serializable"

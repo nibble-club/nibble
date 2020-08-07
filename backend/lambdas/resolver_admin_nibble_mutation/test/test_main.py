@@ -11,7 +11,11 @@ from unittest.mock import Mock, patch
 
 with patch("common.utils.get_engine"):
     with patch("common.es_indices.get_es_client"):
-        import main
+        with patch(
+            "os.environ", {"REDIS_HOST": "host", "REDIS_PORT": "6379",},
+        ):
+            with patch("redis.Redis"):
+                import main
 
 from datetime import datetime, timedelta
 from common.errors import NibbleError

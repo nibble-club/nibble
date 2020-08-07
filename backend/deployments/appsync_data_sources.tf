@@ -140,3 +140,16 @@ module closest_restaurants_datasource {
   assume_role_policy_json  = data.aws_iam_policy_document.appsync_assume_role.json
   permissions_boundary_arn = local.permissions_boundary_arn
 }
+
+module search_datasource {
+  source = "./modules/appsync_lambda_data_source"
+
+  name         = "search"
+  description  = "Data source for searching nibbles and restaurants"
+  function_arn = module.resolver_search_lambda.arn
+
+  appsync_graphql_api_id   = aws_appsync_graphql_api.api.id
+  environment_namespace    = var.environment_namespace
+  assume_role_policy_json  = data.aws_iam_policy_document.appsync_assume_role.json
+  permissions_boundary_arn = local.permissions_boundary_arn
+}

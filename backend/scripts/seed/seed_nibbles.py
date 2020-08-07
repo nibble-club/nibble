@@ -1,8 +1,8 @@
 """
-Seeds every restaurant with the same set of several nibbles; the nibbles will be 
+Seeds every restaurant with a random subset of several nibbles; the nibbles will be 
 available for 8 hours, starting between 2 hours before now and 2 hours after now.
 Make sure to seed restaurants and admins first - this depends on usernames.json 
-existing!
+existing! Nibble information is pulled from nibbles.json.
 """
 import json
 import datetime
@@ -82,7 +82,7 @@ def main():
     # send nibbles
     client = boto3.client("lambda", region_name=region)
     for username in usernames:
-        for payload in nibbles:
+        for payload in random.sample(nibbles, 3):
             response = client.invoke(
                 FunctionName=f"{environment_namespace}-resolver_admin_nibble_mutation",
                 InvocationType="RequestResponse",

@@ -1,11 +1,11 @@
 type Query {
   # gets user ID from identity
   userInfo: User!
-  nibblesFeatured(user: UserCurrentContextInput!): [NibbleAvailable]!
+  nibblesFeatured(userLocation: LatLonInput!): [NibbleAvailable]!
   nibbleInfo(nibbleId: ID!): NibbleAvailable!
-  nibblesRecommended(user: UserCurrentContextInput!): [NibbleAvailable]!
+  nibblesRecommended(userLocation: LatLonInput!): [NibbleAvailable]!
   nibblesWithProperty(
-    user: UserCurrentContextInput!
+    userLocation: LatLonInput!
     property: NibbleRecommendationReason!
   ): [NibbleAvailable]!
   # note that this returns restaurant distance for free,
@@ -27,7 +27,7 @@ type Query {
   # gets user ID from identity
   recentSearches: [SearchParameters]
   search(
-    user: UserCurrentContextInput!
+    userLocation: LatLonInput!
     searchParameters: SearchParametersInput!
   ): SearchResults!
 }
@@ -236,14 +236,15 @@ input S3ObjectInput {
 
 type SearchParameters {
   text: String!
+  maxDistance: Int
+  latestPickup: AWSTimestamp
 }
 
 input SearchParametersInput {
   text: String!
-  maxDistance: Int
+  maxDistance: Float
   earliestPickup: AWSTimestamp
   latestPickup: AWSTimestamp
-  pagination: PaginationInput
 }
 
 type SearchRecentQueries {
@@ -251,14 +252,8 @@ type SearchRecentQueries {
 }
 
 type SearchResults {
-  nibbles: [NibbleAvailable]
-  restaurants: [Restaurant]
-}
-
-input UserCurrentContextInput {
-  id: ID!
-  postalCode: String!
-  location: LatLonInput
+  nibbles: [NibbleAvailable!]!
+  restaurants: [Restaurant!]!
 }
 
 type User {

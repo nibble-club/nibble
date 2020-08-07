@@ -63,6 +63,17 @@ data aws_iam_policy_document resolver_admin_nibble_mutation {
     effect    = "Allow"
     resources = ["*"]
   }
+  // update Elasticsearch
+  statement {
+    actions = [
+      "es:*"
+    ]
+    effect = "Allow"
+    resources = [
+      aws_elasticsearch_domain.elasticsearch.arn,
+      "${aws_elasticsearch_domain.elasticsearch.arn}/*"
+    ]
+  }
 }
 
 resource aws_iam_policy resolver_admin_nibble_mutation {
