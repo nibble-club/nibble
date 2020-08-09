@@ -230,3 +230,13 @@ resource aws_appsync_resolver recent_searches {
   request_template  = templatefile("./resolver_templates/request_lambda.vm", { field = "recentSearches" })
   response_template = file("./resolver_templates/response_lambda.vm")
 }
+
+resource aws_appsync_resolver location_for_postal_code {
+  api_id            = aws_appsync_graphql_api.api.id
+  kind              = "UNIT"
+  field             = "locationForPostalCode"
+  type              = "Query"
+  data_source       = module.location_for_postal_code_datasource.name
+  request_template  = templatefile("./resolver_templates/request_lambda.vm", { field = "locationForPostalCode" })
+  response_template = file("./resolver_templates/response_lambda.vm")
+}

@@ -27,6 +27,7 @@ function useLocation(): LocationResult {
   >(LOCATION_FOR_POSTAL_CODE, { variables: { postalCode } });
 
   const [browserLocationLoading, setBrowserLocationLoading] = useState(false);
+  const [browserLocationBlocked, setBrowserLocationBlocked] = useState(false);
 
   const [locationResult, setLocationResult] = useState<LocationResult>({
     loading: true,
@@ -42,7 +43,11 @@ function useLocation(): LocationResult {
       setLocationResult({ location, loading: false });
     }
     // don't have user location; ask for permission first, and set state in callback
-    else if ("geolocation" in navigator && !browserLocationLoading) {
+    else if (
+      "geolocation" in navigator &&
+      !browserLocationLoading &&
+      !browserLocationBlocked
+    ) {
       setBrowserLocationLoading(true);
       navigator.geolocation.getCurrentPosition(
         (position: Position) => {
@@ -65,6 +70,7 @@ function useLocation(): LocationResult {
         () => {
           console.log("Error getting user position from browser");
           setBrowserLocationLoading(false);
+          setBrowserLocationBlocked(true);
         },
         { enableHighAccuracy: true }
       );
@@ -73,8 +79,20 @@ function useLocation(): LocationResult {
     else if (postalCode.length > 0 && !browserLocationLoading) {
       fetchLocationFromPostalCode();
       if (data) {
-        dispatch(userLocation(data.locationForPostalCode));
-        setLocationResult({ location: data.locationForPostalCode, loading: false });
+        console.log("Setting location from postal code");
+        dispatch(
+          userLocation({
+            latitude: data.locationForPostalCode.latitude,
+            longitude: data.locationForPostalCode.longitude,
+          })
+        );
+        setLocationResult({
+          location: {
+            latitude: data.locationForPostalCode.latitude,
+            longitude: data.locationForPostalCode.longitude,
+          },
+          loading: false,
+        });
       }
     }
   }, [
@@ -85,6 +103,7 @@ function useLocation(): LocationResult {
     data,
     locationResult.loading,
     browserLocationLoading,
+    browserLocationBlocked,
   ]);
 
   return locationResult;

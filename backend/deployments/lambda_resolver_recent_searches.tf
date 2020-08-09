@@ -5,7 +5,7 @@ module resolver_recent_searches_lambda {
   s3_key             = "${var.environment_namespace}/${var.resolver_recent_searches_lambda_name}/${var.resolver_recent_searches_lambda_artifact}"
   function_name      = "${var.environment_namespace}-resolver_recent_searches"
   handler            = "main.lambda_handler"
-  description        = "Resolves search queries"
+  description        = "Resolves recent search queries"
   release_alias_name = "release"
   release_version    = var.resolver_recent_searches_lambda_release_version # defaults to ""
   role_arn           = aws_iam_role.resolver_recent_searches.arn
