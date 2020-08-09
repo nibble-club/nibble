@@ -1,11 +1,10 @@
 import logging
 import os
 
-from elasticsearch import Elasticsearch, RequestsHttpConnection, exceptions
-from requests_aws4auth import AWS4Auth
-
 from common import es_indices
 from common.errors import NibbleError
+from elasticsearch import Elasticsearch, RequestsHttpConnection, exceptions
+from requests_aws4auth import AWS4Auth
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)

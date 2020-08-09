@@ -1,6 +1,7 @@
 import os
-from sqlalchemy import create_engine
 from enum import Enum
+
+from sqlalchemy import create_engine
 
 
 class NibbleReservationStatus(Enum):

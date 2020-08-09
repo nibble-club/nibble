@@ -65,7 +65,7 @@ def upload_logo(url, place_id):
             )
             print(f"Uploaded    {file_name}")
             logging.info(f"Uploaded {file_name} to S3")
-        except:
+        except Exception:
             print("Error uploading")
             logging.error(f"Error uploading {file_name}")
             raise RuntimeError()
@@ -104,7 +104,7 @@ def upload_hero_image(photo_reference, place_id):
             )
             print(f"Uploaded    {file_name}")
             logging.info(f"Uploaded {file_name} to S3")
-        except:
+        except Exception:
             print("Error uploading")
             logging.error(f"Error uploading {file_name}")
             raise RuntimeError("Error uploading to S3")
@@ -140,7 +140,7 @@ def main():
                     "administrativeArea": "Massachusetts",
                     "country": "USA",
                     "postalCode": "02144",
-                    "location": {"latitude": latitude, "longitude": longitude,},
+                    "location": {"latitude": latitude, "longitude": longitude},
                 },
                 "market": "Boston",
                 "description": description,

@@ -4,7 +4,6 @@ import uuid
 
 import boto3
 from botocore.exceptions import ClientError
-
 from common.errors import NibbleError
 
 logger = logging.getLogger()

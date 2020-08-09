@@ -1,9 +1,9 @@
 import logging
-from common import tables, utils
-from sqlalchemy.sql import select, and_, not_
 from datetime import datetime
-from common.errors import NibbleError
 
+from common import tables, utils
+from common.errors import NibbleError
+from sqlalchemy.sql import and_, not_, select
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)

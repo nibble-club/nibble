@@ -1,8 +1,8 @@
-import os
 import logging
+import os
+
 from elasticsearch import Elasticsearch, RequestsHttpConnection
 from requests_aws4auth import AWS4Auth
-
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)

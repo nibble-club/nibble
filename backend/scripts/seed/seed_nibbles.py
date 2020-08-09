@@ -1,7 +1,7 @@
 """
-Seeds every restaurant with a random subset of several nibbles; the nibbles will be 
+Seeds every restaurant with a random subset of several nibbles; the nibbles will be
 available for 8 hours, starting between 2 hours before now and 2 hours after now.
-Make sure to seed restaurants and admins first - this depends on usernames.json 
+Make sure to seed restaurants and admins first - this depends on usernames.json
 existing! Nibble information is pulled from nibbles.json.
 """
 import base64
@@ -13,8 +13,8 @@ import os
 import random
 
 import boto3
-from botocore.errorfactory import ClientError
 import git
+from botocore.errorfactory import ClientError
 
 # set up logging
 repo = git.Repo(os.getcwd(), search_parent_directories=True)
@@ -62,7 +62,7 @@ def upload_nibble_image(image_key):
             )
             print(f"Uploaded {file_name}")
             logging.info(f"Uploaded {file_name} to S3")
-        except:
+        except Exception:
             print("Error uploading")
             logging.error(f"Error uploading {file_name}")
             raise RuntimeError()

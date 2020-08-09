@@ -1,10 +1,11 @@
 import logging
 import os
-from common import tables, utils, validation, redis_keys, es_indices
-from sqlalchemy.sql import select
+
 import redis
-from redis.lock import LockError
+from common import es_indices, redis_keys, tables, utils, validation
 from common.errors import NibbleError
+from redis.lock import LockError
+from sqlalchemy.sql import select
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)

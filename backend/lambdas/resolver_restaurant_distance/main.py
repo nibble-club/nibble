@@ -1,7 +1,8 @@
 import logging
-from geopy import distance
-from common.errors import NibbleError
 
+from geopy import distance
+
+from common.errors import NibbleError
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)

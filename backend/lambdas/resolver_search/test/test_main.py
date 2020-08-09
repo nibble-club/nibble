@@ -1,10 +1,11 @@
-import unittest
-from unittest.mock import patch, MagicMock
 import datetime
+import json
+import unittest
+from copy import deepcopy
+from unittest.mock import MagicMock, patch
+
 from common import redis_keys
 from common.errors import NibbleError
-import json
-from copy import deepcopy
 
 redis_mock = MagicMock(name="RedisMock")
 

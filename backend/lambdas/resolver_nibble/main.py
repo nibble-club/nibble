@@ -1,11 +1,11 @@
 import logging
 import os
-from common import tables, utils, redis_keys
-from sqlalchemy.sql import select, and_
-import redis
 from datetime import datetime
-from common.errors import NibbleError
 
+import redis
+from common import redis_keys, tables, utils
+from common.errors import NibbleError
+from sqlalchemy.sql import and_, select
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)

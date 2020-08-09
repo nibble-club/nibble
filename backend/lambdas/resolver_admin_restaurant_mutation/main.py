@@ -2,10 +2,9 @@ import logging
 import os
 
 import redis
-from sqlalchemy.sql import select
-
 from common import es_indices, redis_keys, tables, utils
 from common.errors import NibbleError
+from sqlalchemy.sql import select
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)

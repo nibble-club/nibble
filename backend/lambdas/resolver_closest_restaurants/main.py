@@ -1,8 +1,8 @@
 import logging
+
 from common import es_indices
 from common.errors import NibbleError
 from elasticsearch_dsl import Search
-
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)

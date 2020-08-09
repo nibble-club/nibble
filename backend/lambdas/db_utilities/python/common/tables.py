@@ -1,19 +1,20 @@
 from enum import Enum
+
 from sqlalchemy import (
-    Table,
     Column,
+    ForeignKey,
     Integer,
     MetaData,
     PrimaryKeyConstraint,
-    ForeignKey,
+    Table,
 )
 from sqlalchemy.dialects.postgresql import (
-    TEXT,
-    JSON,
-    DOUBLE_PRECISION,
-    TIMESTAMP,
     BIGINT,
     BOOLEAN,
+    DOUBLE_PRECISION,
+    JSON,
+    TEXT,
+    TIMESTAMP,
 )
 from sqlalchemy.schema import FetchedValue
 

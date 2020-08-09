@@ -1,7 +1,8 @@
 import logging
+
 from common import tables, utils
-from sqlalchemy.sql import select
 from common.errors import NibbleError
+from sqlalchemy.sql import select
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)

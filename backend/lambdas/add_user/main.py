@@ -1,7 +1,8 @@
-from enum import Enum
 import logging
-from common import tables, utils
+from enum import Enum
+
 import boto3
+from common import tables, utils
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)

@@ -1,7 +1,7 @@
 import logging
+
 from common.errors import NibbleError
 from zip_code_location_mapping import ZIP_CODE_LOCATION_MAPPING
-
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
