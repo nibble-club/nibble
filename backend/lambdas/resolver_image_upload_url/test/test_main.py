@@ -1,15 +1,5 @@
-# unfortunate monkeying needed to import common module
-import sys, os
-
-test_dir = os.path.dirname(__file__)
-common_dir = "../../db_utilities/python"
-sys.path.insert(0, os.path.abspath(os.path.join(test_dir, common_dir)))
-
 import unittest
-import common.validation as validation
-import common.redis_keys as redis_keys
-from unittest.mock import MagicMock, patch
-from common.errors import NibbleError
+from unittest.mock import patch
 
 with patch("boto3.client"):
     import main

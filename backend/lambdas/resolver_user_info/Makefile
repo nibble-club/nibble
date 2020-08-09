@@ -19,4 +19,4 @@ test: .
 	@echo "Installing packages for testing locally..."
 	@python3 -m pip install -r requirements.txt -q
 	@echo "Testing..."
-	@python3 -m unittest test/test_main.py
+	@PYTHONPATH=$(shell git rev-parse --show-toplevel)/backend/lambdas/db_utilities/python python3 -m unittest test/test_main.py

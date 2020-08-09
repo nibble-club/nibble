@@ -1,18 +1,10 @@
-# unfortunate monkeying needed to import common module
-import sys, os
-
-test_dir = os.path.dirname(__file__)
-common_dir = "../../db_utilities/python"
-sys.path.insert(0, os.path.abspath(os.path.join(test_dir, common_dir)))
-
 import unittest
-import common.validation as validation
+from unittest.mock import patch
+
 import common.redis_keys as redis_keys
-from unittest.mock import MagicMock, patch
 
 with patch("common.utils.get_engine"):
     import main
-from datetime import datetime, timedelta
 
 
 sample_from_restaurant = {

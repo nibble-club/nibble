@@ -1,7 +1,6 @@
 import logging
 import os
 
-import boto3
 from elasticsearch import Elasticsearch, RequestsHttpConnection, exceptions
 from requests_aws4auth import AWS4Auth
 
@@ -119,4 +118,3 @@ def lambda_handler(event, context):
 
     logger.info("Index info:")
     logger.info(es.indices.get(es_indices.NIBBLE_INDEX))
-

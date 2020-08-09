@@ -1,19 +1,10 @@
-# unfortunate monkeying needed to import common module
-import sys, os
-
-test_dir = os.path.dirname(__file__)
-common_dir = "../../db_utilities/python"
-sys.path.insert(0, os.path.abspath(os.path.join(test_dir, common_dir)))
-
 import unittest
-import common.validation as validation
-from unittest.mock import Mock, patch
+from unittest.mock import patch
+
+from common.errors import NibbleError
 
 with patch("common.utils.get_engine"):
     import main
-
-from datetime import datetime, timedelta
-from common.errors import NibbleError
 
 
 restaurant_image_url = {"bucket": "PLACEHOLDER", "region": "us-west-2", "key": "hero"}

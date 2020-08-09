@@ -1,10 +1,3 @@
-# unfortunate monkeying needed to import common module
-import sys, os
-
-test_dir = os.path.dirname(__file__)
-common_dir = "../../db_utilities/python"
-sys.path.insert(0, os.path.abspath(os.path.join(test_dir, common_dir)))
-
 import unittest
 from unittest.mock import patch
 
@@ -15,7 +8,7 @@ sample_event = {
     "field": "closestRestaurants",
     "arguments": {
         "location": {"latitude": 42.3854646, "longitude": -71.094187},
-        "paginationInput": {"offset": 0, "limit": 10,},
+        "paginationInput": {"offset": 0, "limit": 10},
         "maxDistance": 2.5,
     },
 }

@@ -1,4 +1,3 @@
-import json
 import logging
 import os
 
@@ -171,7 +170,7 @@ def get_restaurant_es_document(db_values):
             "administrativeArea": db_values["administrative_area"],
             "country": db_values["country"],
             "postalCode": db_values["postal_code"],
-            "location": {"lat": db_values["latitude"], "lon": db_values["longitude"],},
+            "location": {"lat": db_values["latitude"], "lon": db_values["longitude"]},
         },
         "logoUrl": db_values["logo_url"],
         "heroUrl": db_values["hero_url"],

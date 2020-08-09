@@ -1,7 +1,6 @@
 import logging
-import json
 import os
-from common import tables, utils, validation, redis_keys
+from common import tables, utils, redis_keys
 from sqlalchemy.sql import select, and_
 import redis
 from datetime import datetime

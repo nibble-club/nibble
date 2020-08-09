@@ -1,7 +1,5 @@
 import logging
-import json
-import os
-from common import redis_keys, es_indices
+from common import es_indices
 from common.errors import NibbleError
 from elasticsearch_dsl import Search
 

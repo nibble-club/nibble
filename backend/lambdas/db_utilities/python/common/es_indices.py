@@ -34,4 +34,3 @@ def get_es_client():
         connection_class=RequestsHttpConnection,
     )
     return es
-

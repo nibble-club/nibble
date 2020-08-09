@@ -7,7 +7,6 @@ import logging
 import os
 
 import boto3
-from botocore.errorfactory import ClientError
 import git
 
 # set up logging

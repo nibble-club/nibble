@@ -28,11 +28,11 @@ class NibbleTable(Enum):
 
 
 def get_table_metadata(table_name=None):
-    """Gets a SQLAlchemy MetaData object describing the tables in the PostgreSQL 
+    """Gets a SQLAlchemy MetaData object describing the tables in the PostgreSQL
     database.
 
     Args:
-        table_name (NibbleTable): the table object to fetch. If this is invalid or 
+        table_name (NibbleTable): the table object to fetch. If this is invalid or
         empty, returns the MetaData object for the entire schema.
 
     Returns:

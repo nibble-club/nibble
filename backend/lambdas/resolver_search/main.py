@@ -4,10 +4,9 @@ import logging
 import os
 
 import redis
-from common import es_indices, redis_keys, tables, utils, validation
+from common import es_indices, redis_keys
 from common.errors import NibbleError
 from elasticsearch_dsl import Q, Search
-from sqlalchemy.sql import select
 
 # constants
 DEFAULT_MAX_DISTANCE = 10  # miles
@@ -28,7 +27,7 @@ es = es_indices.get_es_client()
 def lambda_handler(event, context):
     """Resolves requests for searches. Currently search will find valid restaurants,
     with a preference for restaurants matching the search term, then for distance from
-    the user; then, it will look for nibbles from restaurants in that set (2 searches 
+    the user; then, it will look for nibbles from restaurants in that set (2 searches
     total).
     """
     logger.info(event)
@@ -136,7 +135,7 @@ def lambda_handler(event, context):
 
 
 def parse_nibble_response(nibble_response):
-    """Takes Elasticsearch response object for query on Nibble index and creates list of 
+    """Takes Elasticsearch response object for query on Nibble index and creates list of
     NibbleAvailable GraphQL objects"""
 
     nibbles = []
@@ -162,7 +161,7 @@ def parse_nibble_response(nibble_response):
 
 
 def parse_restaurant_response(restaurant_response):
-    """Takes Elasticsearch response object for query on Restaurant index and creates 
+    """Takes Elasticsearch response object for query on Restaurant index and creates
     list of Restaurant GraphQL objects"""
     restaurants = []
     for hit in restaurant_response[0:MAX_USER_RESULTS]:

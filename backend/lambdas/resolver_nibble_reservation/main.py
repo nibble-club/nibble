@@ -1,14 +1,14 @@
-import logging
 import json
+import logging
 import os
-from common import tables, utils, validation, redis_keys
-from sqlalchemy.sql import select, and_
-from sqlalchemy.exc import IntegrityError
-import redis
-from redis.lock import LockError
 from datetime import datetime
+
 import boto3
+import redis
+from common import redis_keys, tables, utils, validation
 from common.errors import NibbleError
+from redis.lock import LockError
+from sqlalchemy.sql import and_, select
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -182,7 +182,7 @@ def lambda_handler(event, context):
                     )
                 elif existing_status == utils.NibbleReservationStatus.Completed.value:
                     raise NibbleError(
-                        "You already reserved this Nibble; try again with a different one"
+                        "You already reserved this Nibble; try a different one"
                     )
                 else:
                     logger.info("Allowing user to resurrect reservation")
@@ -272,7 +272,7 @@ def lambda_handler(event, context):
             count_increased_by = new_count - old_count
             if count_increased_by > remaining_count:
                 raise NibbleError(
-                    "Cannot change reservation from {0} to {1}, there are only {2} available".format(
+                    "Cannot change reservation from {0} to {1}, there are {2} available".format(
                         old_count, new_count, remaining_count
                     )
                 )
@@ -302,8 +302,8 @@ def lambda_handler(event, context):
 
 
 def run_in_transaction(r, engine, nibble_id, func):
-    """Given a function `func` which takes three arguments, `conn` (a SQLAlchemy 
-    connection), `pipe` (a redis-py pipeline), and a tuple of (available_count, 
+    """Given a function `func` which takes three arguments, `conn` (a SQLAlchemy
+    connection), `pipe` (a redis-py pipeline), and a tuple of (available_count,
     remaining_count) for the given nibble ID, runs it in a transaction such that
     either every operation in the function succeeds or they all fail. Runs this all
     with a lock on the given nibble_id acquired. Returns the value returned by `func`.

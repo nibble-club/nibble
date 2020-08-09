@@ -1,5 +1,4 @@
 import logging
-import json
 import os
 from common import tables, utils, validation, redis_keys, es_indices
 from sqlalchemy.sql import select
@@ -132,7 +131,7 @@ def lambda_handler(event, context):
 
 
 def nibble_event_db_mapper(nibble):
-    """Gets fields to insert into nibble database, along with common validation for 
+    """Gets fields to insert into nibble database, along with common validation for
     inserts and updates
     """
     # validate input
@@ -227,4 +226,3 @@ def add_to_elasticsearch(db_values, nibble_id, restaurant_id):
     )
     logger.info(index_result)
     logger.info("Indexed Nibble in Elasticsearch")
-

@@ -17,4 +17,3 @@ def in_past(epoch_timestamp):
         bool: True if time is in past, False otherwise
     """
     return datetime.now() > datetime.fromtimestamp(epoch_timestamp)
-

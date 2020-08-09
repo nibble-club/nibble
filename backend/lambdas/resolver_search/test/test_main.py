@@ -1,10 +1,3 @@
-# unfortunate monkeying needed to import common module
-import sys, os
-
-test_dir = os.path.dirname(__file__)
-common_dir = "../../db_utilities/python"
-sys.path.insert(0, os.path.abspath(os.path.join(test_dir, common_dir)))
-
 import unittest
 from unittest.mock import patch, MagicMock
 import datetime
@@ -18,7 +11,7 @@ redis_mock = MagicMock(name="RedisMock")
 
 with patch("common.es_indices.get_es_client"):
     with patch(
-        "os.environ", {"REDIS_HOST": "host", "REDIS_PORT": "6379",},
+        "os.environ", {"REDIS_HOST": "host", "REDIS_PORT": "6379"},
     ):
         with patch("redis.Redis", redis_mock):
             import main
@@ -32,9 +25,9 @@ search_parameters = {
 }
 sample_event = {
     "field": "search",
-    "identity": {"username": username,},
+    "identity": {"username": username},
     "arguments": {
-        "userLocation": {"latitude": 42, "longitude": -71,},
+        "userLocation": {"latitude": 42, "longitude": -71},
         "searchParameters": search_parameters,
     },
 }

@@ -1,8 +1,6 @@
 from enum import Enum
 import logging
-import json
-import os
-from common import tables, utils, validation
+from common import tables, utils
 import boto3
 
 logger = logging.getLogger()

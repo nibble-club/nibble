@@ -1,8 +1,4 @@
 import logging
-import json
-import os
-from common import tables, utils, validation, redis_keys
-from sqlalchemy.sql import select
 from geopy import distance
 from common.errors import NibbleError
 
