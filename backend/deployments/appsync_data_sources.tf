@@ -153,3 +153,17 @@ module search_datasource {
   assume_role_policy_json  = data.aws_iam_policy_document.appsync_assume_role.json
   permissions_boundary_arn = local.permissions_boundary_arn
 }
+
+
+module recent_searches_datasource {
+  source = "./modules/appsync_lambda_data_source"
+
+  name         = "recent_searches"
+  description  = "Data source for fetching recent searches"
+  function_arn = module.resolver_recent_searches_lambda.arn
+
+  appsync_graphql_api_id   = aws_appsync_graphql_api.api.id
+  environment_namespace    = var.environment_namespace
+  assume_role_policy_json  = data.aws_iam_policy_document.appsync_assume_role.json
+  permissions_boundary_arn = local.permissions_boundary_arn
+}

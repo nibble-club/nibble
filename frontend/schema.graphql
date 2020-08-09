@@ -25,7 +25,7 @@ type Query {
   restaurantForAdmin: Restaurant!
   restaurantInfo(restaurantId: ID!): Restaurant!
   # gets user ID from identity
-  recentSearches: [SearchParameters]
+  recentSearches: [SearchParameters!]!
   search(
     userLocation: LatLonInput!
     searchParameters: SearchParametersInput!
@@ -243,7 +243,6 @@ type SearchParameters {
 input SearchParametersInput {
   text: String!
   maxDistance: Float
-  earliestPickup: AWSTimestamp
   latestPickup: AWSTimestamp
 }
 

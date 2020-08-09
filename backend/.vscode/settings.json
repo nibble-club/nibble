@@ -8,6 +8,7 @@
     "hincrby",
     "hset",
     "lpush",
+    "lrange",
     "ltrim",
     "pgpassword",
     "postgres",
@@ -24,5 +25,6 @@
   ],
   "python.linting.flake8Enabled": true,
   "python.linting.pylintEnabled": false,
-  "python.formatting.provider": "black"
+  "python.formatting.provider": "black",
+  "python.linting.flake8CategorySeverity.F": "Warning"
 }

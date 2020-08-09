@@ -220,3 +220,13 @@ resource aws_appsync_resolver search {
   request_template  = templatefile("./resolver_templates/request_lambda.vm", { field = "search" })
   response_template = file("./resolver_templates/response_lambda.vm")
 }
+
+resource aws_appsync_resolver recent_searches {
+  api_id            = aws_appsync_graphql_api.api.id
+  kind              = "UNIT"
+  field             = "recentSearches"
+  type              = "Query"
+  data_source       = module.recent_searches_datasource.name
+  request_template  = templatefile("./resolver_templates/request_lambda.vm", { field = "recentSearches" })
+  response_template = file("./resolver_templates/response_lambda.vm")
+}

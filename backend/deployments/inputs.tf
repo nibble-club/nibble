@@ -280,3 +280,16 @@ variable resolver_search_lambda_release_version {
   type    = string
   default = ""
 }
+
+variable resolver_recent_searches_lambda_name {
+  type = string
+}
+
+variable resolver_recent_searches_lambda_artifact {
+  type = string
+}
+
+variable resolver_recent_searches_lambda_release_version {
+  type    = string
+  default = ""
+}
