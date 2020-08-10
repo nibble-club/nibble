@@ -1,13 +1,13 @@
 type Query {
   # gets user ID from identity
   userInfo: User!
-  nibblesFeatured(userLocation: LatLonInput!): [NibbleAvailable]!
+  nibblesFeatured(userLocation: LatLonInput!): [NibbleAvailable!]!
   nibbleInfo(nibbleId: ID!): NibbleAvailable!
-  nibblesRecommended(userLocation: LatLonInput!): [NibbleAvailable]!
+  nibblesRecommended(userLocation: LatLonInput!): [NibbleAvailable!]!
   nibblesWithProperty(
     userLocation: LatLonInput!
     property: NibbleRecommendationReason!
-  ): [NibbleAvailable]!
+  ): [NibbleAvailable!]!
   # note that this returns restaurant distance for free,
   # without making an extra request. maxDistance unit is miles
   closestRestaurants(

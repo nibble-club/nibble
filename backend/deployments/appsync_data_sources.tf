@@ -180,3 +180,16 @@ module location_for_postal_code_datasource {
   assume_role_policy_json  = data.aws_iam_policy_document.appsync_assume_role.json
   permissions_boundary_arn = local.permissions_boundary_arn
 }
+
+module nibbles_with_property_datasource {
+  source = "./modules/appsync_lambda_data_source"
+
+  name         = "nibbles_with_property"
+  description  = "Data source for fetching nibbles with given property"
+  function_arn = module.resolver_nibbles_with_property_lambda.arn
+
+  appsync_graphql_api_id   = aws_appsync_graphql_api.api.id
+  environment_namespace    = var.environment_namespace
+  assume_role_policy_json  = data.aws_iam_policy_document.appsync_assume_role.json
+  permissions_boundary_arn = local.permissions_boundary_arn
+}

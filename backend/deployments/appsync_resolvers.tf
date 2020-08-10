@@ -240,3 +240,13 @@ resource aws_appsync_resolver location_for_postal_code {
   request_template  = templatefile("./resolver_templates/request_lambda.vm", { field = "locationForPostalCode" })
   response_template = file("./resolver_templates/response_lambda.vm")
 }
+
+resource aws_appsync_resolver nibbles_with_property {
+  api_id            = aws_appsync_graphql_api.api.id
+  kind              = "UNIT"
+  field             = "nibblesWithProperty"
+  type              = "Query"
+  data_source       = module.nibbles_with_property_datasource.name
+  request_template  = templatefile("./resolver_templates/request_lambda.vm", { field = "nibblesWithProperty" })
+  response_template = file("./resolver_templates/response_lambda.vm")
+}

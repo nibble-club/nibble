@@ -306,3 +306,16 @@ variable resolver_location_for_postal_code_lambda_release_version {
   type    = string
   default = ""
 }
+
+variable resolver_nibbles_with_property_lambda_name {
+  type = string
+}
+
+variable resolver_nibbles_with_property_lambda_artifact {
+  type = string
+}
+
+variable resolver_nibbles_with_property_lambda_release_version {
+  type    = string
+  default = ""
+}

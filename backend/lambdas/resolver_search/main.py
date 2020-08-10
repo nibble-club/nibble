@@ -118,8 +118,10 @@ def lambda_handler(event, context):
     nibble_response = nibble_search[0:MAX_USER_RESULTS].execute()
 
     # create GraphQL response object
-    nibbles = parse_nibble_response(nibble_response)
-    restaurants = parse_restaurant_response(restaurant_response)
+    nibbles = es_indices.parse_nibble_response(r, nibble_response)
+    restaurants = es_indices.parse_restaurant_response(
+        restaurant_response, filter_zero_score=True, distance_index=1
+    )
 
     # save search history
     r.lpush(
@@ -132,65 +134,3 @@ def lambda_handler(event, context):
         "nibbles": nibbles,
         "restaurants": restaurants,
     }
-
-
-def parse_nibble_response(nibble_response):
-    """Takes Elasticsearch response object for query on Nibble index and creates list of
-    NibbleAvailable GraphQL objects"""
-
-    nibbles = []
-    for hit in nibble_response:
-        nibble_id = hit.meta.id
-        available_count = int(r.hget(redis_keys.NIBBLES_REMAINING, nibble_id))
-
-        nibbles.append(
-            {
-                "id": nibble_id,
-                "name": hit.name,
-                "type": hit.type,
-                "count": available_count,
-                "imageUrl": hit.imageUrl.to_dict(),
-                "description": hit.description,
-                "price": hit.price,
-                "availableFrom": hit.availableFrom,
-                "availableTo": hit.availableTo,
-            }
-        )
-
-    return nibbles
-
-
-def parse_restaurant_response(restaurant_response):
-    """Takes Elasticsearch response object for query on Restaurant index and creates
-    list of Restaurant GraphQL objects"""
-    restaurants = []
-    for hit in restaurant_response[0:MAX_USER_RESULTS]:
-        if hit.meta.score > 0:  # actually matched search term
-            restaurants.append(
-                {
-                    "id": hit.meta.id,
-                    "name": hit.name,
-                    "market": hit.market,
-                    "address": {
-                        "streetAddress": hit.address.streetAddress,
-                        "dependentLocality": None
-                        if len(hit.address.dependentLocality) == 0
-                        else hit.address.dependentLocality,
-                        "locality": hit.address.locality,
-                        "administrativeArea": hit.address.administrativeArea,
-                        "country": hit.address.country,
-                        "postalCode": hit.address.postalCode,
-                        "location": {
-                            "latitude": hit.address.location.lat,
-                            "longitude": hit.address.location.lon,
-                        },
-                    },
-                    "disclaimer": None if len(hit.disclaimer) == 0 else hit.disclaimer,
-                    "description": hit.description,
-                    "distance": hit.meta.sort[1],
-                    "active": hit.active,
-                    "logoUrl": hit.logoUrl.to_dict(),
-                    "heroUrl": hit.heroUrl.to_dict(),
-                }
-            )
-    return restaurants
