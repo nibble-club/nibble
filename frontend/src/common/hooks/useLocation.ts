@@ -69,8 +69,8 @@ function useLocation(): LocationResult {
         },
         () => {
           console.log("Error getting user position from browser");
-          setBrowserLocationLoading(false);
           setBrowserLocationBlocked(true);
+          setBrowserLocationLoading(false);
         },
         { enableHighAccuracy: true }
       );

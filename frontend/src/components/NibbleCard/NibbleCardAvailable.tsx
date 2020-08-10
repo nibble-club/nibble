@@ -40,17 +40,13 @@ export const NibbleCardAvailable = (
       <div className={classes.name}>{props.name}</div>
       <div>
         <div>
-          <div className={classes.children}>
-            {props.restaurantDistance && (
-              <NibbleProperty
-                icon={NibblePropertyIcon.Location}
-                text={`${props.restaurantDistance || 0} miles`}
-              />
-            )}
-          </div>
-          <div className={classes.children}>
-            <NibbleProperty icon={getIconForType(props.type)} text={props.type} />
-          </div>
+          {props.restaurantDistance && (
+            <NibbleProperty
+              icon={NibblePropertyIcon.Location}
+              text={`${props.restaurantDistance || 0} miles`}
+            />
+          )}
+          <NibbleProperty icon={getIconForType(props.type)} text={props.type} />
         </div>
         <div className={classes.remaining}>{props.count}</div>
       </div>

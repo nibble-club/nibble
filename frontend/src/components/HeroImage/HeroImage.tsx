@@ -34,7 +34,7 @@ const HeroImage = (props: HeroImageProps) => {
   }, [heightRef]);
 
   // calculate necessary height; assumes 3:2 aspect ratio for underlying image
-  const origImageHeight = height + PARALLAX_STRENGTH;
+  const origImageHeight = height; // + PARALLAX_STRENGTH;
   let imageHeight = origImageHeight;
   if (imageHeight * ASPECT_RATIO < width) {
     imageHeight = width / ASPECT_RATIO;
@@ -42,7 +42,8 @@ const HeroImage = (props: HeroImageProps) => {
 
   const classes = useStyles({
     imageHeight,
-    imageMargin: (origImageHeight - imageHeight) / 2,
+    // imageMargin: 200,
+    imageMargin: 0.26 * PARALLAX_STRENGTH, // 0.26 is scroll percentage at top of page
   });
   const appTheme = useTheme() as AppTheme;
 

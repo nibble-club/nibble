@@ -12,7 +12,7 @@ import {
   IMAGE_UPLOAD_URL,
   RESTAURANT_FOR_ADMIN,
   GEOCODE_ADDRESS,
-  NIBBLE_INFO,
+  NIBBLE_INFO_WITH_RESTAURANT,
 } from "../src/graphql/queries";
 import { S3ObjectDestination } from "../src/graphql/generated/types";
 import { BrowserRouter } from "react-router-dom";
@@ -36,6 +36,46 @@ const Styling = ({ children }) => {
 };
 
 const mocks = [
+  {
+    request: {
+      query: NIBBLE_INFO_WITH_RESTAURANT,
+      variables: { nibbleId: "123" },
+    },
+    result: {
+      data: {
+        nibbleInfo: {
+          __typename: "NibbleAvailable",
+          restaurant: {
+            __typename: "Restaurant",
+            name: "Meadhall",
+            address: {
+              __typename: "Address",
+              location: {
+                __typename: "LatLon",
+                latitude: 42.3637177,
+                longitude: -71.087353,
+              },
+            },
+          },
+          id: "123",
+          name: "Sushi ingredients",
+          type: "Ingredients",
+          count: 2,
+          price: 499,
+          availableFrom: 1596773346,
+          availableTo: 1596802146,
+          description:
+            "Ingredients to roll your own sushi - rice, cucumber, avocado, seaweed, and some assortment of proteins",
+          imageUrl: {
+            __typename: "S3Object",
+            bucket: "800344761765-dev-adchurch-nibble-images",
+            region: "us-west-2",
+            key: "seeding/sushi.jpg",
+          },
+        },
+      },
+    },
+  },
   {
     request: {
       query: IMAGE_UPLOAD_URL,
@@ -183,34 +223,6 @@ const mocks = [
         geocodeAddress: {
           latitude: 42.34299,
           longitude: -71.088081,
-        },
-      },
-    },
-  },
-  {
-    request: {
-      query: NIBBLE_INFO,
-      variables: {},
-    },
-    response: {
-      data: {
-        nibbleInfo: {
-          availableFrom: 1596405600,
-          availableTo: 1597111200,
-          count: 1,
-          description: "Famous hoagie rolls :)",
-          id: "1",
-          imageUrl: {
-            bucket: "800344761765-dev-adchurch-restaurant-heros",
-            region: "us-west-2",
-            key: "0279bda8-1765-4b94-b2cc-13e1abf77d53.jpg",
-            __typename: "S3Object",
-          },
-          name: "Hoagie roll",
-          price: 200,
-          restaurant: { name: "Dave's Fresh Pasta", __typename: "Restaurant" },
-          type: "Ingredients",
-          __typename: "NibbleAvailable",
         },
       },
     },

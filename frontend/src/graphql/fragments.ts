@@ -22,10 +22,9 @@ export const NIBBLE_RESERVED_INFO_FRAGMENT = gql`
   fragment NibbleReservedInfo on NibbleReserved {
     id
     name
-    restaurant {
-      name
-    }
     type
+    description
+    price
     count
     availableFrom
     availableTo
@@ -37,6 +36,10 @@ export const NIBBLE_RESERVED_INFO_FRAGMENT = gql`
       bucket
       region
       key
+    }
+    restaurant {
+      id
+      name
     }
   }
 `;

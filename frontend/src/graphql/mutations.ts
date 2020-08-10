@@ -37,3 +37,24 @@ export const ADMIN_EDIT_RESTAURANT = gql`
   }
   ${RESTAURANT_INFO_FRAGMENT}
 `;
+
+export const NIBBLE_CREATE_RESERVATION = gql`
+  mutation NibbleCreateReservation($nibbleId: ID!, $count: Int!) {
+    nibbleCreateReservation(nibbleId: $nibbleId, count: $count) {
+      id
+      name
+      type
+      count
+      imageUrl {
+        bucket
+        region
+        key
+      }
+      price
+      availableFrom
+      availableTo
+      status
+      reservedAt
+    }
+  }
+`;

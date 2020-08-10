@@ -17,6 +17,7 @@ export default {
 export const symphonySushiReservedProps: NibbleReservedInfoFragment = {
   id: "3",
   restaurant: {
+    id: "123",
     name: "Symphony Sushi",
   },
   name: "Half sushi roll",
@@ -27,6 +28,7 @@ export const symphonySushiReservedProps: NibbleReservedInfoFragment = {
     region: "",
     key: "hero",
   },
+  price: 300,
   availableFrom: moment.utc().subtract(7, "h").unix(),
   availableTo: moment.utc().add(1, "h").unix(),
   status: NibbleReservationStatus.Reserved,

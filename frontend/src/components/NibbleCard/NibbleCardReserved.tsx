@@ -48,7 +48,9 @@ export const NibbleCardReserved = (props: NibbleReservedInfoFragment) => {
             </div>{" "}
           </div>
         )}
-        <div className={classes.remaining}>{props.count}</div>
+        <div className={classes.remaining} id={"reserved"}>
+          {props.count}
+        </div>
       </div>
     </div>
   );

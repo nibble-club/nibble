@@ -8,7 +8,7 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
   container: {
     display: "block",
     height: HERO_HEIGHT,
-    marginTop: `-${theme.rounding.medium}px`,
+    // marginTop: `-${theme.rounding.medium}px`,
   },
   hero: {
     minHeight: HERO_HEIGHT,

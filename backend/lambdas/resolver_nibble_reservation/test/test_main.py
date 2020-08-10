@@ -4,7 +4,11 @@ from unittest.mock import MagicMock, Mock, call, patch
 from common.errors import NibbleError
 
 with patch("common.utils.get_engine"):
-    import main
+    with patch(
+        "os.environ", {"REDIS_HOST": "host", "REDIS_PORT": "6379"},
+    ):
+        with patch("redis.Redis"):
+            import main
 
 
 def function_returns(conn, pipe, counts):

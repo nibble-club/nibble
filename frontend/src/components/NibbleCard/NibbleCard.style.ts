@@ -47,6 +47,7 @@ const commonContainerStyles = (theme: AppTheme) => ({
   padding: cardPadding,
   transition: theme.animation.simple,
   margin: theme.spacing.medium,
+  marginRight: 0,
 });
 
 export const useStyles = createUseStyles((theme: AppTheme) => ({
@@ -69,9 +70,6 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
     borderRadius: `${theme.rounding.medium}px ${theme.rounding.medium}px 0px 0px`,
     objectFit: "cover",
   },
-  children: {
-    marginTop: theme.spacing.small,
-  },
   restaurant: {
     color: theme.color.green,
     fontSize: theme.fontSizes.small,
@@ -93,10 +91,14 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
     color: (props: NibbleCardPropsWithHover) => getColorForAmount(props.count),
     fontWeight: "700",
     textShadow: theme.shadow[0],
+    "&#reserved": {
+      color: (_) => theme.color.green,
+    },
   },
   pickupBy: {
     paddingTop: theme.spacing.small,
     color: theme.color.text.grayed,
+    fontSize: theme.fontSizes.small,
   },
   pickupByTime: {
     color: (props: NibbleCardPropsWithHover) => getColorForStatus(props.status),

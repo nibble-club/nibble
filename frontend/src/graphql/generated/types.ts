@@ -146,28 +146,24 @@ export type MutationAdminCancelReservationArgs = {
 
 
 export type MutationNibbleCreateReservationArgs = {
-  userId: Scalars['ID'];
   nibbleId: Scalars['ID'];
   count: Scalars['Int'];
 };
 
 
 export type MutationNibbleEditReservationArgs = {
-  userId: Scalars['ID'];
   nibbleId: Scalars['ID'];
   newCount: Scalars['Int'];
 };
 
 
 export type MutationNibbleCancelReservationArgs = {
-  userId: Scalars['ID'];
   nibbleId: Scalars['ID'];
   reason?: Maybe<Scalars['String']>;
 };
 
 
 export type MutationNibbleCompleteReservationArgs = {
-  userId: Scalars['ID'];
   nibbleId: Scalars['ID'];
 };
 
@@ -244,13 +240,13 @@ export type Query = {
   locationForPostalCode: LatLon;
   restaurantForAdmin: Restaurant;
   restaurantInfo: Restaurant;
-  recentSearches?: Maybe<Array<Maybe<SearchParameters>>>;
+  recentSearches: Array<SearchParameters>;
   search: SearchResults;
 };
 
 
 export type QueryNibblesFeaturedArgs = {
-  user: UserCurrentContextInput;
+  userLocation: LatLonInput;
 };
 
 
@@ -260,12 +256,12 @@ export type QueryNibbleInfoArgs = {
 
 
 export type QueryNibblesRecommendedArgs = {
-  user: UserCurrentContextInput;
+  userLocation: LatLonInput;
 };
 
 
 export type QueryNibblesWithPropertyArgs = {
-  user: UserCurrentContextInput;
+  userLocation: LatLonInput;
   property: NibbleRecommendationReason;
 };
 
@@ -298,7 +294,7 @@ export type QueryRestaurantInfoArgs = {
 
 
 export type QuerySearchArgs = {
-  user: UserCurrentContextInput;
+  userLocation: LatLonInput;
   searchParameters: SearchParametersInput;
 };
 
@@ -345,14 +341,14 @@ export type S3ObjectInput = {
 export type SearchParameters = {
   __typename?: 'SearchParameters';
   text: Scalars['String'];
+  maxDistance?: Maybe<Scalars['Int']>;
+  latestPickup?: Maybe<Scalars['AWSTimestamp']>;
 };
 
 export type SearchParametersInput = {
   text: Scalars['String'];
-  maxDistance?: Maybe<Scalars['Int']>;
-  earliestPickup?: Maybe<Scalars['AWSTimestamp']>;
+  maxDistance?: Maybe<Scalars['Float']>;
   latestPickup?: Maybe<Scalars['AWSTimestamp']>;
-  pagination?: Maybe<PaginationInput>;
 };
 
 export type SearchRecentQueries = {
@@ -362,8 +358,8 @@ export type SearchRecentQueries = {
 
 export type SearchResults = {
   __typename?: 'SearchResults';
-  nibbles?: Maybe<Array<Maybe<NibbleAvailable>>>;
-  restaurants?: Maybe<Array<Maybe<Restaurant>>>;
+  nibbles: Array<NibbleAvailable>;
+  restaurants: Array<Restaurant>;
 };
 
 export type User = {
@@ -378,12 +374,6 @@ export type User = {
   nibblesHistory: Array<Maybe<NibbleReserved>>;
 };
 
-export type UserCurrentContextInput = {
-  id: Scalars['ID'];
-  postalCode: Scalars['String'];
-  location?: Maybe<LatLonInput>;
-};
-
 export type NibbleAvailableInfoFragment = (
   { __typename?: 'NibbleAvailable' }
   & Pick<NibbleAvailable, 'id' | 'name' | 'type' | 'count' | 'price' | 'availableFrom' | 'availableTo' | 'description'>
@@ -395,13 +385,13 @@ export type NibbleAvailableInfoFragment = (
 
 export type NibbleReservedInfoFragment = (
   { __typename?: 'NibbleReserved' }
-  & Pick<NibbleReserved, 'id' | 'name' | 'type' | 'count' | 'availableFrom' | 'availableTo' | 'status' | 'cancelledAt' | 'cancellationReason' | 'reservedAt'>
-  & { restaurant: (
-    { __typename?: 'Restaurant' }
-    & Pick<Restaurant, 'name'>
-  ), imageUrl: (
+  & Pick<NibbleReserved, 'id' | 'name' | 'type' | 'description' | 'price' | 'count' | 'availableFrom' | 'availableTo' | 'status' | 'cancelledAt' | 'cancellationReason' | 'reservedAt'>
+  & { imageUrl: (
     { __typename?: 'S3Object' }
     & Pick<S3Object, 'bucket' | 'region' | 'key'>
+  ), restaurant: (
+    { __typename?: 'Restaurant' }
+    & Pick<Restaurant, 'id' | 'name'>
   ) }
 );
 
@@ -500,6 +490,47 @@ export type NibbleInfoQuery = (
   ) }
 );
 
+export type NibbleInfoWithRestaurantQueryVariables = Exact<{
+  nibbleId: Scalars['ID'];
+}>;
+
+
+export type NibbleInfoWithRestaurantQuery = (
+  { __typename?: 'Query' }
+  & { nibbleInfo: (
+    { __typename?: 'NibbleAvailable' }
+    & { restaurant: (
+      { __typename?: 'Restaurant' }
+      & Pick<Restaurant, 'id' | 'name'>
+      & { logoUrl: (
+        { __typename?: 'S3Object' }
+        & Pick<S3Object, 'bucket' | 'region' | 'key'>
+      ), address: (
+        { __typename?: 'Address' }
+        & { location: (
+          { __typename?: 'LatLon' }
+          & Pick<LatLon, 'latitude' | 'longitude'>
+        ) }
+      ) }
+    ) }
+    & NibbleAvailableInfoFragment
+  ) }
+);
+
+export type RestaurantDistanceQueryVariables = Exact<{
+  restaurantId: Scalars['ID'];
+  currentPos: LatLonInput;
+}>;
+
+
+export type RestaurantDistanceQuery = (
+  { __typename?: 'Query' }
+  & { restaurantInfo: (
+    { __typename?: 'Restaurant' }
+    & Pick<Restaurant, 'distance'>
+  ) }
+);
+
 export type RestaurantForAdminQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -516,9 +547,8 @@ export type RestaurantForAdminQuery = (
 );
 
 export type NibbleSearchQueryVariables = Exact<{
-  user: UserCurrentContextInput;
   searchParameters: SearchParametersInput;
-  currentPos: LatLonInput;
+  userLocation: LatLonInput;
 }>;
 
 
@@ -526,21 +556,21 @@ export type NibbleSearchQuery = (
   { __typename?: 'Query' }
   & { search: (
     { __typename?: 'SearchResults' }
-    & { nibbles?: Maybe<Array<Maybe<(
+    & { nibbles: Array<(
       { __typename?: 'NibbleAvailable' }
       & Pick<NibbleAvailable, 'id' | 'name' | 'type' | 'count' | 'price' | 'availableFrom' | 'availableTo'>
       & { restaurant: (
         { __typename?: 'Restaurant' }
         & Pick<Restaurant, 'name'>
       ) }
-    )>>>, restaurants?: Maybe<Array<Maybe<(
+    )>, restaurants: Array<(
       { __typename?: 'Restaurant' }
       & Pick<Restaurant, 'id' | 'name' | 'distance'>
       & { logoUrl: (
         { __typename?: 'S3Object' }
         & Pick<S3Object, 'region' | 'bucket' | 'key'>
       ) }
-    )>>> }
+    )> }
   ) }
 );
 
@@ -557,7 +587,11 @@ export type UserInfoQuery = (
       & Pick<S3Object, 'bucket' | 'region' | 'key'>
     ), nibblesReserved: Array<Maybe<(
       { __typename?: 'NibbleReserved' }
-      & Pick<NibbleReserved, 'id' | 'name' | 'count' | 'price'>
+      & { restaurant: (
+        { __typename?: 'Restaurant' }
+        & Pick<Restaurant, 'id' | 'name'>
+      ) }
+      & NibbleReservedInfoFragment
     )>> }
   ) }
 );

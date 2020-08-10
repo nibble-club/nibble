@@ -16,6 +16,9 @@ logger.setLevel(logging.INFO)
 # get database info
 engine = utils.get_engine()
 
+# connect to Redis
+r = redis.Redis(host=os.environ["REDIS_HOST"], port=os.environ["REDIS_PORT"])
+
 
 def lambda_handler(event, context):
     """Resolves requests related to Nibble reservations
@@ -34,11 +37,11 @@ def lambda_handler(event, context):
             )
         )
 
-    user_id = event["arguments"]["userId"]
+    user_id = event["identity"]["username"]
+    if field == "adminCancelReservation":
+        user_id = event["arguments"]["userId"]
     nibble_id = event["arguments"]["nibbleId"]
 
-    # connect to Redis
-    r = redis.Redis(host=os.environ["REDIS_HOST"], port=os.environ["REDIS_PORT"])
     r.ping()
     logger.info("Connected to Redis")
 

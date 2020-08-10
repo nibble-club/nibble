@@ -22,6 +22,7 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
       fontSize: `calc(2 * ${theme.fontSizes.xLarge})`,
       fontWeight: "bold",
       lineHeight: 0,
+      transition: theme.animation.exciting,
       "&:focus": {
         outline: 0,
         boxShadow: `0 0 0 1px ${theme.color.text.primary}`,

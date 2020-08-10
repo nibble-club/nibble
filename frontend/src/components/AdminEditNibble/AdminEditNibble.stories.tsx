@@ -8,4 +8,4 @@ export default {
   excludeStories: /.*Props$/,
 };
 
-export const EditRestaurant = () => <AdminEditNibble />;
+export const EditNibble = () => <AdminEditNibble />;

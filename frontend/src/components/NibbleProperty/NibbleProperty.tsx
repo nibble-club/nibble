@@ -34,6 +34,8 @@ const useStyles = createUseStyles((theme: AppTheme) => ({
     borderRadius: theme.rounding.hard,
     fontSize: theme.fontSizes.small,
     lineHeight: "100%",
+    marginTop: theme.spacing.small,
+    marginRight: theme.spacing.small,
   },
   icon: {
     paddingRight: theme.spacing.xSmall,

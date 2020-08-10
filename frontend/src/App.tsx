@@ -13,6 +13,7 @@ import NotificationBar from "./components/NotificationBar/NotificationBar";
 import Admin from "./pages/Admin/Admin";
 import Home from "./pages/Home/Home";
 import Login from "./pages/Login/Login";
+import NibbleDetail from "./pages/NibbleDetail/NibbleDetail";
 import { userPostalCode, userSignIn } from "./redux/actions";
 import { RootState } from "./redux/reducers";
 
@@ -67,7 +68,9 @@ function App() {
           <Login />
         </Route>
 
-        <Route path="/nibble/:id"></Route>
+        <Route path="/nibble/:id">
+          <NibbleDetail />
+        </Route>
         <Route path="/restaurant/:id"></Route>
         <Route path="/profile">
           <div>Hello from profile page!</div>

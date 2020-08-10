@@ -168,7 +168,10 @@ const MapView = ({ pins, activePin = -1, height = 500 }: MapViewProps) => {
     );
     // if (newMarkers.length > 0) console.log(`Added ${newMarkers.length} markers`);
     currentMarkers.current = newMarkers;
-    map.fitBounds(getBoundingBox(pins), { padding: BOUNDING_BOX_PADDING });
+    map.fitBounds(getBoundingBox(pins), {
+      padding: BOUNDING_BOX_PADDING,
+      maxZoom: PROGRAMMATIC_MAX_ZOOM,
+    });
     map.triggerRepaint();
   }, [pins, pinsChanged, map, classes.popup, classes.restaurantPopup]);
 
@@ -187,7 +190,10 @@ const MapView = ({ pins, activePin = -1, height = 500 }: MapViewProps) => {
         zoom: PROGRAMMATIC_MAX_ZOOM,
       });
     } else {
-      map.fitBounds(getBoundingBox(pins), { padding: BOUNDING_BOX_PADDING });
+      map.fitBounds(getBoundingBox(pins), {
+        padding: BOUNDING_BOX_PADDING,
+        maxZoom: PROGRAMMATIC_MAX_ZOOM,
+      });
     }
   }, [map, pins, activePin]);
 

@@ -1,6 +1,10 @@
 import { gql } from "@apollo/client";
 
-import { NIBBLE_AVAILABLE_INFO_FRAGMENT, RESTAURANT_INFO_FRAGMENT } from "./fragments";
+import {
+  NIBBLE_AVAILABLE_INFO_FRAGMENT,
+  NIBBLE_RESERVED_INFO_FRAGMENT,
+  RESTAURANT_INFO_FRAGMENT
+} from "./fragments";
 
 export const CLOSEST_RESTAURANTS = gql`
   query ClosestRestaurants(
@@ -63,6 +67,38 @@ export const NIBBLE_INFO = gql`
   ${NIBBLE_AVAILABLE_INFO_FRAGMENT}
 `;
 
+export const NIBBLE_INFO_WITH_RESTAURANT = gql`
+  query NibbleInfoWithRestaurant($nibbleId: ID!) {
+    nibbleInfo(nibbleId: $nibbleId) {
+      ...NibbleAvailableInfo
+      restaurant {
+        id
+        name
+        logoUrl {
+          bucket
+          region
+          key
+        }
+        address {
+          location {
+            latitude
+            longitude
+          }
+        }
+      }
+    }
+  }
+  ${NIBBLE_AVAILABLE_INFO_FRAGMENT}
+`;
+
+export const RESTAURANT_DISTANCE = gql`
+  query RestaurantDistance($restaurantId: ID!, $currentPos: LatLonInput!) {
+    restaurantInfo(restaurantId: $restaurantId) {
+      distance(currentPos: $currentPos)
+    }
+  }
+`;
+
 export const RESTAURANT_FOR_ADMIN = gql`
   query RestaurantForAdmin {
     restaurantForAdmin {
@@ -78,11 +114,10 @@ export const RESTAURANT_FOR_ADMIN = gql`
 
 export const SEARCH = gql`
   query NibbleSearch(
-    $user: UserCurrentContextInput!
     $searchParameters: SearchParametersInput!
-    $currentPos: LatLonInput!
+    $userLocation: LatLonInput!
   ) {
-    search(user: $user, searchParameters: $searchParameters) {
+    search(searchParameters: $searchParameters, userLocation: $userLocation) {
       nibbles {
         id
         name
@@ -98,7 +133,7 @@ export const SEARCH = gql`
       restaurants {
         id
         name
-        distance(currentPos: $currentPos)
+        distance(currentPos: $userLocation)
         logoUrl {
           region
           bucket
@@ -121,11 +156,13 @@ export const USER_INFO = gql`
       email
       postalCode
       nibblesReserved {
-        id
-        name
-        count
-        price
+        ...NibbleReservedInfo
+        restaurant {
+          id
+          name
+        }
       }
     }
   }
+  ${NIBBLE_RESERVED_INFO_FRAGMENT}
 `;
