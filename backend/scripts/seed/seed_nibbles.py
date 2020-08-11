@@ -102,10 +102,10 @@ def main():
             {
                 "name": n["name"],
                 "type": n["type"],
-                "count": n["count"],
+                "count": n["count"] + random.randint(-1, 5),
                 "imageUrl": imageUrl,
                 "description": n["description"],
-                "price": n["price"],
+                "price": n["price"] + 5 * random.randint(-10, 10),
                 "availableFrom": int(now.timestamp()),
                 "availableTo": int(then.timestamp()),
             }
@@ -114,7 +114,7 @@ def main():
     # send nibbles
     client = boto3.client("lambda", region_name=region)
     for username in usernames:
-        for payload in random.sample(nibbles, 3):
+        for payload in random.sample(nibbles, 2):
             response = client.invoke(
                 FunctionName=f"{environment_namespace}-resolver_admin_nibble_mutation",
                 InvocationType="RequestResponse",

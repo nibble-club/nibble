@@ -4,14 +4,14 @@ import os
 import redis
 from common import es_indices
 from common.errors import NibbleError
-from elasticsearch_dsl import Search
+from elasticsearch_dsl import Q, Search
 
 # constants
-NIBBLE_PROPERTIES = ("Distance", "AvailableNow")
+NIBBLE_PROPERTIES = ("Distance", "AvailableNow", "Recommended")
 MAX_DISTANCE = 2  # miles
 MAX_IRRELEVANT_DISTANCE = 20  # miles
-INTERNAL_RESTAURANT_COUNT_LIMIT = 20
-RETURN_COUNT = 10
+INTERNAL_RESTAURANT_COUNT_LIMIT = 24
+RETURN_COUNT = 12
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -42,6 +42,7 @@ def lambda_handler(event, context):
     # fetch restaurants within distance threshold
     s = (
         Search(using=es, index=es_indices.RESTAURANT_INDEX)
+        .query(Q("bool", should=[Q()]))
         .filter("term", active=True)
         .filter(
             "geo_distance",
@@ -94,6 +95,15 @@ def lambda_handler(event, context):
             .filter("range", **{"availableTo": {"gte": "now"}})
             .filter("terms", **{"restaurantId": valid_restaurant_ids})
             .sort({"price": {"order": "asc"}}, {"availableTo": {"order": "asc"}})
+        )
+        nibble_response = nibble_search[0:RETURN_COUNT].execute()
+        return es_indices.parse_nibble_response(r, nibble_response)
+    elif nibble_property == "Recommended":
+        nibble_search = (
+            Search(using=es, index=es_indices.NIBBLE_INDEX)
+            .filter("range", **{"availableTo": {"gte": "now"}})
+            .filter("terms", **{"restaurantId": valid_restaurant_ids})
+            .sort({"price": {"order": "desc"}}, {"availableFrom": {"order": "desc"}})
         )
         nibble_response = nibble_search[0:RETURN_COUNT].execute()
         return es_indices.parse_nibble_response(r, nibble_response)
