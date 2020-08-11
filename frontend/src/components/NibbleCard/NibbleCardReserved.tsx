@@ -1,14 +1,12 @@
 import moment from "moment";
 import React, { useState } from "react";
 
-import {
-  NibbleReservationStatus,
-  NibbleReservedInfoFragment
-} from "../../graphql/generated/types";
+import { NibbleReservationStatus } from "../../graphql/generated/types";
 import S3Image from "../S3Image";
 import { useStyles } from "./NibbleCard.style";
+import { NibbleCardReservedProps } from "./NibbleCardReserved.types";
 
-export const NibbleCardReserved = (props: NibbleReservedInfoFragment) => {
+export const NibbleCardReserved = (props: NibbleCardReservedProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const classes = useStyles({ isHovered, ...props });
 

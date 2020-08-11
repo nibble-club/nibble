@@ -1,7 +1,7 @@
 import moment from "moment";
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { useHistory, useParams } from "react-router-dom";
+import { Link, useHistory, useParams } from "react-router-dom";
 
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 
@@ -119,7 +119,9 @@ const NibbleDetail = () => {
               <div className={classes.priceNameContainer}>
                 <h3 id={"price"}>{formatAsCurrency(data.nibbleInfo.price)}</h3>
                 <p id={"separator"}>|</p>
-                <h3 id={"restaurant"}>{data.nibbleInfo.restaurant.name}</h3>
+                <Link to={{ pathname: `/restaurant/${data.nibbleInfo.restaurant.id}` }}>
+                  <h3 id={"restaurant"}>{data.nibbleInfo.restaurant.name}</h3>
+                </Link>
               </div>
               <div className={classes.properties}>
                 <NibbleProperty

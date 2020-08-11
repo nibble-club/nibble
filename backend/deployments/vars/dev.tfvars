@@ -52,4 +52,4 @@ resolver_recent_searches_lambda_artifact = "resolver_recent_searches-64f5938b54.
 resolver_location_for_postal_code_lambda_name = "resolver_location_for_postal_code"
 resolver_location_for_postal_code_lambda_artifact = "resolver_location_for_postal_code-2ae0b924d3.zip"
 resolver_nibbles_with_property_lambda_name = "resolver_nibbles_with_property"
-resolver_nibbles_with_property_lambda_artifact = "resolver_nibbles_with_property-be57daa9e2.zip"
+resolver_nibbles_with_property_lambda_artifact = "resolver_nibbles_with_property-4d2b7910de.zip"

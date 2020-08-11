@@ -230,10 +230,10 @@ export type PaginationInput = {
 export type Query = {
   __typename?: 'Query';
   userInfo: User;
-  nibblesFeatured: Array<Maybe<NibbleAvailable>>;
+  nibblesFeatured: Array<NibbleAvailable>;
   nibbleInfo: NibbleAvailable;
-  nibblesRecommended: Array<Maybe<NibbleAvailable>>;
-  nibblesWithProperty: Array<Maybe<NibbleAvailable>>;
+  nibblesRecommended: Array<NibbleAvailable>;
+  nibblesWithProperty: Array<NibbleAvailable>;
   closestRestaurants: ClosestRestaurantsResults;
   geocodeAddress: LatLon;
   imageUploadURL: ImageUploadDestination;
@@ -370,8 +370,8 @@ export type User = {
   email: Scalars['String'];
   phoneNumber?: Maybe<Scalars['String']>;
   postalCode?: Maybe<Scalars['String']>;
-  nibblesReserved: Array<Maybe<NibbleReserved>>;
-  nibblesHistory: Array<Maybe<NibbleReserved>>;
+  nibblesReserved: Array<NibbleReserved>;
+  nibblesHistory: Array<NibbleReserved>;
 };
 
 export type NibbleAvailableInfoFragment = (
@@ -392,6 +392,42 @@ export type NibbleReservedInfoFragment = (
   ), restaurant: (
     { __typename?: 'Restaurant' }
     & Pick<Restaurant, 'id' | 'name'>
+  ) }
+);
+
+export type NibbleRestaurantInfoFragment = (
+  { __typename?: 'NibbleAvailable' }
+  & { restaurant: (
+    { __typename?: 'Restaurant' }
+    & Pick<Restaurant, 'id' | 'name'>
+    & { logoUrl: (
+      { __typename?: 'S3Object' }
+      & Pick<S3Object, 'bucket' | 'region' | 'key'>
+    ), address: (
+      { __typename?: 'Address' }
+      & { location: (
+        { __typename?: 'LatLon' }
+        & Pick<LatLon, 'latitude' | 'longitude'>
+      ) }
+    ) }
+  ) }
+);
+
+export type NibbleRestaurantInfoWithDistanceFragment = (
+  { __typename?: 'NibbleAvailable' }
+  & { restaurant: (
+    { __typename?: 'Restaurant' }
+    & Pick<Restaurant, 'id' | 'name' | 'distance'>
+    & { logoUrl: (
+      { __typename?: 'S3Object' }
+      & Pick<S3Object, 'bucket' | 'region' | 'key'>
+    ), address: (
+      { __typename?: 'Address' }
+      & { location: (
+        { __typename?: 'LatLon' }
+        & Pick<LatLon, 'latitude' | 'longitude'>
+      ) }
+    ) }
   ) }
 );
 
@@ -499,22 +535,24 @@ export type NibbleInfoWithRestaurantQuery = (
   { __typename?: 'Query' }
   & { nibbleInfo: (
     { __typename?: 'NibbleAvailable' }
-    & { restaurant: (
-      { __typename?: 'Restaurant' }
-      & Pick<Restaurant, 'id' | 'name'>
-      & { logoUrl: (
-        { __typename?: 'S3Object' }
-        & Pick<S3Object, 'bucket' | 'region' | 'key'>
-      ), address: (
-        { __typename?: 'Address' }
-        & { location: (
-          { __typename?: 'LatLon' }
-          & Pick<LatLon, 'latitude' | 'longitude'>
-        ) }
-      ) }
-    ) }
     & NibbleAvailableInfoFragment
+    & NibbleRestaurantInfoFragment
   ) }
+);
+
+export type NibblesWithPropertyDistanceQueryVariables = Exact<{
+  userLocation: LatLonInput;
+  property: NibbleRecommendationReason;
+}>;
+
+
+export type NibblesWithPropertyDistanceQuery = (
+  { __typename?: 'Query' }
+  & { nibblesWithProperty: Array<(
+    { __typename?: 'NibbleAvailable' }
+    & NibbleAvailableInfoFragment
+    & NibbleRestaurantInfoWithDistanceFragment
+  )> }
 );
 
 export type RestaurantDistanceQueryVariables = Exact<{
@@ -541,6 +579,7 @@ export type RestaurantForAdminQuery = (
     & { nibblesAvailable: Array<Maybe<(
       { __typename?: 'NibbleAvailable' }
       & NibbleAvailableInfoFragment
+      & NibbleRestaurantInfoFragment
     )>> }
     & RestaurantInfoFragment
   ) }
@@ -585,13 +624,9 @@ export type UserInfoQuery = (
     & { profilePicUrl: (
       { __typename?: 'S3Object' }
       & Pick<S3Object, 'bucket' | 'region' | 'key'>
-    ), nibblesReserved: Array<Maybe<(
+    ), nibblesReserved: Array<(
       { __typename?: 'NibbleReserved' }
-      & { restaurant: (
-        { __typename?: 'Restaurant' }
-        & Pick<Restaurant, 'id' | 'name'>
-      ) }
       & NibbleReservedInfoFragment
-    )>> }
+    )> }
   ) }
 );

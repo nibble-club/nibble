@@ -93,7 +93,9 @@ def main():
             imageUrl = upload_nibble_image(n["imageName"])
 
         now = datetime.datetime.now()
-        now += datetime.timedelta(hours=random.randint(-2, 2))
+        now += datetime.timedelta(
+            hours=random.randint(-2, 2), minutes=random.randint(-30, 30)
+        )
         then = now + datetime.timedelta(hours=8)
 
         nibbles.append(

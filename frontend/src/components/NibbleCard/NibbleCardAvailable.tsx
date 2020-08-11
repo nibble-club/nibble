@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 
-import { NibbleAvailableInfoFragment } from "../../graphql/generated/types";
 import NibbleProperty, { NibblePropertyIcon } from "../NibbleProperty";
 import S3Image from "../S3Image";
 import { useStyles } from "./NibbleCard.style";
+import { NibbleCardAvailableProps } from "./NibbleCardAvailable.types";
 
 export const getIconForType = (type: string) => {
   const typeStr = type.toUpperCase();
@@ -18,12 +18,7 @@ export const getIconForType = (type: string) => {
   }
 };
 
-export const NibbleCardAvailable = (
-  props: NibbleAvailableInfoFragment & {
-    restaurantName: string;
-    restaurantDistance?: number;
-  }
-) => {
+export const NibbleCardAvailable = (props: NibbleCardAvailableProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const classes = useStyles({ isHovered, ...props });
 
@@ -36,14 +31,14 @@ export const NibbleCardAvailable = (
       <div>
         <S3Image className={classes.image} location={props.imageUrl} alt={props.name} />
       </div>
-      <div className={classes.restaurant}>{props.restaurantName}</div>
+      <div className={classes.restaurant}>{props.restaurant.name}</div>
       <div className={classes.name}>{props.name}</div>
       <div>
         <div>
-          {props.restaurantDistance && (
+          {props.restaurant.distance && (
             <NibbleProperty
               icon={NibblePropertyIcon.Location}
-              text={`${props.restaurantDistance || 0} miles`}
+              text={`${props.restaurant.distance.toFixed(1) || 0} miles`}
             />
           )}
           <NibbleProperty icon={getIconForType(props.type)} text={props.type} />

@@ -44,6 +44,47 @@ export const NIBBLE_RESERVED_INFO_FRAGMENT = gql`
   }
 `;
 
+export const NIBBLE_RESTAURANT_INFO_FRAGMENT = gql`
+  fragment NibbleRestaurantInfo on NibbleAvailable {
+    restaurant {
+      id
+      name
+      logoUrl {
+        bucket
+        region
+        key
+      }
+      address {
+        location {
+          latitude
+          longitude
+        }
+      }
+    }
+  }
+`;
+
+export const NIBBLE_RESTAURANT_INFO_WITH_DISTANCE_FRAGMENT = gql`
+  fragment NibbleRestaurantInfoWithDistance on NibbleAvailable {
+    restaurant {
+      id
+      name
+      logoUrl {
+        bucket
+        region
+        key
+      }
+      address {
+        location {
+          latitude
+          longitude
+        }
+      }
+      distance(currentPos: $userLocation)
+    }
+  }
+`;
+
 export const RESTAURANT_INFO_FRAGMENT = gql`
   fragment RestaurantInfo on Restaurant {
     id

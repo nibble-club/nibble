@@ -2,6 +2,7 @@ import React from "react";
 
 import { NibbleAvailableInfoFragment, NibbleType } from "../../graphql/generated/types";
 import { NibbleCardAvailable } from "./NibbleCardAvailable";
+import { NibbleCardAvailableProps } from "./NibbleCardAvailable.types";
 
 export default {
   component: NibbleCardAvailable,
@@ -9,13 +10,24 @@ export default {
   excludeStories: /.*Props$/,
 };
 
-export const symphonySushiProps: NibbleAvailableInfoFragment & {
-  restaurantName: string;
-  restaurantDistance?: number;
-} = {
+export const symphonySushiProps: NibbleCardAvailableProps = {
   id: "3",
-  restaurantName: "Symphony Sushi",
-  restaurantDistance: 0.2,
+  restaurant: {
+    name: "Symphony Sushi",
+    address: {
+      location: {
+        latitude: 42,
+        longitude: -71,
+      },
+    },
+    id: "23",
+    logoUrl: {
+      bucket: "PLACEHOLDER",
+      region: "",
+      key: "logo",
+    },
+    distance: 0.2,
+  },
   name: "Half sushi roll",
   type: NibbleType.Prepared,
   count: 5,
@@ -29,13 +41,24 @@ export const symphonySushiProps: NibbleAvailableInfoFragment & {
   price: 300,
 };
 
-export const cheesesteakPlaceProps: NibbleAvailableInfoFragment & {
-  restaurantName: string;
-  restaurantDistance?: number;
-} = {
+export const cheesesteakPlaceProps: NibbleCardAvailableProps = {
   id: "4",
-  restaurantName: "Cheesesteak Place",
-  restaurantDistance: 1.2,
+  restaurant: {
+    name: "Cheesesteak Place",
+    address: {
+      location: {
+        latitude: 42,
+        longitude: -71,
+      },
+    },
+    id: "23",
+    logoUrl: {
+      bucket: "PLACEHOLDER",
+      region: "",
+      key: "logo",
+    },
+    distance: 1.2,
+  },
   name: "2 Hoagie rolls",
   type: NibbleType.Ingredients,
   count: 1,

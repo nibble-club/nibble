@@ -11,25 +11,25 @@ import {
 type NibbleCardPropsWithHover = NibbleAvailableInfoFragment &
   NibbleReservedInfoFragment & { isHovered: boolean };
 
-export const getColorForAmount = (amount: number) => {
+export const getColorForAmount = (amount: number, theme: AppTheme) => {
   if (amount <= 1) {
-    return appTheme.color.text.alert;
+    return theme.color.text.alert;
   } else if (amount <= 3) {
-    return appTheme.color.text.warn;
+    return theme.color.text.warn;
   } else {
-    return appTheme.color.text.primary;
+    return theme.color.text.primary;
   }
 };
 
-const getColorForStatus = (status: NibbleReservationStatus) => {
+const getColorForStatus = (status: NibbleReservationStatus, theme: AppTheme) => {
   switch (status) {
     case NibbleReservationStatus.Reserved:
-      return appTheme.color.blue;
+      return theme.color.blue;
     case NibbleReservationStatus.CancelledByRestaurant:
     case NibbleReservationStatus.CancelledByUser:
-      return appTheme.color.text.alert;
+      return theme.color.text.alert;
     default:
-      return appTheme.color.text.primary;
+      return theme.color.text.primary;
   }
 };
 
@@ -74,6 +74,7 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
     color: theme.color.green,
     fontSize: theme.fontSizes.small,
     fontWeight: "bold",
+    lineHeight: 1.1,
   },
   name: {
     color: theme.color.text.primary,
@@ -88,7 +89,7 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
     bottom: cardPadding,
     fontSize: theme.fontSizes.xLarge,
     lineHeight: "100%",
-    color: (props: NibbleCardPropsWithHover) => getColorForAmount(props.count),
+    color: (props: NibbleCardPropsWithHover) => getColorForAmount(props.count, theme),
     fontWeight: "700",
     textShadow: theme.shadow[0],
     "&#reserved": {
@@ -101,7 +102,7 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
     fontSize: theme.fontSizes.small,
   },
   pickupByTime: {
-    color: (props: NibbleCardPropsWithHover) => getColorForStatus(props.status),
+    color: (props: NibbleCardPropsWithHover) => getColorForStatus(props.status, theme),
     fontSize: theme.fontSizes.large,
     lineHeight: "100%",
     fontWeight: "700",

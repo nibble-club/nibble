@@ -261,6 +261,6 @@ type User {
   email: String!
   phoneNumber: String
   postalCode: String
-  nibblesReserved: [NibbleReserved]!
-  nibblesHistory: [NibbleReserved]!
+  nibblesReserved: [NibbleReserved!]!
+  nibblesHistory: [NibbleReserved!]!
 }

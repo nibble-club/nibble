@@ -9,8 +9,9 @@ from elasticsearch_dsl import Search
 # constants
 NIBBLE_PROPERTIES = ("Distance", "AvailableNow")
 MAX_DISTANCE = 2  # miles
+MAX_IRRELEVANT_DISTANCE = 20  # miles
 INTERNAL_RESTAURANT_COUNT_LIMIT = 20
-RETURN_COUNT = 5
+RETURN_COUNT = 10
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -31,52 +32,56 @@ def lambda_handler(event, context):
         raise NibbleError("Invalid field {0} for search resolver".format(field))
 
     # collect input
-    user_location = event["arguments"]["userLocation"]
     nibble_property = event["arguments"]["property"]
+    user_location = event["arguments"]["userLocation"]
 
     # validation
     if nibble_property not in NIBBLE_PROPERTIES:
         raise NibbleError("Invalid recommendation reason {0}".format(nibble_property))
 
-    # fetch nibbles
-    if nibble_property == "Distance":
-        # fetch restaurants within distance threshold
-        s = (
-            Search(using=es, index=es_indices.RESTAURANT_INDEX)
-            .filter("term", active=True)
-            .filter(
-                "geo_distance",
-                **{
-                    "distance": f"{MAX_DISTANCE}miles",
-                    "distance_type": "plane",
+    # fetch restaurants within distance threshold
+    s = (
+        Search(using=es, index=es_indices.RESTAURANT_INDEX)
+        .filter("term", active=True)
+        .filter(
+            "geo_distance",
+            **{
+                "distance": f"{MAX_IRRELEVANT_DISTANCE}miles",
+                "distance_type": "plane",
+                "address.location": {
+                    "lat": user_location["latitude"],
+                    "lon": user_location["longitude"],
+                },
+            },
+        )
+        .sort(
+            {
+                "_geo_distance": {
                     "address.location": {
                         "lat": user_location["latitude"],
                         "lon": user_location["longitude"],
                     },
-                },
-            )
-            .sort(
-                {
-                    "_geo_distance": {
-                        "address.location": {
-                            "lat": user_location["latitude"],
-                            "lon": user_location["longitude"],
-                        },
-                        "order": "asc",
-                        "unit": "miles",
-                        "distance_type": "plane",
-                    }
+                    "order": "asc",
+                    "unit": "miles",
+                    "distance_type": "plane",
                 }
-            )
+            }
         )
-        nearby_restaurants = s[0:INTERNAL_RESTAURANT_COUNT_LIMIT].execute()
-        valid_restaurant_ids = [hit.meta.id for hit in nearby_restaurants]
+    )
+    nearby_restaurants = s[0:INTERNAL_RESTAURANT_COUNT_LIMIT].execute()
+    valid_restaurant_ids = [hit.meta.id for hit in nearby_restaurants]
+    closer_restaurant_ids = [
+        hit.meta.id for hit in nearby_restaurants if hit.meta.sort[0] < MAX_DISTANCE
+    ]
+
+    # fetch nibbles within MAX_DISTANCE
+    if nibble_property == "Distance":
         # now find nibbles at those restaurants
         nibble_search = (
             Search(using=es, index=es_indices.NIBBLE_INDEX)
-            .filter("range", **{"availableFrom": {"lte": "now"}})
             .filter("range", **{"availableTo": {"gte": "now"}})
-            .filter("terms", **{"restaurantId": valid_restaurant_ids})
+            .filter("terms", **{"restaurantId": closer_restaurant_ids})
+            .sort({"availableFrom": {"order": "asc"}})
         )
 
         nibble_response = nibble_search[0:RETURN_COUNT].execute()
@@ -87,7 +92,8 @@ def lambda_handler(event, context):
             Search(using=es, index=es_indices.NIBBLE_INDEX)
             .filter("range", **{"availableFrom": {"lte": "now"}})
             .filter("range", **{"availableTo": {"gte": "now"}})
-            .sort({"availableTo": {"order": "asc"}})
+            .filter("terms", **{"restaurantId": valid_restaurant_ids})
+            .sort({"price": {"order": "asc"}}, {"availableTo": {"order": "asc"}})
         )
         nibble_response = nibble_search[0:RETURN_COUNT].execute()
         return es_indices.parse_nibble_response(r, nibble_response)

@@ -1,4 +1,3 @@
-import Maybe from "graphql/tsutils/Maybe";
 import React from "react";
 import { useDispatch } from "react-redux";
 import { Link, useRouteMatch } from "react-router-dom";
@@ -8,7 +7,6 @@ import Auth from "@aws-amplify/auth";
 
 import HeroImage from "../../components/HeroImage/HeroImage";
 import {
-  NibbleAvailableInfoFragment,
   RestaurantForAdminQuery,
   RestaurantForAdminQueryVariables
 } from "../../graphql/generated/types";
@@ -60,23 +58,18 @@ const AdminHome = (props: AdminHomeProps) => {
       <div style={{ display: "flex", flexDirection: "row" }}>
         {!loading &&
           !error &&
-          data?.restaurantForAdmin.nibblesAvailable.map(
-            (nibble: Maybe<NibbleAvailableInfoFragment>) => {
-              if (nibble) {
-                return (
-                  <Link
-                    to={{ pathname: `${url}/edit_nibble/${nibble.id}` }}
-                    key={nibble.id}
-                  >
-                    <NibbleCardAvailable
-                      {...nibble}
-                      restaurantName={data.restaurantForAdmin.name}
-                    />
-                  </Link>
-                );
-              }
+          data?.restaurantForAdmin.nibblesAvailable.map((nibble) => {
+            if (nibble) {
+              return (
+                <Link
+                  to={{ pathname: `${url}/edit_nibble/${nibble.id}` }}
+                  key={nibble.id}
+                >
+                  <NibbleCardAvailable {...nibble} />
+                </Link>
+              );
             }
-          )}
+          })}
       </div>
     </div>
   );

@@ -45,7 +45,7 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
     fontSize: theme.fontSizes.xxLarge,
     fontWeight: "bold",
     // textShadow: textOutlineShadow(theme),
-    color: ({ count }) => getColorForAmount(count),
+    color: ({ count }) => getColorForAmount(count, theme),
   },
   properties: {
     position: "absolute",

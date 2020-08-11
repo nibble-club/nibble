@@ -3,6 +3,8 @@ import { gql } from "@apollo/client";
 import {
   NIBBLE_AVAILABLE_INFO_FRAGMENT,
   NIBBLE_RESERVED_INFO_FRAGMENT,
+  NIBBLE_RESTAURANT_INFO_FRAGMENT,
+  NIBBLE_RESTAURANT_INFO_WITH_DISTANCE_FRAGMENT,
   RESTAURANT_INFO_FRAGMENT
 } from "./fragments";
 
@@ -71,24 +73,25 @@ export const NIBBLE_INFO_WITH_RESTAURANT = gql`
   query NibbleInfoWithRestaurant($nibbleId: ID!) {
     nibbleInfo(nibbleId: $nibbleId) {
       ...NibbleAvailableInfo
-      restaurant {
-        id
-        name
-        logoUrl {
-          bucket
-          region
-          key
-        }
-        address {
-          location {
-            latitude
-            longitude
-          }
-        }
-      }
+      ...NibbleRestaurantInfo
     }
   }
   ${NIBBLE_AVAILABLE_INFO_FRAGMENT}
+  ${NIBBLE_RESTAURANT_INFO_FRAGMENT}
+`;
+
+export const NIBBLES_WITH_PROPERTY_DISTANCE = gql`
+  query NibblesWithPropertyDistance(
+    $userLocation: LatLonInput!
+    $property: NibbleRecommendationReason!
+  ) {
+    nibblesWithProperty(userLocation: $userLocation, property: $property) {
+      ...NibbleAvailableInfo
+      ...NibbleRestaurantInfoWithDistance
+    }
+  }
+  ${NIBBLE_AVAILABLE_INFO_FRAGMENT}
+  ${NIBBLE_RESTAURANT_INFO_WITH_DISTANCE_FRAGMENT}
 `;
 
 export const RESTAURANT_DISTANCE = gql`
@@ -105,11 +108,13 @@ export const RESTAURANT_FOR_ADMIN = gql`
       ...RestaurantInfo
       nibblesAvailable {
         ...NibbleAvailableInfo
+        ...NibbleRestaurantInfo
       }
     }
   }
   ${RESTAURANT_INFO_FRAGMENT}
   ${NIBBLE_AVAILABLE_INFO_FRAGMENT}
+  ${NIBBLE_RESTAURANT_INFO_FRAGMENT}
 `;
 
 export const SEARCH = gql`
@@ -157,10 +162,6 @@ export const USER_INFO = gql`
       postalCode
       nibblesReserved {
         ...NibbleReservedInfo
-        restaurant {
-          id
-          name
-        }
       }
     }
   }
