@@ -8,7 +8,7 @@ export const NibbleCollectionLoading = () => {
 
   return (
     <div className={classes.collectionContainer}>
-      {[1, 2, 3, 4, 5].map((num) => (
+      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((num) => (
         <NibbleCardLoading key={num} />
       ))}
     </div>

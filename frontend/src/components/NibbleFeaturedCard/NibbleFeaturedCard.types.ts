@@ -1,6 +1,3 @@
-import { NibbleAvailableInfoFragment } from "../../graphql/generated/types";
+import { NibbleCardAvailableProps } from "../NibbleCard/NibbleCardAvailable.types";
 
-export type NibbleFeaturedCardProps = NibbleAvailableInfoFragment & {
-  restaurantName: string;
-  restaurantDistance?: number;
-};
+export type NibbleFeaturedCardProps = NibbleCardAvailableProps;

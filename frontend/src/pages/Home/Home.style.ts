@@ -7,8 +7,7 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
   mainContent: {
     marginTop: theme.headerHeight,
   },
-  nibbleCollection: {
+  recommendedCollection: {
     ...ROW_FLEX_BOX,
-    justifyContent: "start",
   },
 }));

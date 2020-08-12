@@ -8,20 +8,23 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
     ...ROW_FLEX_BOX,
     justifyContent: "start",
     alignItems: "start",
-    width: "100%",
+    width: "min(95vw, 950px)",
     overflowX: "scroll",
     flexWrap: "wrap",
-    paddingRight: theme.spacing.small,
     // hide scroll bar
     "&::-webkit-scrollbar": {
       display: "none",
     },
     "-ms-overflow-style": "none",
     scrollbarWidth: "none",
+    transition: theme.animation.simple,
+    margin: "auto",
   },
   "@media (max-width: 620px)": {
     collectionContainer: {
       flexWrap: "nowrap",
+      justifyContent: "start",
+      width: "100vw",
     },
   },
 }));

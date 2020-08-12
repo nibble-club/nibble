@@ -3,17 +3,30 @@ import ContentLoader from "react-content-loader";
 import { useTheme } from "react-jss";
 
 import { AppTheme } from "../../common/theming/theming.types";
-import { cardPadding, cardWidth, useLoadingStyles } from "./NibbleCard.style";
+import {
+  cardPadding,
+  cardWidthFourCards,
+  cardWidthThreeCards,
+  cardWidthTwoCards,
+  useLoadingStyles
+} from "./NibbleCard.style";
 
 export const NibbleCardLoading = () => {
   const appTheme = useTheme() as AppTheme;
   const [isHovered, setIsHovered] = useState(false);
 
   const classes = useLoadingStyles(isHovered);
+  // needs to match media queries in NibbleCard.style.ts
+  let cardWidth = cardWidthFourCards;
+  if (window.innerWidth < 620) {
+    cardWidth = cardWidthTwoCards;
+  } else if (window.innerWidth < 800) {
+    cardWidth = cardWidthThreeCards;
+  }
   const imageHeight = `calc((${cardWidth} + 2 * ${cardPadding}) * 2/3)`;
   return (
     <div
-      className={classes.loading}
+      className={classes.container}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

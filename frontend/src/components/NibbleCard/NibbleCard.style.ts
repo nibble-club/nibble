@@ -1,6 +1,5 @@
 import { createUseStyles } from "react-jss";
 
-import { appTheme } from "../../common/theming/theming";
 import { AppTheme } from "../../common/theming/theming.types";
 import {
   NibbleAvailableInfoFragment,
@@ -33,20 +32,46 @@ const getColorForStatus = (status: NibbleReservationStatus, theme: AppTheme) => 
   }
 };
 
-export const cardWidth = "min(250px, 42vw)";
-export const cardPadding = appTheme.spacing.medium;
-export const imageWidth = `calc(${cardWidth} + 2 * (${cardPadding}))`;
+// 0-620px: 2 cards
+// 2 |     xx      | 2 |     xx      | 2
+// 620-1000px: 3 cards
+// 2 |  xx   | 2 |  xx   | 2 |  xx   | 2
+// 1000+px: 4 cards
+// 2 | xx | 2 | xx | 2 | xx | 2 | xx | 2
+export const cardWidthTwoCards = "42.5vw";
+export const cardWidthThreeCards = "27vw";
+export const cardWidthFourCards = "min(19.25vw, 192.5px)";
+export const cardPadding = "min(1.5vw, 15px)";
+export const imageWidth = `calc(var(--base-width) + 2 * (${cardPadding}))`;
+
+const widthMediaQueries = {
+  "@media (max-width: 620px)": {
+    container: {
+      "--base-width": cardWidthTwoCards,
+    },
+  },
+  "@media (min-width: 621px) and (max-width: 1000px)": {
+    container: {
+      "--base-width": cardWidthThreeCards,
+    },
+  },
+  "@media (min-width: 1001px)": {
+    container: {
+      "--base-width": cardWidthFourCards,
+    },
+  },
+};
 
 /**
  * Used in both loading and loaded styles
  */
 const commonContainerStyles = (theme: AppTheme) => ({
-  width: cardWidth,
+  width: "var(--base-width)",
   background: theme.color.card[0],
   borderRadius: theme.rounding.medium,
   padding: cardPadding,
   transition: theme.animation.simple,
-  margin: theme.spacing.medium,
+  margin: cardPadding,
   marginRight: 0,
 });
 
@@ -69,6 +94,7 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
     marginTop: `calc(-1 * (${cardPadding}))`,
     borderRadius: `${theme.rounding.medium}px ${theme.rounding.medium}px 0px 0px`,
     objectFit: "cover",
+    transition: theme.animation.simple,
   },
   restaurant: {
     color: theme.color.green,
@@ -106,14 +132,15 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
     fontSize: theme.fontSizes.large,
     lineHeight: "100%",
     fontWeight: "700",
-    maxWidth: `calc(${cardWidth} * 2 / 3)`,
+    maxWidth: `calc(var(--base-width) * 2 / 3)`,
   },
+  ...widthMediaQueries,
 }));
 
 export const useLoadingStyles = createUseStyles((theme: AppTheme) => ({
-  loading: {
+  container: {
     ...commonContainerStyles(theme),
-    height: `calc(${cardWidth} + 70px)`,
+    height: 320,
     "& svg": {
       width: imageWidth,
       height: "100%",
@@ -122,4 +149,5 @@ export const useLoadingStyles = createUseStyles((theme: AppTheme) => ({
     },
     boxShadow: (isHovered: boolean) => (isHovered ? theme.shadow[2] : theme.shadow[0]),
   },
+  ...widthMediaQueries,
 }));

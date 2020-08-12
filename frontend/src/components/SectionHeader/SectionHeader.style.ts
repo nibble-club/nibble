@@ -5,6 +5,7 @@ import { SectionHeaderProps } from "./SectionHeader.types";
 
 export const useStyles = createUseStyles((theme: AppTheme) => ({
   container: {
+    maxWidth: 1000,
     padding: theme.spacing.small,
     paddingLeft: theme.spacing.large,
     paddingRight: theme.spacing.large,
@@ -12,6 +13,7 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    margin: "auto",
   },
   text: {
     color: (props: SectionHeaderProps) => props.color,

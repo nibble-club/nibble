@@ -187,6 +187,7 @@ export type NibbleCancelReservationResponse = {
 };
 
 export enum NibbleRecommendationReason {
+  Recommended = 'Recommended',
   Distance = 'Distance',
   AvailableNow = 'AvailableNow'
 }
@@ -232,7 +233,6 @@ export type Query = {
   userInfo: User;
   nibblesFeatured: Array<NibbleAvailable>;
   nibbleInfo: NibbleAvailable;
-  nibblesRecommended: Array<NibbleAvailable>;
   nibblesWithProperty: Array<NibbleAvailable>;
   closestRestaurants: ClosestRestaurantsResults;
   geocodeAddress: LatLon;
@@ -252,11 +252,6 @@ export type QueryNibblesFeaturedArgs = {
 
 export type QueryNibbleInfoArgs = {
   nibbleId: Scalars['ID'];
-};
-
-
-export type QueryNibblesRecommendedArgs = {
-  userLocation: LatLonInput;
 };
 
 

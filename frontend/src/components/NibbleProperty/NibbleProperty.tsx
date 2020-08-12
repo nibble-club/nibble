@@ -36,6 +36,7 @@ const useStyles = createUseStyles((theme: AppTheme) => ({
     lineHeight: "100%",
     marginTop: theme.spacing.small,
     marginRight: theme.spacing.small,
+    boxShadow: theme.shadow[1],
   },
   icon: {
     paddingRight: theme.spacing.xSmall,

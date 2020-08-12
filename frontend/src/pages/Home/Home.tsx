@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useTheme } from "react-jss";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
@@ -14,6 +14,13 @@ import {
   NibbleCollectionLoading,
   NibbleCollectionReserved
 } from "../../components/NibbleCollection";
+import {
+  NibbleFeaturedCard,
+  NibbleFeaturedCardLoading
+} from "../../components/NibbleFeaturedCard";
+import {
+  NibbleFeaturedCardProps
+} from "../../components/NibbleFeaturedCard/NibbleFeaturedCard.types";
 import { PROFILE_PICTURE_PLACEHOLDER } from "../../components/S3Image/S3Image";
 import SectionHeader from "../../components/SectionHeader/SectionHeader";
 import {
@@ -37,10 +44,24 @@ const Home = () => {
     NibblesWithPropertyDistanceQuery,
     NibblesWithPropertyDistanceQueryVariables
   >(NIBBLES_WITH_PROPERTY_DISTANCE);
+  const [fetchRecommendedNibbles, { data: recommendedNibbles }] = useLazyQuery<
+    NibblesWithPropertyDistanceQuery,
+    NibblesWithPropertyDistanceQueryVariables
+  >(NIBBLES_WITH_PROPERTY_DISTANCE);
   const appTheme = useTheme() as AppTheme;
   const classes = useStyles();
   const dispatch = useDispatch();
   const location = useLocation();
+  const [recommended, setRecommended] = useState<NibbleFeaturedCardProps[]>([]);
+  const [recommendedCount, setRecommendedCount] = useState(1);
+  const [width, setWidth] = useState(window.innerWidth);
+
+  // update window width
+  useEffect(() => {
+    window.addEventListener("resize", () => {
+      setWidth(window.innerWidth);
+    });
+  }, []);
 
   // fetch nibbles with property
   useEffect(() => {
@@ -57,8 +78,36 @@ const Home = () => {
           userLocation: location.location,
         },
       });
+      fetchRecommendedNibbles({
+        variables: {
+          property: NibbleRecommendationReason.Recommended,
+          userLocation: location.location,
+        },
+      });
     }
-  }, [location.loading, location.location, fetchNearbyNibbles, fetchAvailableNibbles]);
+  }, [
+    location.loading,
+    location.location,
+    fetchNearbyNibbles,
+    fetchAvailableNibbles,
+    fetchRecommendedNibbles,
+  ]);
+
+  // based on width fetch either 1 or 2 recommended nibbles
+  useEffect(() => {
+    if (width <= 620) {
+      setRecommendedCount(1);
+    } else {
+      setRecommendedCount(2);
+    }
+    if (recommendedNibbles) {
+      setRecommended(
+        recommendedNibbles.nibblesWithProperty
+          .filter((nibble) => nibble.count > 0)
+          .slice(0, recommendedCount)
+      );
+    }
+  }, [recommendedNibbles, recommendedCount, width]);
 
   return (
     <div>
@@ -69,10 +118,21 @@ const Home = () => {
         {data && data.userInfo.nibblesReserved.length > 0 && (
           <div>
             <SectionHeader name="Your Nibbles" color={appTheme.color.blue} />
-
             <NibbleCollectionReserved nibbles={data.userInfo.nibblesReserved} />
           </div>
         )}
+        <SectionHeader name="Recommended" color={appTheme.color.pink} />
+        <div className={classes.recommendedCollection}>
+          {(recommended.length > 0 &&
+            recommended.map((nibble) => (
+              <Link to={{ pathname: `/nibble/${nibble.id}` }} key={nibble.id}>
+                <NibbleFeaturedCard {...nibble} />
+              </Link>
+            ))) ||
+            Array.from({ length: recommendedCount }).map((_, index) => (
+              <NibbleFeaturedCardLoading key={index} />
+            ))}
+        </div>
         <SectionHeader name="Near You" color={appTheme.color.text.primary} />
         {(nearbyNibbles && (
           <NibbleCollectionAvailable nibbles={nearbyNibbles.nibblesWithProperty} />

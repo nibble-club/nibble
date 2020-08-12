@@ -189,3 +189,12 @@ export const muiTheme = createMuiTheme({
     fontFamily: '"Baloo 2"',
   },
 });
+
+const offset = "3px";
+const blur = "6px";
+export const textOutlineShadow = (
+  theme: AppTheme
+) => `-${offset} ${offset} ${blur} ${theme.color.background}, 
+${offset} ${offset} ${blur} ${theme.color.background}, 
+${offset} -${offset} ${blur} ${theme.color.background}, 
+-${offset} -${offset} ${blur} ${theme.color.background}`;

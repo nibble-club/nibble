@@ -11,8 +11,8 @@ export const NibbleCollectionAvailable = (props: NibbleCollectionAvailableProps)
   return (
     <div className={classes.collectionContainer}>
       {props.nibbles.map((nibble) => (
-        <Link to={{ pathname: `/nibble/${nibble.id}` }}>
-          <NibbleCardAvailable {...nibble} key={nibble.id} />
+        <Link to={{ pathname: `/nibble/${nibble.id}` }} key={nibble.id}>
+          <NibbleCardAvailable {...nibble} />
         </Link>
       ))}
     </div>

@@ -6,7 +6,7 @@ import { getS3ImageUrl } from "../S3Image/S3Image";
 import { useStyles } from "./NibbleFeaturedCard.style";
 import { NibbleFeaturedCardProps } from "./NibbleFeaturedCard.types";
 
-const NibbleFeaturedCard = (props: NibbleFeaturedCardProps) => {
+export const NibbleFeaturedCard = (props: NibbleFeaturedCardProps) => {
   const imageUrl = getS3ImageUrl(props.imageUrl);
   const classes = useStyles({ imageUrl, count: props.count });
 
@@ -14,11 +14,11 @@ const NibbleFeaturedCard = (props: NibbleFeaturedCardProps) => {
     <div className={classes.container}>
       <p className={classes.count}>{props.count}</p>
       <div className={classes.properties}>
-        {props.restaurantDistance && (
+        {props.restaurant.distance && (
           <div className={classes.property}>
             <NibbleProperty
               icon={NibblePropertyIcon.Location}
-              text={`${props.restaurantDistance || 0} miles`}
+              text={`${props.restaurant.distance.toFixed(1) || 0} miles`}
             />
           </div>
         )}
@@ -27,7 +27,7 @@ const NibbleFeaturedCard = (props: NibbleFeaturedCardProps) => {
         </div>
       </div>
       <div className={classes.description}>
-        <p id="restaurant">{props.restaurantName}</p>
+        <p id="restaurant">{props.restaurant.name}</p>
         <p id="name">{props.name}</p>
       </div>
       <div className={classes.icon}>
@@ -36,5 +36,3 @@ const NibbleFeaturedCard = (props: NibbleFeaturedCardProps) => {
     </div>
   );
 };
-
-export default NibbleFeaturedCard;
