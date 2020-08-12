@@ -140,7 +140,7 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
 export const useLoadingStyles = createUseStyles((theme: AppTheme) => ({
   container: {
     ...commonContainerStyles(theme),
-    height: 320,
+    height: `calc(4/3 * ${imageWidth})`,
     "& svg": {
       width: imageWidth,
       height: "100%",

@@ -3,7 +3,7 @@
 # reset
 echo "" > .env
 
-echo 'HTTPS="false"' >> .env
+echo 'HTTPS="true"' >> .env
 
 if [ -z "$DEPLOY_ENV" ]
 then

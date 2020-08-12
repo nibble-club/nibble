@@ -10,6 +10,7 @@ private_subnet_ids = [
   "subnet-074a3e5c344df5111",
 ]
 vpc_endpoint_id = "vpce-01bd0ead8b8be92a0"
+route53_zone_id = "Z0968214C1Y55Z5CSGI9"
 
 postgres_instance_class = "db.t2.micro"
 elasticsearch_instance_class = "t2.small.elasticsearch"
@@ -18,11 +19,11 @@ elasticsearch_master_instance_class = "t2.small.elasticsearch"
 ssh_public_key_path = "~/.ssh/dev-ssh_key_pair.pub"
 
 resolver_admin_nibble_mutation_lambda_name = "resolver_admin_nibble_mutation"
-resolver_admin_nibble_mutation_lambda_artifact = "resolver_admin_nibble_mutation-a29eca5b55.zip"
+resolver_admin_nibble_mutation_lambda_artifact = "resolver_admin_nibble_mutation-84f8ed193f.zip"
 migrate_database_lambda_name = "migrate_database"
 migrate_database_lambda_artifact = "migrate_database-d936d73da0.zip"
 resolver_admin_restaurant_mutation_lambda_name = "resolver_admin_restaurant_mutation"
-resolver_admin_restaurant_mutation_lambda_artifact = "resolver_admin_restaurant_mutation-793b4a4670.zip"
+resolver_admin_restaurant_mutation_lambda_artifact = "resolver_admin_restaurant_mutation-3d0c9d7056.zip"
 db_utilities_lambda_name = "db_utilities"
 db_utilities_lambda_artifact = "db_utilities-5161211d4b.zip"
 add_user_lambda_name = "add_user"
@@ -40,9 +41,9 @@ resolver_nibble_history_lambda_artifact = "resolver_nibble_history-8a8e15522f.zi
 resolver_nibble_reservation_lambda_name = "resolver_nibble_reservation"
 resolver_nibble_reservation_lambda_artifact = "resolver_nibble_reservation-e6bc281668.zip"
 resolver_image_upload_url_lambda_name = "resolver_image_upload_url"
-resolver_image_upload_url_lambda_artifact = "resolver_image_upload_url-c68b038f4a.zip"
+resolver_image_upload_url_lambda_artifact = "resolver_image_upload_url-30e5704a33.zip"
 migrate_elasticsearch_lambda_name = "migrate_elasticsearch"
-migrate_elasticsearch_lambda_artifact = "migrate_elasticsearch-e0004ec218.zip"
+migrate_elasticsearch_lambda_artifact = "migrate_elasticsearch-893e1401b5.zip"
 resolver_closest_restaurants_lambda_name = "resolver_closest_restaurants"
 resolver_closest_restaurants_lambda_artifact = "resolver_closest_restaurants-a880511ea9.zip"
 resolver_search_lambda_name = "resolver_search"

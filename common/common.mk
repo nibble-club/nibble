@@ -1,5 +1,6 @@
 # directories
 BACKEND_HOME := $(shell git rev-parse --show-toplevel)/backend
+FRONTEND_HOME := $(shell git rev-parse --show-toplevel)/frontend
 
 # check for correct environment
 ERROR_MESSAGE = "is not set - try sourcing the appropriate file from the local-dev-env directory"

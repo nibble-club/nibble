@@ -13,7 +13,6 @@ variable aws_profile {
 variable aws_target_account_id {
   type        = string
   description = "The targeted AWS account, used for accessing lambda/db schema buckets"
-  default     = "800344761765"
 }
 
 variable environment {
@@ -45,6 +44,11 @@ variable private_subnet_ids {
 variable vpc_endpoint_id {
   type        = string
   description = "ID of the VPC endpoint created in backend_resources"
+}
+
+variable route53_zone_id {
+  type        = string
+  description = "ID of the Route 53 zone with the desired domain name"
 }
 
 # service-specific configurations

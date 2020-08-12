@@ -10,6 +10,7 @@ private_subnet_ids = [
   "subnet-0dd79a5131defba7f",
 ]
 vpc_endpoint_id = "vpce-034304dfd95a2aebb"
+route53_zone_id = "Z09681113G8LJGJABLD8A"
 
 postgres_instance_class = "db.t2.micro"
 

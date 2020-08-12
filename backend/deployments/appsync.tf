@@ -2,7 +2,7 @@ resource aws_appsync_graphql_api api {
   authentication_type = "AMAZON_COGNITO_USER_POOLS"
   name                = "${var.environment_namespace}-api"
 
-  schema = file("../../frontend/schema.graphql")
+  schema = file("./schema.graphql")
 
   user_pool_config {
     default_action = "ALLOW"

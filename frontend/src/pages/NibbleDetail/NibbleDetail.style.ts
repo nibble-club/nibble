@@ -65,6 +65,7 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
     paddingRight: `calc(1.5 * ${theme.spacing.large})`,
     bottom: theme.spacing.large,
     borderRadius: theme.rounding.soft,
+    zIndex: 50,
   },
   "@media (max-width: 620px)": {
     reserveButton: {

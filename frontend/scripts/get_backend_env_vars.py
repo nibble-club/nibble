@@ -2,11 +2,14 @@
 Appends backend config vars to the .env file in the frontend folder.
 """
 
+import fileinput
 import getpass
 import logging
 import os
+import sys
 
 import boto3
+
 import git
 
 # set up logging
@@ -43,6 +46,7 @@ def main():
     logging.info("Got parameters:")
     logging.info([p["Name"] for p in response["Parameters"]])
 
+    # write to .env file, for local deploy
     with open(os.path.join(nibble_home_dir, "frontend", ".env"), "a") as f:
         for param in response["Parameters"]:
             param_name = param["Name"].split("/")[-1].upper()

@@ -21,6 +21,7 @@
     "scrollbar",
     "signup",
     "tfstate",
+    "tfvars",
     "theming",
     "unmounts",
     "viewports"
@@ -36,5 +37,13 @@
   "importSorter.importStringConfiguration.tabSize": 2,
   "python.linting.flake8Enabled": true,
   "python.linting.pylintEnabled": false,
-  "python.formatting.provider": "black"
+  "python.formatting.provider": "black",
+  "python.linting.flake8CategorySeverity.F": "Warning",
+  "[python]": {
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": true
+    }
+  },
+  "python.sortImports.path": "isort",
+  "python.sortImports.args": ["-sp", "${workspaceFolder}/.isort.cfg"]
 }

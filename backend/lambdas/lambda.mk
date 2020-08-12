@@ -3,7 +3,7 @@
 BUILDS_DIR ?= $(PWD)/build
 PACKAGES_DIR ?= $(PWD)/packages
 
-include $(shell git rev-parse --show-toplevel)/backend/common.mk
+include $(shell git rev-parse --show-toplevel)/common/common.mk
 
 LAMBDAS_S3_BUCKET = $(AWS_TARGET_ACCOUNT_ID)-$(AWS_REGION)-$(DEPLOY_ENV)-lambdas
 

@@ -10,4 +10,5 @@ locals {
   restaurant_heros_bucket       = replace("${var.aws_target_account_id}-${var.environment_namespace}-restaurant-heros", "_", "-")
   nibble_images_bucket          = replace("${var.aws_target_account_id}-${var.environment_namespace}-nibble-images", "_", "-")
   frontend_config_var_namespace = "/environment/${var.environment_namespace}/frontend_config"
+  frontend_deploy_var_namespace = "/environment/${var.environment_namespace}/frontend_deploy"
 }

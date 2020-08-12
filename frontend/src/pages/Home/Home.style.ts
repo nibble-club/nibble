@@ -9,5 +9,8 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
   },
   recommendedCollection: {
     ...ROW_FLEX_BOX,
+    justifyContent: "start",
+    margin: "auto",
+    width: "fit-content",
   },
 }));

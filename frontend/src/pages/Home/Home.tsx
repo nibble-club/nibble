@@ -123,7 +123,7 @@ const Home = () => {
         )}
         <SectionHeader name="Recommended" color={appTheme.color.pink} />
         <div className={classes.recommendedCollection}>
-          {(recommended.length > 0 &&
+          {(recommendedNibbles &&
             recommended.map((nibble) => (
               <Link to={{ pathname: `/nibble/${nibble.id}` }} key={nibble.id}>
                 <NibbleFeaturedCard {...nibble} />
