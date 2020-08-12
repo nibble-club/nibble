@@ -123,7 +123,7 @@ const MapView = ({ pins, activePin = -1, height = 500 }: MapViewProps) => {
     // it in the future.
     setTimeout(() => {
       setPinsChanged(true);
-    }, 5000);
+    }, 3000);
   }, [pinsStr]);
 
   // add pins to map, on pin change only, once map is loaded

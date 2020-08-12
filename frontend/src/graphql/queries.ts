@@ -117,6 +117,21 @@ export const RESTAURANT_FOR_ADMIN = gql`
   ${NIBBLE_RESTAURANT_INFO_FRAGMENT}
 `;
 
+export const RESTAURANT_INFO = gql`
+  query RestaurantInfo($restaurantId: ID!) {
+    restaurantInfo(restaurantId: $restaurantId) {
+      ...RestaurantInfo
+      nibblesAvailable {
+        ...NibbleAvailableInfo
+        ...NibbleRestaurantInfo
+      }
+    }
+  }
+  ${RESTAURANT_INFO_FRAGMENT}
+  ${NIBBLE_AVAILABLE_INFO_FRAGMENT}
+  ${NIBBLE_RESTAURANT_INFO_FRAGMENT}
+`;
+
 export const SEARCH = gql`
   query NibbleSearch(
     $searchParameters: SearchParametersInput!

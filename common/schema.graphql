@@ -211,7 +211,7 @@ type Restaurant {
   heroUrl: S3Object!
   disclaimer: String
   distance(currentPos: LatLonInput!): Float!
-  nibblesAvailable: [NibbleAvailable]!
+  nibblesAvailable: [NibbleAvailable!]!
   active: Boolean!
 }
 

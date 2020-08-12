@@ -84,6 +84,7 @@ const NibbleDetail = () => {
       try {
         await makeReservation({
           variables: { nibbleId: data.nibbleInfo.id, count: currentCount },
+          refetchQueries: ["UserInfo"],
         });
         console.log("Successfully reserved");
         dispatch(
@@ -114,47 +115,51 @@ const NibbleDetail = () => {
         data && (
           <div>
             <HeroImage location={data.nibbleInfo.imageUrl || HERO_PLACEHOLDER} />
-            <div className={classes.detailsContainer}>
-              <h1>{data.nibbleInfo.name}</h1>
-              <div className={classes.priceNameContainer}>
-                <h3 id={"price"}>{formatAsCurrency(data.nibbleInfo.price)}</h3>
-                <p id={"separator"}>|</p>
-                <Link to={{ pathname: `/restaurant/${data.nibbleInfo.restaurant.id}` }}>
-                  <h3 id={"restaurant"}>{data.nibbleInfo.restaurant.name}</h3>
-                </Link>
-              </div>
-              <div className={classes.properties}>
-                <NibbleProperty
-                  icon={getIconForType(data.nibbleInfo.type)}
-                  text={data.nibbleInfo.type}
-                />
-                <NibbleProperty
-                  icon={NibblePropertyIcon.Time}
-                  text={moment.unix(data.nibbleInfo.availableTo).calendar()}
-                />
-                {restaurantDistanceData && (
+            <div className={classes.fixedContainer}>
+              <div className={classes.detailsContainer}>
+                <h1>{data.nibbleInfo.name}</h1>
+                <div className={classes.priceNameContainer}>
+                  <h3 id={"price"}>{formatAsCurrency(data.nibbleInfo.price)}</h3>
+                  <p id={"separator"}>|</p>
+                  <Link
+                    to={{ pathname: `/restaurant/${data.nibbleInfo.restaurant.id}` }}
+                  >
+                    <h3 id={"restaurant"}>{data.nibbleInfo.restaurant.name}</h3>
+                  </Link>
+                </div>
+                <div className={classes.properties}>
                   <NibbleProperty
-                    icon={NibblePropertyIcon.Location}
-                    text={`${restaurantDistanceData.restaurantInfo.distance.toFixed(
-                      1
-                    )} miles`}
+                    icon={getIconForType(data.nibbleInfo.type)}
+                    text={data.nibbleInfo.type}
                   />
-                )}
+                  <NibbleProperty
+                    icon={NibblePropertyIcon.Time}
+                    text={moment.unix(data.nibbleInfo.availableTo).calendar()}
+                  />
+                  {restaurantDistanceData && (
+                    <NibbleProperty
+                      icon={NibblePropertyIcon.Location}
+                      text={`${restaurantDistanceData.restaurantInfo.distance.toFixed(
+                        1
+                      )} miles`}
+                    />
+                  )}
+                </div>
+              </div>
+              {data.nibbleInfo.description && (
+                <div className={classes.description}>{data.nibbleInfo.description}</div>
+              )}
+              <div className={classes.reservationContainer}>
+                <ReservationCountSelector
+                  availableCount={data.nibbleInfo.count}
+                  currentCount={currentCount}
+                  onCountChange={(change: number) => {
+                    setCurrentCount(currentCount + change);
+                  }}
+                />
               </div>
             </div>
-            {data.nibbleInfo.description && (
-              <div className={classes.description}>{data.nibbleInfo.description}</div>
-            )}
-            <div className={classes.reservationContainer}>
-              <ReservationCountSelector
-                availableCount={data.nibbleInfo.count}
-                currentCount={currentCount}
-                onCountChange={(change: number) => {
-                  setCurrentCount(currentCount + change);
-                }}
-              />
-            </div>
-            <MapView pins={[data.nibbleInfo.restaurant]} activePin={0} height={350} />
+            <MapView pins={[data.nibbleInfo.restaurant]} height={350} />
             <div className={classes.buttonContainer}>
               <button
                 className={classes.reserveButton}

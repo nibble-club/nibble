@@ -145,7 +145,10 @@ const AdminEditNibble = (props: AdminEditNibbleProps) => {
     };
     try {
       if (isCreate) {
-        await createNibble({ variables: { input } });
+        await createNibble({
+          variables: { input },
+          refetchQueries: ["RestaurantForAdmin"],
+        });
       } else {
         await editNibble({ variables: { id, input } });
       }

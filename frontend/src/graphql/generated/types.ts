@@ -304,7 +304,7 @@ export type Restaurant = {
   heroUrl: S3Object;
   disclaimer?: Maybe<Scalars['String']>;
   distance: Scalars['Float'];
-  nibblesAvailable: Array<Maybe<NibbleAvailable>>;
+  nibblesAvailable: Array<NibbleAvailable>;
   active: Scalars['Boolean'];
 };
 
@@ -571,11 +571,29 @@ export type RestaurantForAdminQuery = (
   { __typename?: 'Query' }
   & { restaurantForAdmin: (
     { __typename?: 'Restaurant' }
-    & { nibblesAvailable: Array<Maybe<(
+    & { nibblesAvailable: Array<(
       { __typename?: 'NibbleAvailable' }
       & NibbleAvailableInfoFragment
       & NibbleRestaurantInfoFragment
-    )>> }
+    )> }
+    & RestaurantInfoFragment
+  ) }
+);
+
+export type RestaurantInfoQueryVariables = Exact<{
+  restaurantId: Scalars['ID'];
+}>;
+
+
+export type RestaurantInfoQuery = (
+  { __typename?: 'Query' }
+  & { restaurantInfo: (
+    { __typename?: 'Restaurant' }
+    & { nibblesAvailable: Array<(
+      { __typename?: 'NibbleAvailable' }
+      & NibbleAvailableInfoFragment
+      & NibbleRestaurantInfoFragment
+    )> }
     & RestaurantInfoFragment
   ) }
 );

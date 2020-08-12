@@ -58,18 +58,11 @@ const AdminHome = (props: AdminHomeProps) => {
       <div style={{ display: "flex", flexDirection: "row" }}>
         {!loading &&
           !error &&
-          data?.restaurantForAdmin.nibblesAvailable.map((nibble) => {
-            if (nibble) {
-              return (
-                <Link
-                  to={{ pathname: `${url}/edit_nibble/${nibble.id}` }}
-                  key={nibble.id}
-                >
-                  <NibbleCardAvailable {...nibble} />
-                </Link>
-              );
-            }
-          })}
+          data?.restaurantForAdmin.nibblesAvailable.map((nibble) => (
+            <Link to={{ pathname: `${url}/edit_nibble/${nibble.id}` }} key={nibble.id}>
+              <NibbleCardAvailable {...nibble} />
+            </Link>
+          ))}
       </div>
     </div>
   );

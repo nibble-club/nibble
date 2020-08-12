@@ -5,6 +5,10 @@ import { AppTheme } from "../../common/theming/theming.types";
 
 export const useStyles = createUseStyles((theme: AppTheme) => ({
   mainContent: {},
+  fixedContainer: {
+    maxWidth: 1000,
+    margin: "auto",
+  },
   detailsContainer: {
     ...COLUMN_FLEX_BOX,
     alignItems: "start",
