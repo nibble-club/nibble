@@ -33,6 +33,7 @@ es = Elasticsearch(
 def lambda_handler(event, context):
     """Migrates ES indices
     """
+    logger.info(event)
     logger.info("Beginning creation")
     try:
         es.indices.create(

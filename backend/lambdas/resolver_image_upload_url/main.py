@@ -35,11 +35,11 @@ def bucket_name(s3_object_destination):
 def lambda_handler(event, context):
     """Resolves requests for S3 pre-signed URL to upload image
     """
+    logger.info(event)
     if "imageUploadURL" not in event["field"]:
         raise NibbleError(
             "Cannot use S3 presigned URL resolver on field {0}".format(event["field"])
         )
-    logger.info(os.environ)
     s3_bucket = bucket_name(event["arguments"]["destination"])
     s3_key = str(uuid.uuid4()) + ".jpg"
     try:

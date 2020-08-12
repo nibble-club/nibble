@@ -27,6 +27,7 @@ es = es_indices.get_es_client()
 def lambda_handler(event, context):
     """Resolves adminCreateNibble GraphQL requests
     """
+    logger.info(event)
     event_field = event["field"]
     if event_field not in ("adminCreateNibble", "adminEditNibble"):
         raise NibbleError(
