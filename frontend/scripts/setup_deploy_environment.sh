@@ -23,6 +23,7 @@ echo "aws_region = \"$AWS_REGION\"" >> $VARS_FILE
 echo "aws_profile = \"$AWS_PROFILE\"" >> $VARS_FILE
 echo "aws_target_account_id = \"$AWS_TARGET_ACCOUNT_ID\"" >> $VARS_FILE
 echo "environment = \"$DEPLOY_ENV\"" >> $VARS_FILE
+echo "heroku_team_name = \"nibble-club\"" >> $VARS_FILE
 
 # set up Heroku; just use sensitive by default
 echo "" >> $VARS_FILE

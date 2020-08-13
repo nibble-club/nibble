@@ -1,10 +1,15 @@
 resource heroku_app frontend {
   name   = replace(var.environment_namespace, "_", "-")
   region = "us"
+  acm    = true
 
   sensitive_config_vars = var.heroku_sensitive_config_vars
 
   buildpacks = ["https://github.com/mars/create-react-app-buildpack"]
+
+  organization {
+    name = var.heroku_team_name
+  }
 }
 
 resource heroku_build frontend {
