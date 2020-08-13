@@ -12,7 +12,7 @@ export default {
   decorators: [withKnobs],
 };
 
-export const ImageUpload = () => (
+export const Selector = () => (
   <ReservationCountSelector
     currentCount={number("Current selected count", 2)}
     availableCount={number("Remaining count", 5)}

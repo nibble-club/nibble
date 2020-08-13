@@ -523,7 +523,6 @@ const AdminEditRestaurant = (props: AdminEditRestaurantProps) => {
                             : []
                         }
                         activePin={restaurantLoc ? 0 : undefined}
-                        height={500}
                       />
                     </div>
                   </FormSection>

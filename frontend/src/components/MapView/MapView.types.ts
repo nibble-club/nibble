@@ -3,7 +3,7 @@ import { LatLon, S3Object } from "../../graphql/generated/types";
 export type MapViewProps = {
   pins: MapPin[];
   activePin?: number;
-  height?: number;
+  height?: string;
 };
 
 export type MapPin = {

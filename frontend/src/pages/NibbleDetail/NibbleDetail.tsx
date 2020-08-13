@@ -6,6 +6,7 @@ import { Link, useHistory, useParams } from "react-router-dom";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 
 import useLocation from "../../common/hooks/useLocation";
+import ActionButton from "../../components/ActionButton";
 import HeroImage from "../../components/HeroImage";
 import MapView from "../../components/MapView";
 import { getIconForType } from "../../components/NibbleCard/NibbleCardAvailable";
@@ -159,16 +160,15 @@ const NibbleDetail = () => {
                 />
               </div>
             </div>
-            <MapView pins={[data.nibbleInfo.restaurant]} height={350} />
-            <div className={classes.buttonContainer}>
-              <button
-                className={classes.reserveButton}
-                disabled={!data || data.nibbleInfo.count === 0 || reservationLoading}
-                onClick={onReservationClick}
-              >{`Reserve ${currentCount} now (${formatAsCurrency(
+            <MapView pins={[data.nibbleInfo.restaurant]} height={"40vh"} />
+            <ActionButton
+              disabled={!data || data.nibbleInfo.count === 0 || reservationLoading}
+              onClick={onReservationClick}
+            >
+              {`Reserve ${currentCount} now (${formatAsCurrency(
                 data.nibbleInfo.price * currentCount
-              )})`}</button>
-            </div>
+              )})`}
+            </ActionButton>
           </div>
         )
       )}

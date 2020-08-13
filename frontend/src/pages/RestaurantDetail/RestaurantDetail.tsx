@@ -96,6 +96,8 @@ const RestaurantDetail = () => {
                   <a
                     className={classes.navigate}
                     href={`https://www.google.com/maps/dir/?api=1&destination=${data.restaurantInfo.address.location.latitude},${data.restaurantInfo.address.location.longitude}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
                     <i className={"material-icons-outlined"}>navigation</i>
                     <p>Navigate</p>
@@ -126,9 +128,11 @@ const RestaurantDetail = () => {
                 />
               </div>
             )}
-            <MapView pins={[data.restaurantInfo]} height={350} />
+            <MapView pins={[data.restaurantInfo]} height={"40vh"} />
             {data.restaurantInfo.disclaimer && (
-              <p className={classes.disclaimer}>{data.restaurantInfo.disclaimer}</p>
+              <div className={classes.fixedContainer}>
+                <p className={classes.disclaimer}>{data.restaurantInfo.disclaimer}</p>
+              </div>
             )}
           </div>
         )

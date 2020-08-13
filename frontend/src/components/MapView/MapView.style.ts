@@ -6,7 +6,7 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
   container: {
     width: "100%",
     position: "relative",
-    height: (height: number) => height,
+    height: (height: string) => height,
   },
   mapContainer: {
     position: "absolute",

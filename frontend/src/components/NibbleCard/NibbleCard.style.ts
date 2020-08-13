@@ -1,14 +1,12 @@
 import { createUseStyles } from "react-jss";
 
 import { AppTheme } from "../../common/theming/theming.types";
-import {
-  NibbleAvailableInfoFragment,
-  NibbleReservationStatus,
-  NibbleReservedInfoFragment
-} from "../../graphql/generated/types";
+import { NibbleReservationStatus } from "../../graphql/generated/types";
+import { NibbleCardAvailableProps } from "./NibbleCardAvailable.types";
+import { NibbleCardReservedProps } from "./NibbleCardReserved.types";
 
-type NibbleCardPropsWithHover = NibbleAvailableInfoFragment &
-  NibbleReservedInfoFragment & { isHovered: boolean };
+type NibbleCardPropsWithHover = NibbleCardAvailableProps &
+  NibbleCardReservedProps & { isHovered: boolean };
 
 export const getColorForAmount = (amount: number, theme: AppTheme) => {
   if (amount <= 1) {

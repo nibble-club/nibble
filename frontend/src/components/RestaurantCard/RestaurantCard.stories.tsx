@@ -2,6 +2,7 @@ import React from "react";
 
 import RestaurantCard from "./RestaurantCard";
 import { RestaurantCardProps } from "./RestaurantCard.types";
+import { RestaurantCardLoading } from "./RestaurantCardLoading";
 
 export default {
   component: RestaurantCard,
@@ -48,3 +49,5 @@ export const SymphonySushiProps: RestaurantCardProps = {
 };
 
 export const SymphonySushi = () => <RestaurantCard {...SymphonySushiProps} />;
+
+export const Loading = () => <RestaurantCardLoading />;

@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useTheme } from "react-jss";
 import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 
 import { useLazyQuery, useQuery } from "@apollo/client";
 import Auth from "@aws-amplify/auth";
 
 import useLocation from "../../common/hooks/useLocation";
 import { AppTheme } from "../../common/theming/theming.types";
+import ActionButton from "../../components/ActionButton";
 import HeaderBar from "../../components/HeaderBar/HeaderBar";
 import {
   NibbleCollectionAvailable,
@@ -52,15 +53,18 @@ const Home = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const location = useLocation();
+  const history = useHistory();
   const [recommended, setRecommended] = useState<NibbleFeaturedCardProps[]>([]);
   const [recommendedCount, setRecommendedCount] = useState(1);
   const [width, setWidth] = useState(window.innerWidth);
 
   // update window width
   useEffect(() => {
-    window.addEventListener("resize", () => {
+    const onResize = () => {
       setWidth(window.innerWidth);
-    });
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
   }, []);
 
   // fetch nibbles with property
@@ -150,6 +154,13 @@ const Home = () => {
         >
           Sign out
         </Link>
+        <ActionButton
+          disabled={false}
+          onClick={() => history.push("/restaurants")}
+          color={appTheme.color.blue}
+        >
+          See all restaurants
+        </ActionButton>
       </div>
     </div>
   );

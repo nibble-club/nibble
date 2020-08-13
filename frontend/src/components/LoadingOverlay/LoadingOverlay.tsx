@@ -28,6 +28,14 @@ const LoadingOverlay = (props: LoadingOverlayProps) => {
   useEffect(() => {
     setIsMounted(true);
 
+    return () => {
+      showOverlay.current = () => {};
+      hideOverlay.current = () => {};
+      setIsMounted(false);
+    };
+  }, []);
+
+  useEffect(() => {
     showOverlay.current = () => {
       setDisplay(true);
       delay(500).then(() => {
@@ -45,11 +53,6 @@ const LoadingOverlay = (props: LoadingOverlayProps) => {
         }
       });
     };
-
-    return () => {
-      showOverlay.current = () => {};
-      hideOverlay.current = () => {};
-    };
   }, [isMounted]);
 
   useEffect(() => {
@@ -58,7 +61,8 @@ const LoadingOverlay = (props: LoadingOverlayProps) => {
     } else {
       hideOverlay.current();
     }
-  }, [props.show, isMounted]);
+  }, [props.show]);
+
   const classes = useStyles({ opacity, display });
   return (
     <div>

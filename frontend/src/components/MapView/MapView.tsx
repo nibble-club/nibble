@@ -59,14 +59,30 @@ const getBoundingBox = (pins: MapPin[]): LngLatBounds => {
   ]);
 };
 
-const MapView = ({ pins, activePin = -1, height = 500 }: MapViewProps) => {
+const MapView = ({ pins, activePin = -1, height = "500px" }: MapViewProps) => {
   const classes = useStyles(height);
   const [map, setMap] = useState<Map | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
   const [pinsChanged, setPinsChanged] = useState(false);
+
+  // need to update markers with timeout because there's a LOT of weirdness with adding
+  // markers right when the map is loading; if you try, half the time the map doesn't
+  // even move, half the time they load but are strangely invisible, and half
+  // the time it works just fine and makes you think you're crazy. This timeout
+  // seems to work well on normal connections, fast 3G, and slow 3G; may need to revisit
+  // it in the future.
+  const markersDelay = useRef<number>(3000);
 
   const currentMarkers = useRef<mapboxgl.Marker[]>([]);
 
   const mapContainer = useRef<HTMLDivElement | null>(null);
+
+  // keep track of mounted status to avoid no-op state updates
+  useEffect(() => {
+    setIsMounted(true);
+
+    return () => setIsMounted(false);
+  }, []);
 
   // create map component
   useEffect(() => {
@@ -115,16 +131,14 @@ const MapView = ({ pins, activePin = -1, height = 500 }: MapViewProps) => {
     }))
   );
   useEffect(() => {
-    // need to do it with timeout because there's a LOT of weirdness with adding
-    // markers right when the map is loading; if you try, half the time the map doesn't
-    // even move, half the time they load but are strangely invisible, and half
-    // the time it works just fine and makes you think you're crazy. This timeout
-    // seems to work well on normal connections, fast 3G, and slow 3G; may need to revisit
-    // it in the future.
     setTimeout(() => {
-      setPinsChanged(true);
-    }, 3000);
-  }, [pinsStr]);
+      if (isMounted) {
+        setPinsChanged(true);
+        // after first update we can make it a bit faster
+        markersDelay.current = 1500;
+      }
+    }, markersDelay.current);
+  }, [pinsStr, isMounted]);
 
   // add pins to map, on pin change only, once map is loaded
   useEffect(() => {
@@ -135,6 +149,9 @@ const MapView = ({ pins, activePin = -1, height = 500 }: MapViewProps) => {
       return;
     }
     if (!map.loaded() || !map.isStyleLoaded()) {
+      return;
+    }
+    if (!isMounted) {
       return;
     }
     setPinsChanged(false);
@@ -173,7 +190,7 @@ const MapView = ({ pins, activePin = -1, height = 500 }: MapViewProps) => {
       maxZoom: PROGRAMMATIC_MAX_ZOOM,
     });
     map.triggerRepaint();
-  }, [pins, pinsChanged, map, classes.popup, classes.restaurantPopup]);
+  }, [pins, pinsChanged, map, isMounted, classes.popup, classes.restaurantPopup]);
 
   // move map to current activePin
   useEffect(() => {
@@ -187,7 +204,7 @@ const MapView = ({ pins, activePin = -1, height = 500 }: MapViewProps) => {
           currentPin.address.location.longitude,
           currentPin.address.location.latitude,
         ],
-        zoom: PROGRAMMATIC_MAX_ZOOM,
+        zoom: PROGRAMMATIC_MAX_ZOOM + 1.5,
       });
     } else {
       map.fitBounds(getBoundingBox(pins), {
