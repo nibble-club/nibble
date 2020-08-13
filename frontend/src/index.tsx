@@ -39,7 +39,14 @@ const link = from([retryLink, authFlowLink, loggerLink, httpLink]);
 
 const client = new ApolloClient({
   link,
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      Address: {
+        // uniquely identified by street address, locality, and admin area
+        keyFields: ["location", ["latitude", "longitude"]],
+      },
+    },
+  }),
 });
 
 const store = createStore(nibbleApp, devToolsEnhancer({}));

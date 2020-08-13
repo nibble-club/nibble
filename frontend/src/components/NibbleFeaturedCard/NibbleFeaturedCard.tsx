@@ -14,7 +14,7 @@ export const NibbleFeaturedCard = (props: NibbleFeaturedCardProps) => {
     <div className={classes.container}>
       <p className={classes.count}>{props.count}</p>
       <div className={classes.properties}>
-        {props.restaurant.distance && (
+        {"distance" in props.restaurant && props.restaurant.distance && (
           <div className={classes.property}>
             <NibbleProperty
               icon={NibblePropertyIcon.Location}

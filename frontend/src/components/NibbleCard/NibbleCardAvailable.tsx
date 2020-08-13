@@ -35,7 +35,7 @@ export const NibbleCardAvailable = (props: NibbleCardAvailableProps) => {
       <div className={classes.name}>{props.name}</div>
       <div>
         <div>
-          {props.restaurant.distance && (
+          {"distance" in props.restaurant && props.restaurant.distance && (
             <NibbleProperty
               icon={NibblePropertyIcon.Location}
               text={`${props.restaurant.distance.toFixed(1) || 0} miles`}

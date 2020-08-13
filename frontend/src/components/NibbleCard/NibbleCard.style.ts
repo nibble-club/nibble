@@ -48,6 +48,8 @@ const widthMediaQueries = {
   "@media (max-width: 620px)": {
     container: {
       "--base-width": cardWidthTwoCards,
+      margin: `calc(${cardPadding} * 2)`,
+      marginRight: 0,
     },
   },
   "@media (min-width: 621px) and (max-width: 1000px)": {

@@ -9,6 +9,7 @@ import Auth from "@aws-amplify/auth";
 import { USER_TOKEN_KEY } from "./common/constants";
 import { globalTheme } from "./common/theming/theming";
 import { AppTheme } from "./common/theming/theming.types";
+import LoadingOverlay from "./components/LoadingOverlay";
 import NotificationBar from "./components/NotificationBar/NotificationBar";
 import Admin from "./pages/Admin/Admin";
 import Home from "./pages/Home/Home";
@@ -60,7 +61,9 @@ function App() {
   }, [dispatch]);
   const classes = useStyles();
   return loading ? (
-    <div />
+    <div>
+      <LoadingOverlay show />
+    </div>
   ) : (
     <div className={classes.app}>
       <NotificationBar />

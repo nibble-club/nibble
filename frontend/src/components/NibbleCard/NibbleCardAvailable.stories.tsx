@@ -1,6 +1,6 @@
 import React from "react";
 
-import { NibbleAvailableInfoFragment, NibbleType } from "../../graphql/generated/types";
+import { NibbleType } from "../../graphql/generated/types";
 import { NibbleCardAvailable } from "./NibbleCardAvailable";
 import { NibbleCardAvailableProps } from "./NibbleCardAvailable.types";
 

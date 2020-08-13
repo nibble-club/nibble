@@ -28,8 +28,7 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
   container: {
     width: "var(--base-width)",
     height: "calc(3/4 * var(--base-width))",
-    margin: "min(3vw, 30px)",
-    marginRight: 0,
+    margin: "min(1.5vw, 15px)",
     position: "relative",
     transition: theme.animation.simple,
     padding: cardPadding,
