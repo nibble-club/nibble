@@ -90,9 +90,7 @@ function App() {
         </Route>
 
         <Route path="/admin">
-          <div>
-            <Admin />
-          </div>
+          {!admin ? <Redirect to={{ pathname: "/" }} /> : <Admin />}
         </Route>
 
         <Route path="/">

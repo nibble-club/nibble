@@ -20,6 +20,7 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
   },
   priceNameContainer: {
     ...ROW_FLEX_BOX,
+    marginBottom: theme.spacing.medium,
     "& h3": {
       marginLeft: theme.spacing.large,
       margin: 0,
@@ -30,6 +31,7 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
     "& #restaurant": {
       marginLeft: theme.spacing.medium,
       color: theme.color.pink,
+      lineHeight: 1,
     },
     "& #separator": {
       margin: 0,
