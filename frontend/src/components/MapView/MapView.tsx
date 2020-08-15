@@ -71,7 +71,7 @@ const MapView = ({ pins, activePin = -1, height = "500px" }: MapViewProps) => {
   // the time it works just fine and makes you think you're crazy. This timeout
   // seems to work well on normal connections, fast 3G, and slow 3G; may need to revisit
   // it in the future.
-  const markersDelay = useRef<number>(3000);
+  const markersDelay = useRef<number>(1000);
 
   const currentMarkers = useRef<mapboxgl.Marker[]>([]);
 
@@ -132,15 +132,15 @@ const MapView = ({ pins, activePin = -1, height = "500px" }: MapViewProps) => {
   );
   useEffect(() => {
     setTimeout(() => {
-      if (isMounted) {
+      if (isMounted && pinsStr !== "[]") {
         setPinsChanged(true);
         // after first update we can make it a bit faster
-        markersDelay.current = 2000;
+        markersDelay.current = 100;
       }
     }, markersDelay.current);
   }, [pinsStr, isMounted]);
 
-  // add pins to map, on pin change only, once map is loaded
+  // add pins to map, or edit current pins, on pin change only, once map is loaded
   useEffect(() => {
     if (!map) {
       return;
@@ -148,21 +148,46 @@ const MapView = ({ pins, activePin = -1, height = "500px" }: MapViewProps) => {
     if (!pinsChanged) {
       return;
     }
-    if (!map.loaded() || !map.isStyleLoaded()) {
-      return;
-    }
     if (!isMounted) {
       return;
     }
     setPinsChanged(false);
+    const pinsCopy = [...pins];
+
+    // ignore empty list
+    if (pinsCopy.length === 0) {
+      return;
+    }
+
+    // edit existing markers; remove the ones that are no longer valid
     currentMarkers.current.forEach((marker) => {
-      marker.remove();
+      const pin = pinsCopy.pop();
+      if (pin) {
+        marker
+          .setLngLat([pin.address.location.longitude, pin.address.location.latitude])
+          .setPopup(
+            addPopup(
+              <div className={classes.restaurantPopup}>
+                <S3Image
+                  location={pin.logoUrl || LOGO_PLACEHOLDER}
+                  alt={`${pin.name} logo`}
+                  key={pin.name}
+                />
+                <div>
+                  <p>{pin.name}</p>
+                </div>
+              </div>,
+              classes.popup
+            )
+          )
+          .addTo(map);
+      } else {
+        marker.remove();
+      }
     });
-    // if (currentMarkers.current.length > 0)
-    //   console.log(`Removed ${currentMarkers.current.length} markers`);
-    const newMarkers: mapboxgl.Marker[] = [];
-    pins.forEach((pin: MapPin) =>
-      newMarkers.push(
+
+    pinsCopy.forEach((pin: MapPin) =>
+      currentMarkers.current.push(
         new mapboxgl.Marker({ color: appTheme.color.pink })
           .setLngLat([pin.address.location.longitude, pin.address.location.latitude])
           .setPopup(
@@ -183,8 +208,6 @@ const MapView = ({ pins, activePin = -1, height = "500px" }: MapViewProps) => {
           .addTo(map)
       )
     );
-    // if (newMarkers.length > 0) console.log(`Added ${newMarkers.length} markers`);
-    currentMarkers.current = newMarkers;
     map.fitBounds(getBoundingBox(pins), {
       padding: BOUNDING_BOX_PADDING,
       maxZoom: PROGRAMMATIC_MAX_ZOOM,
@@ -194,7 +217,8 @@ const MapView = ({ pins, activePin = -1, height = "500px" }: MapViewProps) => {
 
   // move map to current activePin
   useEffect(() => {
-    if (!map || activePin === -1) {
+    // ignore if map or pins not loaded
+    if (!map || currentMarkers.current.length === 0) {
       return;
     }
     if (0 <= activePin && activePin < pins.length) {

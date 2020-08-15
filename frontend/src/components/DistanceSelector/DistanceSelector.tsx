@@ -15,7 +15,7 @@ const DistanceSelector = (props: DistanceSelectorProps) => {
   return (
     <div className={classes.container}>
       <Slider
-        defaultValue={DEFAULT_DISTANCE}
+        defaultValue={props.startValue || DEFAULT_DISTANCE}
         step={0.1}
         min={min}
         max={max}

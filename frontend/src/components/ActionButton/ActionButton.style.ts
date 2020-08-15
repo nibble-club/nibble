@@ -9,6 +9,7 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
     bottom: 0,
     left: 0,
     textAlign: "center",
+    zIndex: 50,
   },
   button: {
     position: "inline-block",

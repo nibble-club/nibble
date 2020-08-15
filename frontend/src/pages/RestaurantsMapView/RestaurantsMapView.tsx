@@ -5,6 +5,7 @@ import { useHistory } from "react-router-dom";
 import { useLazyQuery } from "@apollo/client";
 
 import useLocation from "../../common/hooks/useLocation";
+import DistanceSelector from "../../components/DistanceSelector";
 import HeaderBar from "../../components/HeaderBar";
 import LoadingOverlay from "../../components/LoadingOverlay";
 import MapView from "../../components/MapView";
@@ -43,6 +44,7 @@ const RestaurantsMapView = () => {
   const [width, setWidth] = useState(window.innerWidth);
   const [scrollPos, setScrollPos] = useState(window.scrollY);
   const cardHeightRef = useRef<HTMLDivElement>(null);
+  const [maxDistance, setMaxDistance] = useState(MAX_DISTANCE);
 
   // update window width
   useEffect(() => {
@@ -69,15 +71,15 @@ const RestaurantsMapView = () => {
         variables: {
           location: location.location,
           paginationInput: { limit: RESTAURANT_COUNT, offset: searchOffset },
-          maxDistance: MAX_DISTANCE,
+          maxDistance: maxDistance,
         },
       });
     }
-  }, [location, fetchClosestRestaurants, searchOffset]);
+  }, [location, fetchClosestRestaurants, searchOffset, maxDistance]);
 
   // scroll to top once restaurants loaded
   useEffect(() => {
-    if (!loading) {
+    if (loading) {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }, [loading]);
@@ -92,6 +94,17 @@ const RestaurantsMapView = () => {
       );
     }
   }, [error, history, dispatch]);
+
+  // move to first page if current page is over limit; happens when someone changes
+  // max distance down while not on first page
+  useEffect(() => {
+    if (
+      (restaurantData?.closestRestaurants.totalResults || Number.MAX_SAFE_INTEGER) <
+      searchOffset
+    ) {
+      setSearchOffset(0);
+    }
+  }, [restaurantData, searchOffset]);
 
   // inner components for cards and search
   const RestaurantsLoadingList = useCallback(
@@ -119,43 +132,65 @@ const RestaurantsMapView = () => {
 
   const PaginationButtons = useCallback(
     (restaurantData: ClosestRestaurantsQuery) => (
-      <div className={classes.pagination}>
-        <button
-          disabled={searchOffset === 0}
-          onClick={() => {
-            setSearchOffset((searchOffset) => searchOffset - RESTAURANT_COUNT);
-          }}
-        >
-          <div className={classes.innerButton}>
-            <i className={"material-icons-outlined"}>chevron_left</i>
-          </div>{" "}
-        </button>
-        <p>
-          {`${searchOffset + 1}-${Math.min(
-            searchOffset + RESTAURANT_COUNT,
-            restaurantData.closestRestaurants.totalResults
-          )} of ${restaurantData.closestRestaurants.totalResults}`}
-        </p>
-        <button
-          disabled={
-            searchOffset + RESTAURANT_COUNT >
-            restaurantData.closestRestaurants.totalResults
-          }
-          onClick={() => {
-            setSearchOffset((searchOffset) => searchOffset + RESTAURANT_COUNT);
-          }}
-        >
-          <div className={classes.innerButton}>
-            <i className={"material-icons-outlined"}>chevron_right</i>
-          </div>
-        </button>
+      <div className={classes.paginationContainer}>
+        <div className={classes.pagination}>
+          <button
+            disabled={searchOffset === 0}
+            onClick={() => {
+              setSearchOffset((searchOffset) => searchOffset - RESTAURANT_COUNT);
+            }}
+          >
+            <div className={classes.innerButton}>
+              <i className={"material-icons-outlined"}>chevron_left</i>
+            </div>
+          </button>
+          <p>
+            {`${Math.min(
+              searchOffset + 1,
+              restaurantData.closestRestaurants.totalResults
+            )}-${Math.min(
+              searchOffset + RESTAURANT_COUNT,
+              restaurantData.closestRestaurants.totalResults
+            )} of ${restaurantData.closestRestaurants.totalResults}`}
+          </p>
+          <button
+            disabled={
+              searchOffset + RESTAURANT_COUNT >
+              restaurantData.closestRestaurants.totalResults
+            }
+            onClick={() => {
+              setSearchOffset((searchOffset) => searchOffset + RESTAURANT_COUNT);
+            }}
+          >
+            <div className={classes.innerButton}>
+              <i className={"material-icons-outlined"}>chevron_right</i>
+            </div>
+          </button>
+        </div>
+        <div className={classes.distance}>
+          <p>Set maximum distance:</p>
+          <DistanceSelector
+            max={10}
+            onDistanceChange={(distance) => {
+              setMaxDistance(distance);
+            }}
+            startValue={maxDistance}
+          />
+        </div>
       </div>
     ),
-    [classes.pagination, classes.innerButton, searchOffset]
+    [
+      classes.pagination,
+      classes.innerButton,
+      classes.paginationContainer,
+      classes.distance,
+      searchOffset,
+      maxDistance,
+    ]
   );
 
   const activePin =
-    scrollPos > 0
+    scrollPos > 0 && !loading
       ? Math.floor(
           (scrollPos + 20) / // offset by 20px
             ((cardHeightRef.current?.offsetHeight || 100) + RESTAURANT_CARD_MARGIN)

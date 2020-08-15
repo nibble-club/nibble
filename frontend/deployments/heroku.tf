@@ -22,8 +22,9 @@ resource heroku_build frontend {
 }
 
 resource heroku_formation frontend {
-  app      = heroku_app.frontend.id
-  type     = "web"
-  quantity = 1
-  size     = "hobby"
+  app        = heroku_app.frontend.id
+  type       = "web"
+  quantity   = 1
+  size       = "hobby"
+  depends_on = [heroku_build.frontend]
 }
