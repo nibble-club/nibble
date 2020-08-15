@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 
-import { useLazyQuery, useQuery } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 
 import useLocation from "../../common/hooks/useLocation";
 import HeaderBar from "../../components/HeaderBar";
@@ -15,14 +15,11 @@ import {
 import {
   RestaurantCardLoading
 } from "../../components/RestaurantCard/RestaurantCardLoading";
-import { PROFILE_PICTURE_PLACEHOLDER } from "../../components/S3Image/S3Image";
 import {
   ClosestRestaurantsQuery,
-  ClosestRestaurantsQueryVariables,
-  UserInfoQuery,
-  UserInfoQueryVariables
+  ClosestRestaurantsQueryVariables
 } from "../../graphql/generated/types";
-import { CLOSEST_RESTAURANTS, USER_INFO } from "../../graphql/queries";
+import { CLOSEST_RESTAURANTS } from "../../graphql/queries";
 import { MessageType, showMessage } from "../../redux/actions";
 import { MAP_HEIGHT, useStyles } from "./RestaurantsMapView.style";
 
@@ -33,7 +30,6 @@ const MOBILE_CUTOFF = 620; // px
 
 const RestaurantsMapView = () => {
   const classes = useStyles();
-  const { data } = useQuery<UserInfoQuery, UserInfoQueryVariables>(USER_INFO);
   const [
     fetchClosestRestaurants,
     { data: restaurantData, loading, error },
@@ -79,6 +75,13 @@ const RestaurantsMapView = () => {
     }
   }, [location, fetchClosestRestaurants, searchOffset]);
 
+  // scroll to top once restaurants loaded
+  useEffect(() => {
+    if (!loading) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [loading]);
+
   // redirect on error
   useEffect(() => {
     if (error) {
@@ -119,9 +122,9 @@ const RestaurantsMapView = () => {
       <div className={classes.pagination}>
         <button
           disabled={searchOffset === 0}
-          onClick={() =>
-            setSearchOffset((searchOffset) => searchOffset - RESTAURANT_COUNT)
-          }
+          onClick={() => {
+            setSearchOffset((searchOffset) => searchOffset - RESTAURANT_COUNT);
+          }}
         >
           <div className={classes.innerButton}>
             <i className={"material-icons-outlined"}>chevron_left</i>
@@ -138,9 +141,9 @@ const RestaurantsMapView = () => {
             searchOffset + RESTAURANT_COUNT >
             restaurantData.closestRestaurants.totalResults
           }
-          onClick={() =>
-            setSearchOffset((searchOffset) => searchOffset + RESTAURANT_COUNT)
-          }
+          onClick={() => {
+            setSearchOffset((searchOffset) => searchOffset + RESTAURANT_COUNT);
+          }}
         >
           <div className={classes.innerButton}>
             <i className={"material-icons-outlined"}>chevron_right</i>
@@ -161,9 +164,7 @@ const RestaurantsMapView = () => {
 
   return (
     <div>
-      <HeaderBar
-        profilePicUrl={data?.userInfo.profilePicUrl || PROFILE_PICTURE_PLACEHOLDER}
-      />
+      <HeaderBar />
       <div className={classes.mainContent}>
         <LoadingOverlay show={loading || location.loading} />
         <div className={width <= MOBILE_CUTOFF ? classes.map : classes.mapDesktop}>

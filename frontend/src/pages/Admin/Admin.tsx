@@ -8,7 +8,6 @@ import AdminEditRestaurant from "../../components/AdminEditRestaurant";
 import AdminHome from "../../components/AdminHome";
 import HeaderBar from "../../components/HeaderBar";
 import HeroImage from "../../components/HeroImage/HeroImage";
-import { PROFILE_PICTURE_PLACEHOLDER } from "../../components/S3Image/S3Image";
 import {
   RestaurantForAdminQuery,
   RestaurantForAdminQueryVariables,
@@ -28,10 +27,7 @@ const Admin = () => {
 
   return (
     <div>
-      <HeaderBar
-        profilePicUrl={data?.restaurantForAdmin.logoUrl || PROFILE_PICTURE_PLACEHOLDER}
-        adminName={data?.restaurantForAdmin.name || "Admin"}
-      />
+      <HeaderBar />
       <div className={classes.mainContent}>
         <Switch>
           <Route path={`${path}/edit_nibble/:id`}>

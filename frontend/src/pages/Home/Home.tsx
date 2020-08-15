@@ -22,7 +22,6 @@ import {
 import {
   NibbleFeaturedCardProps
 } from "../../components/NibbleFeaturedCard/NibbleFeaturedCard.types";
-import { PROFILE_PICTURE_PLACEHOLDER } from "../../components/S3Image/S3Image";
 import SectionHeader from "../../components/SectionHeader/SectionHeader";
 import {
   NibbleRecommendationReason,
@@ -115,9 +114,7 @@ const Home = () => {
 
   return (
     <div>
-      <HeaderBar
-        profilePicUrl={data?.userInfo.profilePicUrl || PROFILE_PICTURE_PLACEHOLDER}
-      />
+      <HeaderBar />
       <div className={classes.mainContent}>
         {data && data.userInfo.nibblesReserved.length > 0 && (
           <div>

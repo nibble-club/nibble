@@ -23,7 +23,8 @@ import {
 import { NIBBLE_CREATE_RESERVATION } from "../../graphql/mutations";
 import {
   NIBBLE_INFO_WITH_RESTAURANT,
-  RESTAURANT_DISTANCE
+  RESTAURANT_DISTANCE,
+  USER_INFO
 } from "../../graphql/queries";
 import { MessageType, showMessage } from "../../redux/actions";
 import { useStyles } from "./NibbleDetail.style";
@@ -85,7 +86,7 @@ const NibbleDetail = () => {
       try {
         await makeReservation({
           variables: { nibbleId: data.nibbleInfo.id, count: currentCount },
-          refetchQueries: ["UserInfo"],
+          refetchQueries: [{ query: USER_INFO }],
         });
         console.log("Successfully reserved");
         dispatch(

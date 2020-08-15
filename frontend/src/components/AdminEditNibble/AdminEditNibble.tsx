@@ -16,7 +16,7 @@ import {
   S3ObjectInput
 } from "../../graphql/generated/types";
 import { ADMIN_CREATE_NIBBLE, ADMIN_EDIT_NIBBLE } from "../../graphql/mutations";
-import { NIBBLE_INFO } from "../../graphql/queries";
+import { NIBBLE_INFO, RESTAURANT_FOR_ADMIN } from "../../graphql/queries";
 import { MessageType, showMessage } from "../../redux/actions";
 import FormSection from "../FormSection";
 import LabeledInput from "../LabeledInput";
@@ -147,7 +147,7 @@ const AdminEditNibble = (props: AdminEditNibbleProps) => {
       if (isCreate) {
         await createNibble({
           variables: { input },
-          refetchQueries: ["RestaurantForAdmin"],
+          refetchQueries: [{ query: RESTAURANT_FOR_ADMIN }],
         });
       } else {
         await editNibble({ variables: { id, input } });

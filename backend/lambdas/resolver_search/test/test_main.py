@@ -36,14 +36,19 @@ sample_event = {
 bad_text_sample_event = deepcopy(sample_event)
 bad_text_sample_event["arguments"]["searchParameters"]["text"] = "a"
 
-bad_time_sample_event = deepcopy(sample_event)
-bad_time_sample_event["arguments"]["searchParameters"]["latestPickup"] = int(
-    (datetime.datetime.now() - datetime.timedelta(minutes=1)).timestamp()
-)
-
 
 class TestAdminRestaurantMutation(unittest.TestCase):
     def test_runs(self):
+        main.lambda_handler(sample_event, None)
+
+    def test_runs_null_distance(self):
+        null_event = deepcopy(sample_event)
+        null_event["arguments"]["searchParameters"]["maxDistance"] = None
+        main.lambda_handler(sample_event, None)
+
+    def test_runs_null_time(self):
+        null_event = deepcopy(sample_event)
+        null_event["arguments"]["searchParameters"]["latestPickup"] = None
         main.lambda_handler(sample_event, None)
 
     def test_redis_updated(self):
@@ -55,10 +60,6 @@ class TestAdminRestaurantMutation(unittest.TestCase):
     def test_error_on_invalid_text(self):
         with self.assertRaises(NibbleError):
             main.lambda_handler(bad_text_sample_event, None)
-
-    def test_error_on_invalid_time(self):
-        with self.assertRaises(NibbleError):
-            main.lambda_handler(bad_time_sample_event, None)
 
 
 if __name__ == "__main__":

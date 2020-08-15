@@ -47,6 +47,7 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
   },
   properties: {
     ...ROW_FLEX_BOX,
+    justifyContent: "start",
     flexWrap: "wrap",
     marginLeft: theme.spacing.large,
   },

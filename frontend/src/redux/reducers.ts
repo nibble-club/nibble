@@ -3,8 +3,10 @@ import { combineReducers } from "redux";
 import { LatLon } from "../graphql/generated/types";
 import {
   HIDE_MESSAGE,
+  HIDE_SEARCH,
   MessageType,
   SHOW_MESSAGE,
+  SHOW_SEARCH,
   USER_LOCATION,
   USER_POSTAL_CODE,
   USER_SIGN_IN,
@@ -32,6 +34,10 @@ type PostalCodeAction = {
 type LocationAction = {
   type: string;
   location: LatLon;
+};
+
+type SearchAction = {
+  type: string;
 };
 
 function user(state = { email: "", id: "", admin: false }, action: UserAction) {
@@ -80,7 +86,24 @@ function userLocation(
   }
 }
 
-const nibbleState = combineReducers({ user, message, userPostalCode, userLocation });
+function search(state = { show: false }, action: SearchAction) {
+  switch (action.type) {
+    case SHOW_SEARCH:
+      return { ...state, show: true };
+    case HIDE_SEARCH:
+      return { ...state, show: false };
+    default:
+      return state;
+  }
+}
+
+const nibbleState = combineReducers({
+  user,
+  message,
+  userPostalCode,
+  userLocation,
+  search,
+});
 
 export default nibbleState;
 

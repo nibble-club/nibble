@@ -10,6 +10,7 @@ from elasticsearch_dsl import Q, Search
 
 # constants
 DEFAULT_MAX_DISTANCE = 10  # miles
+MAX_MAX_DISTANCE = 50  # miles
 MAX_INTERNAL_RESTAURANT_RESULTS = 50
 MAX_USER_RESULTS = 30  # each, for restaurants and nibbles
 SEARCH_HISTORY_LENGTH = 10
@@ -40,18 +41,22 @@ def lambda_handler(event, context):
     user_location = event["arguments"]["userLocation"]
     search_text = event["arguments"]["searchParameters"]["text"]
     search_max_distance = event["arguments"]["searchParameters"].get(
-        "maxDistance", DEFAULT_MAX_DISTANCE
+        "maxDistance", None
     )
-    search_latest_pickup = event["arguments"]["searchParameters"].get(
-        "latestPickup",
-        int((datetime.datetime.now() + datetime.timedelta(days=7)).timestamp()),
+    if search_max_distance is None:
+        search_max_distance = DEFAULT_MAX_DISTANCE
+    search_pickup_after = event["arguments"]["searchParameters"].get(
+        "pickupAfter", None
     )
+    if search_pickup_after is None:
+        search_pickup_after = int(datetime.datetime.now().timestamp())
 
     # validation
     if len(search_text) < 3:
         raise NibbleError("Please type at least 3 characters")
-    if search_latest_pickup < datetime.datetime.now().timestamp():
-        raise NibbleError("Latest pickup time is in the past")
+    if search_max_distance > MAX_MAX_DISTANCE:
+        raise NibbleError(f"Please select a distance less than {MAX_MAX_DISTANCE}")
+
     # get restaurant results, must be valid and should match search term
     restaurant_search = (
         Search(using=es, index=es_indices.RESTAURANT_INDEX)
@@ -98,6 +103,8 @@ def lambda_handler(event, context):
         )
     )
 
+    logger.info(restaurant_search.to_dict())
+
     restaurant_response = restaurant_search[0:MAX_INTERNAL_RESTAURANT_RESULTS].execute()
     valid_restaurant_ids = [hit.meta.id for hit in restaurant_response]
 
@@ -111,7 +118,7 @@ def lambda_handler(event, context):
             fuzziness="AUTO",
         )
         .filter("range", **{"availableFrom": {"lte": "now"}})
-        .filter("range", **{"availableTo": {"gte": "now", "lte": search_latest_pickup}})
+        .filter("range", **{"availableTo": {"gte": search_pickup_after}})
         .filter("terms", **{"restaurantId": valid_restaurant_ids})
     )
 

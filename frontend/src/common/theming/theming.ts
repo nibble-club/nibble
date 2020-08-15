@@ -128,6 +128,10 @@ export const globalTheme = (theme: AppTheme) => ({
       "&:hover": {
         boxShadow: theme.shadow[1],
       },
+      "&:focus": {
+        outline: 0,
+        boxShadow: `0 0 0 1px ${theme.color.text.primary}`,
+      },
     },
   },
 });

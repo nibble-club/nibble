@@ -94,6 +94,16 @@ export const NIBBLES_WITH_PROPERTY_DISTANCE = gql`
   ${NIBBLE_RESTAURANT_INFO_WITH_DISTANCE_FRAGMENT}
 `;
 
+export const RECENT_SEARCHES = gql`
+  query RecentSearches {
+    recentSearches {
+      text
+      maxDistance
+      pickupAfter
+    }
+  }
+`;
+
 export const RESTAURANT_DISTANCE = gql`
   query RestaurantDistance($restaurantId: ID!, $currentPos: LatLonInput!) {
     restaurantInfo(restaurantId: $restaurantId) {
@@ -133,35 +143,21 @@ export const RESTAURANT_INFO = gql`
 `;
 
 export const SEARCH = gql`
-  query NibbleSearch(
-    $searchParameters: SearchParametersInput!
-    $userLocation: LatLonInput!
-  ) {
+  query Search($searchParameters: SearchParametersInput!, $userLocation: LatLonInput!) {
     search(searchParameters: $searchParameters, userLocation: $userLocation) {
       nibbles {
-        id
-        name
-        type
-        count
-        price
-        restaurant {
-          name
-        }
-        availableFrom
-        availableTo
+        ...NibbleAvailableInfo
+        ...NibbleRestaurantInfoWithDistance
       }
       restaurants {
-        id
-        name
+        ...RestaurantInfo
         distance(currentPos: $userLocation)
-        logoUrl {
-          region
-          bucket
-          key
-        }
       }
     }
   }
+  ${RESTAURANT_INFO_FRAGMENT}
+  ${NIBBLE_AVAILABLE_INFO_FRAGMENT}
+  ${NIBBLE_RESTAURANT_INFO_WITH_DISTANCE_FRAGMENT}
 `;
 
 export const USER_INFO = gql`

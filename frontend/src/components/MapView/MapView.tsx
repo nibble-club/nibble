@@ -135,7 +135,7 @@ const MapView = ({ pins, activePin = -1, height = "500px" }: MapViewProps) => {
       if (isMounted) {
         setPinsChanged(true);
         // after first update we can make it a bit faster
-        markersDelay.current = 1500;
+        markersDelay.current = 2000;
       }
     }, markersDelay.current);
   }, [pinsStr, isMounted]);

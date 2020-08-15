@@ -2,6 +2,7 @@ import { createUseStyles } from "react-jss";
 
 import { ROW_FLEX_BOX } from "../../common/theming/theming";
 import { AppTheme } from "../../common/theming/theming.types";
+import { cardPadding } from "../NibbleCard/NibbleCard.style";
 
 export const useStyles = createUseStyles((theme: AppTheme) => ({
   collectionContainer: {
@@ -11,6 +12,7 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
     width: "min(95vw, 950px)",
     overflowX: "scroll",
     flexWrap: "wrap",
+    paddingRight: cardPadding,
     // hide scroll bar
     "&::-webkit-scrollbar": {
       display: "none",

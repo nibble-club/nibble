@@ -10,6 +10,9 @@ export const HIDE_MESSAGE = "HIDE_MESSAGE";
 export const USER_POSTAL_CODE = "USER_POSTAL_CODE";
 export const USER_LOCATION = "USER_LOCATION";
 
+export const SHOW_SEARCH = "SHOW_SEARCH";
+export const HIDE_SEARCH = "HIDE_SEARCH";
+
 export enum MessageType {
   Error,
   Warning,
@@ -41,4 +44,12 @@ export function userPostalCode(postalCode: string) {
 
 export function userLocation(location: LatLon) {
   return { type: USER_LOCATION, location };
+}
+
+export function showSearch() {
+  return { type: SHOW_SEARCH };
+}
+
+export function hideSearch() {
+  return { type: HIDE_SEARCH };
 }

@@ -1,4 +1,6 @@
 export type SearchBarProps = {
   searchFocused: boolean;
-  setSearchFocused: React.Dispatch<React.SetStateAction<boolean>>;
+  searchString: string;
+  setSearchString: React.Dispatch<React.SetStateAction<string>>;
+  onSearch: () => void;
 };

@@ -27,12 +27,19 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
     },
   },
   logo: {
+    position: "relative",
+    right: (searchFocused: boolean) =>
+      searchFocused ? `calc(${logoWidth} + ${theme.spacing.medium})` : 0,
+    opacity: (searchFocused: boolean) => (searchFocused ? 0 : 100),
+    transition: theme.animation.simple,
     width: logoWidth,
     height: imageSize,
-    marginRight: theme.spacing.large,
+    marginRight: 0,
   },
   search: {
     transition: theme.animation.simple,
+    marginLeft: (searchFocused: boolean) =>
+      searchFocused ? `calc(-1 * ${logoWidth})` : theme.spacing.large,
     marginRight: (searchFocused: boolean) =>
       searchFocused ? `calc(-1 * ${imageSize})` : theme.spacing.large,
     flexGrow: 8,

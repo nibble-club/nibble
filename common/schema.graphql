@@ -21,6 +21,7 @@ type Query {
   imageUploadURL(destination: S3ObjectDestination): ImageUploadDestination!
   # gets lat lon for users who don't allow location access
   locationForPostalCode(postalCode: String!): LatLon!
+  nibbleGetReservation(nibbleId: ID!): NibbleReserved
   # checks admin id in identity
   restaurantForAdmin: Restaurant!
   restaurantInfo(restaurantId: ID!): Restaurant!
@@ -236,14 +237,14 @@ input S3ObjectInput {
 
 type SearchParameters {
   text: String!
-  maxDistance: Int
-  latestPickup: AWSTimestamp
+  maxDistance: Float
+  pickupAfter: AWSTimestamp
 }
 
 input SearchParametersInput {
   text: String!
   maxDistance: Float
-  latestPickup: AWSTimestamp
+  pickupAfter: AWSTimestamp
 }
 
 type SearchRecentQueries {

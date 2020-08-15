@@ -16,23 +16,6 @@ export default {
   },
 };
 
-export const Bar = () => (
-  <HeaderBar
-    profilePicUrl={{
-      bucket: "800344761765-dev-adchurch-profile-pics",
-      region: "us-west-2",
-      key: "andrew-churchill.jpg",
-    }}
-  />
-);
+export const Bar = () => <HeaderBar />;
 
-export const AdminBar = () => (
-  <HeaderBar
-    profilePicUrl={{
-      bucket: "800344761765-dev-adchurch-profile-pics",
-      region: "us-west-2",
-      key: "andrew-churchill.jpg",
-    }}
-    adminName={text("Restaurant Name", "Symphony Sushi")}
-  />
-);
+export const AdminBar = () => <HeaderBar />;

@@ -17,6 +17,7 @@ import Login from "./pages/Login/Login";
 import NibbleDetail from "./pages/NibbleDetail/NibbleDetail";
 import RestaurantDetail from "./pages/RestaurantDetail";
 import RestaurantsMapView from "./pages/RestaurantsMapView/RestaurantsMapView";
+import Search from "./pages/Search/Search";
 import { userPostalCode, userSignIn } from "./redux/actions";
 import { RootState } from "./redux/reducers";
 
@@ -83,6 +84,10 @@ function App() {
 
         <Route path="/restaurant/:id">
           <RestaurantDetail />
+        </Route>
+
+        <Route path="/search">
+          <Search />
         </Route>
 
         <Route path="/profile">

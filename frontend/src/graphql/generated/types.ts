@@ -1,5 +1,5 @@
 export type Maybe<T> = T | null;
-export type Exact<T extends { [key: string]: any }> = { [K in keyof T]: T[K] };
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -238,6 +238,7 @@ export type Query = {
   geocodeAddress: LatLon;
   imageUploadURL: ImageUploadDestination;
   locationForPostalCode: LatLon;
+  nibbleGetReservation?: Maybe<NibbleReserved>;
   restaurantForAdmin: Restaurant;
   restaurantInfo: Restaurant;
   recentSearches: Array<SearchParameters>;
@@ -280,6 +281,11 @@ export type QueryImageUploadUrlArgs = {
 
 export type QueryLocationForPostalCodeArgs = {
   postalCode: Scalars['String'];
+};
+
+
+export type QueryNibbleGetReservationArgs = {
+  nibbleId: Scalars['ID'];
 };
 
 
@@ -336,14 +342,14 @@ export type S3ObjectInput = {
 export type SearchParameters = {
   __typename?: 'SearchParameters';
   text: Scalars['String'];
-  maxDistance?: Maybe<Scalars['Int']>;
-  latestPickup?: Maybe<Scalars['AWSTimestamp']>;
+  maxDistance?: Maybe<Scalars['Float']>;
+  pickupAfter?: Maybe<Scalars['AWSTimestamp']>;
 };
 
 export type SearchParametersInput = {
   text: Scalars['String'];
   maxDistance?: Maybe<Scalars['Float']>;
-  latestPickup?: Maybe<Scalars['AWSTimestamp']>;
+  pickupAfter?: Maybe<Scalars['AWSTimestamp']>;
 };
 
 export type SearchRecentQueries = {
@@ -550,6 +556,17 @@ export type NibblesWithPropertyDistanceQuery = (
   )> }
 );
 
+export type RecentSearchesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type RecentSearchesQuery = (
+  { __typename?: 'Query' }
+  & { recentSearches: Array<(
+    { __typename?: 'SearchParameters' }
+    & Pick<SearchParameters, 'text' | 'maxDistance' | 'pickupAfter'>
+  )> }
+);
+
 export type RestaurantDistanceQueryVariables = Exact<{
   restaurantId: Scalars['ID'];
   currentPos: LatLonInput;
@@ -598,30 +615,24 @@ export type RestaurantInfoQuery = (
   ) }
 );
 
-export type NibbleSearchQueryVariables = Exact<{
+export type SearchQueryVariables = Exact<{
   searchParameters: SearchParametersInput;
   userLocation: LatLonInput;
 }>;
 
 
-export type NibbleSearchQuery = (
+export type SearchQuery = (
   { __typename?: 'Query' }
   & { search: (
     { __typename?: 'SearchResults' }
     & { nibbles: Array<(
       { __typename?: 'NibbleAvailable' }
-      & Pick<NibbleAvailable, 'id' | 'name' | 'type' | 'count' | 'price' | 'availableFrom' | 'availableTo'>
-      & { restaurant: (
-        { __typename?: 'Restaurant' }
-        & Pick<Restaurant, 'name'>
-      ) }
+      & NibbleAvailableInfoFragment
+      & NibbleRestaurantInfoWithDistanceFragment
     )>, restaurants: Array<(
       { __typename?: 'Restaurant' }
-      & Pick<Restaurant, 'id' | 'name' | 'distance'>
-      & { logoUrl: (
-        { __typename?: 'S3Object' }
-        & Pick<S3Object, 'region' | 'bucket' | 'key'>
-      ) }
+      & Pick<Restaurant, 'distance'>
+      & RestaurantInfoFragment
     )> }
   ) }
 );
