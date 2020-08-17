@@ -25,6 +25,11 @@ plan: my-workspace fmt prepare
 apply: my-workspace
 	terraform apply ./.terraform/$(PERSONAL_WORKSPACE).tfplan
 
+destroy: my-workspace
+	terraform destroy \
+		-var-file=./vars/dev.tfvars \
+		-var="environment_namespace=dev_$(PERSONAL_WORKSPACE)"
+
 plan-qa: qa-workspace fmt prepare
 	terraform plan
 		-var-file=./vars/qa.tfvars \

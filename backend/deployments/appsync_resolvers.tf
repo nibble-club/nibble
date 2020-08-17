@@ -1,4 +1,4 @@
-// http resolvers
+# http resolvers
 resource aws_appsync_resolver geocode_address {
   api_id            = aws_appsync_graphql_api.api.id
   kind              = "UNIT"
@@ -10,7 +10,7 @@ resource aws_appsync_resolver geocode_address {
 }
 
 
-// lambda resolvers
+# lambda resolvers
 resource aws_appsync_resolver admin_create_nibble {
   api_id            = aws_appsync_graphql_api.api.id
   kind              = "UNIT"

@@ -7,6 +7,8 @@ resource aws_appsync_datasource data_source {
   lambda_config {
     function_arn = var.function_arn
   }
+
+  depends_on = [var.appsync_graphql_api_id]
 }
 
 resource aws_iam_role data_source {

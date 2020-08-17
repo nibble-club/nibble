@@ -59,23 +59,7 @@ resource aws_elasticsearch_domain_policy elasticsearch {
 }
 
 data aws_iam_policy_document elasticsearch_access {
-  // lambda access
-  statement {
-    effect = "Allow"
-    principals {
-      identifiers = [
-        aws_iam_role.resolver_admin_restaurant_mutation.arn,
-        aws_iam_role.resolver_admin_nibble_mutation.arn,
-      ]
-      type = "AWS"
-    }
-    actions = ["es:ESHttpPut"]
-    resources = [
-      "${aws_elasticsearch_domain.elasticsearch.arn}/*"
-    ]
-  }
-
-  // allow developer access
+  # allow developer access
   statement {
     effect = "Allow"
     principals {
@@ -91,17 +75,17 @@ data aws_iam_policy_document elasticsearch_access {
     ]
   }
 
-  // open access
-  //  statement {
-  //    effect = "Allow"
-  //    principals {
-  //      identifiers = ["*"]
-  //      type        = "AWS"
-  //    }
-  //    resources = [
-  //      "${aws_elasticsearch_domain.elasticsearch.arn}/*"
-  //    ]
-  //  }
+  # open access
+  #  statement {
+  #    effect = "Allow"
+  #    principals {
+  #      identifiers = ["*"]
+  #      type        = "AWS"
+  #    }
+  #    resources = [
+  #      "${aws_elasticsearch_domain.elasticsearch.arn}/*"
+  #    ]
+  #  }
 }
 
 resource aws_cloudwatch_log_group elasticsearch {

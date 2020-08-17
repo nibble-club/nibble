@@ -1,4 +1,4 @@
-// HTTP data sources
+# HTTP data sources
 resource aws_appsync_datasource geocodio_api {
   api_id      = aws_appsync_graphql_api.api.id
   name        = "${var.environment_namespace}_geocodio_http"
@@ -10,7 +10,7 @@ resource aws_appsync_datasource geocodio_api {
   }
 }
 
-// lambda data sources
+# lambda data sources
 module admin_nibble_mutation_datasource {
   source = "./modules/appsync_lambda_data_source"
 
