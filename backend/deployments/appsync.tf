@@ -2,7 +2,8 @@ resource aws_appsync_graphql_api api {
   authentication_type = "AMAZON_COGNITO_USER_POOLS"
   name                = "${var.environment_namespace}-api"
 
-  schema = file("./schema.graphql")
+  schema       = file("./schema.graphql")
+  xray_enabled = true
 
   user_pool_config {
     default_action = "ALLOW"
@@ -39,6 +40,18 @@ data aws_iam_policy_document appsync_permissions {
       "logs:CreateLogStream",
       "logs:PutLogEvents",
     ]
+    resources = ["*"]
+  }
+
+  statement {
+    actions = [
+      "xray:PutTraceSegments",
+      "xray:PutTelemetryRecords",
+      "xray:GetSamplingRules",
+      "xray:GetSamplingTargets",
+      "xray:GetSamplingStatisticSummaries"
+    ]
+    effect    = "Allow"
     resources = ["*"]
   }
 }

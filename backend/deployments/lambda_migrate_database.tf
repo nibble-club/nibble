@@ -38,6 +38,17 @@ resource aws_iam_role migrate_database {
 }
 
 data aws_iam_policy_document migrate_database {
+  statement {
+    actions = [
+      "xray:PutTraceSegments",
+      "xray:PutTelemetryRecords",
+      "xray:GetSamplingRules",
+      "xray:GetSamplingTargets",
+      "xray:GetSamplingStatisticSummaries"
+    ]
+    effect    = "Allow"
+    resources = ["*"]
+  }
   // interface with VPC resources
   statement {
     actions = [

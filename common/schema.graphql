@@ -1,13 +1,6 @@
 type Query {
-  # gets user ID from identity
-  userInfo: User!
-  nibblesFeatured(userLocation: LatLonInput!): [NibbleAvailable!]!
-  nibbleInfo(nibbleId: ID!): NibbleAvailable!
-  # all "intelligent" recommendations come from this query
-  nibblesWithProperty(
-    userLocation: LatLonInput!
-    property: NibbleRecommendationReason!
-  ): [NibbleAvailable!]!
+  # returns reservations on given Nibble
+  adminNibbleReservations(nibbleId: ID!): [AdminNibbleReservation!]!
   # note that this returns restaurant distance for free,
   # without making an extra request. maxDistance unit is miles
   closestRestaurants(
@@ -18,19 +11,27 @@ type Query {
   # geocodes given address
   geocodeAddress(address: AddressWithoutLocationInput!): LatLon!
   # creates S3 presigned URL to upload image
-  imageUploadURL(destination: S3ObjectDestination): ImageUploadDestination!
+  imageUploadURL(destination: S3ObjectDestination!): ImageUploadDestination!
   # gets lat lon for users who don't allow location access
   locationForPostalCode(postalCode: String!): LatLon!
-  nibbleGetReservation(nibbleId: ID!): NibbleReserved
+  nibbleReservation(nibbleId: ID!): NibbleReserved
+  nibbleInfo(nibbleId: ID!): NibbleAvailable!
+  # all "intelligent" recommendations come from this query
+  nibblesWithProperty(
+    userLocation: LatLonInput!
+    property: NibbleRecommendationReason!
+  ): [NibbleAvailable!]!
+  # gets user ID from identity
+  recentSearches: [SearchParameters!]!
   # checks admin id in identity
   restaurantForAdmin: Restaurant!
   restaurantInfo(restaurantId: ID!): Restaurant!
-  # gets user ID from identity
-  recentSearches: [SearchParameters!]!
   search(
     userLocation: LatLonInput!
     searchParameters: SearchParametersInput!
   ): SearchResults!
+  # gets user ID from identity
+  userInfo: User!
 }
 
 type Mutation {
@@ -94,6 +95,10 @@ input AddressWithoutLocationInput {
   postalCode: String!
 }
 
+type AdminDeleteNibbleResponse {
+  id: ID!
+}
+
 input AdminNibbleInput {
   name: String!
   type: NibbleType!
@@ -105,6 +110,23 @@ input AdminNibbleInput {
   availableTo: AWSTimestamp!
 }
 
+type AdminNibbleReservation {
+  nibbleId: ID!
+  count: Int! # number reserved
+  price: Int! # price in cents for entire reservation
+  reservedAt: AWSTimestamp!
+  user: AdminNibbleReservationUserInfo!
+  status: NibbleReservationStatus!
+  cancelledAt: AWSTimestamp # mandatory if NibbleReservationStatus is CANCELLED*
+  cancellationReason: String
+}
+
+type AdminNibbleReservationUserInfo {
+  userId: ID!
+  name: String!
+  email: String!
+}
+
 input AdminRestaurantInput {
   name: String!
   address: AddressInput!
@@ -114,10 +136,6 @@ input AdminRestaurantInput {
   heroUrl: S3ObjectInput!
   disclaimer: String
   active: Boolean!
-}
-
-type AdminDeleteNibbleResponse {
-  id: ID!
 }
 
 type ClosestRestaurantsResults {

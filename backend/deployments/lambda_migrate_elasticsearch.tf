@@ -47,6 +47,18 @@ data aws_iam_policy_document migrate_elasticsearch {
     resources = ["*"]
   }
 
+  statement {
+    actions = [
+      "xray:PutTraceSegments",
+      "xray:PutTelemetryRecords",
+      "xray:GetSamplingRules",
+      "xray:GetSamplingTargets",
+      "xray:GetSamplingStatisticSummaries"
+    ]
+    effect    = "Allow"
+    resources = ["*"]
+  }
+
   // interface with VPC resources
   statement {
     actions = [

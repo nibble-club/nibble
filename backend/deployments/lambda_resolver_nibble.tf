@@ -52,6 +52,19 @@ data aws_iam_policy_document resolver_nibble {
     effect    = "Allow"
     resources = ["*"]
   }
+
+  statement {
+    actions = [
+      "xray:PutTraceSegments",
+      "xray:PutTelemetryRecords",
+      "xray:GetSamplingRules",
+      "xray:GetSamplingTargets",
+      "xray:GetSamplingStatisticSummaries"
+    ]
+    effect    = "Allow"
+    resources = ["*"]
+  }
+
   // interface with VPC resources
   statement {
     actions = [

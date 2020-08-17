@@ -155,7 +155,7 @@ const RestaurantsMapView = () => {
           </p>
           <button
             disabled={
-              searchOffset + RESTAURANT_COUNT >
+              searchOffset + RESTAURANT_COUNT >=
               restaurantData.closestRestaurants.totalResults
             }
             onClick={() => {
