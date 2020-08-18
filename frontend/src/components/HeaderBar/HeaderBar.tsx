@@ -101,11 +101,13 @@ const HeaderBar = () => {
             />
           )}
         </div>
-        <S3Image
-          className={classes.profilePic}
-          location={profilePicUrl}
-          alt="profile"
-        />
+        <Link to={{ pathname: isAdmin ? "/admin" : "/profile" }}>
+          <S3Image
+            className={classes.profilePic}
+            location={profilePicUrl}
+            alt="profile"
+          />
+        </Link>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import React from "react";
 
-import { text, withKnobs } from "@storybook/addon-knobs";
+import { withKnobs } from "@storybook/addon-knobs";
 
 import HeaderBar from "./HeaderBar";
 

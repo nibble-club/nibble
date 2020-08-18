@@ -9,6 +9,7 @@ import { useLazyQuery } from "@apollo/client";
 import MomentUtils from "@date-io/moment";
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 
+import useOutsideClickAlerter from "../../common/hooks/useOutsideClickAlerter";
 import { AppTheme } from "../../common/theming/theming.types";
 import {
   RecentSearchesQuery,
@@ -24,32 +25,6 @@ import { useBoxStyles, useStyles } from "./SearchOverlay.style";
 import { SearchOverlayProps, SelectorBoxProps } from "./SearchOverlay.types";
 
 const MAX_SEARCH_DISTANCE = 10; // miles
-
-/**
- * Hook that hides search on clicks outside of the passed ref; credit to
- * https://stackoverflow.com/a/42234988/4932372
- */
-const useOutsideClickAlerter = (
-  refs: React.MutableRefObject<HTMLDivElement | null>[],
-  callback: () => void
-) => {
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        refs.every((ref) => ref.current && !ref.current.contains(event.target as Node))
-      ) {
-        callback();
-      }
-    }
-
-    // Bind the event listener
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      // Unbind the event listener on clean up
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [refs, callback]);
-};
 
 const SelectorBox = (props: SelectorBoxProps) => {
   const [show, setShow] = useState(false);

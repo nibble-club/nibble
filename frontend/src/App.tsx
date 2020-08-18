@@ -15,6 +15,7 @@ import Admin from "./pages/Admin/Admin";
 import Home from "./pages/Home/Home";
 import Login from "./pages/Login/Login";
 import NibbleDetail from "./pages/NibbleDetail/NibbleDetail";
+import Profile from "./pages/Profile";
 import RestaurantDetail from "./pages/RestaurantDetail";
 import RestaurantsMapView from "./pages/RestaurantsMapView/RestaurantsMapView";
 import Search from "./pages/Search/Search";
@@ -91,7 +92,7 @@ function App() {
         </Route>
 
         <Route path="/profile">
-          <div>Hello from profile page!</div>
+          <Profile />
         </Route>
 
         <Route path="/admin">

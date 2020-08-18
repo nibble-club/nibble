@@ -1,6 +1,10 @@
 import { gql } from "@apollo/client";
 
-import { NIBBLE_AVAILABLE_INFO_FRAGMENT, RESTAURANT_INFO_FRAGMENT } from "./fragments";
+import {
+  NIBBLE_AVAILABLE_INFO_FRAGMENT,
+  NIBBLE_RESERVED_INFO_FRAGMENT,
+  RESTAURANT_INFO_FRAGMENT
+} from "./fragments";
 
 export const ADMIN_CREATE_NIBBLE = gql`
   mutation AdminCreateNibble($input: AdminNibbleInput!) {
@@ -41,20 +45,24 @@ export const ADMIN_EDIT_RESTAURANT = gql`
 export const NIBBLE_CREATE_RESERVATION = gql`
   mutation NibbleCreateReservation($nibbleId: ID!, $count: Int!) {
     nibbleCreateReservation(nibbleId: $nibbleId, count: $count) {
+      ...NibbleReservedInfo
+    }
+  }
+  ${NIBBLE_RESERVED_INFO_FRAGMENT}
+`;
+
+export const UPDATE_USER = gql`
+  mutation UpdateUser($userInfo: UserInfo!) {
+    updateUser(userInfo: $userInfo) {
       id
-      name
-      type
-      count
-      imageUrl {
+      fullName
+      profilePicUrl {
         bucket
         region
         key
       }
-      price
-      availableFrom
-      availableTo
-      status
-      reservedAt
+      email
+      postalCode
     }
   }
 `;

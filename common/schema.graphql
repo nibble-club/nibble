@@ -62,6 +62,9 @@ type Mutation {
   ): NibbleCancelReservationResponse!
   # either restaurant or user can mark reservation as completed
   nibbleCompleteReservation(nibbleId: ID!): NibbleReserved!
+
+  # update user info
+  updateUser(userInfo: UserInfo!): User!
 }
 
 # keep alphabetically sorted below here
@@ -280,7 +283,14 @@ type User {
   profilePicUrl: S3Object!
   email: String!
   phoneNumber: String
-  postalCode: String
+  postalCode: String!
   nibblesReserved: [NibbleReserved!]!
   nibblesHistory: [NibbleReserved!]!
+}
+
+input UserInfo {
+  fullName: String!
+  profilePicUrl: S3ObjectInput!
+  phoneNumber: String
+  postalCode: String!
 }

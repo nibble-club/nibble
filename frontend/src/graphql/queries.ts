@@ -163,6 +163,7 @@ export const SEARCH = gql`
 export const USER_INFO = gql`
   query UserInfo {
     userInfo {
+      id
       fullName
       profilePicUrl {
         bucket
@@ -170,8 +171,47 @@ export const USER_INFO = gql`
         key
       }
       email
+      phoneNumber
+      postalCode
+    }
+  }
+`;
+
+export const USER_INFO_NIBBLES_RESERVED = gql`
+  query UserInfoNibblesReserved {
+    userInfo {
+      id
+      fullName
+      profilePicUrl {
+        bucket
+        region
+        key
+      }
+      email
+      phoneNumber
       postalCode
       nibblesReserved {
+        ...NibbleReservedInfo
+      }
+    }
+  }
+  ${NIBBLE_RESERVED_INFO_FRAGMENT}
+`;
+
+export const USER_INFO_NIBBLES_HISTORY = gql`
+  query UserInfoNibblesHistory {
+    userInfo {
+      id
+      fullName
+      profilePicUrl {
+        bucket
+        region
+        key
+      }
+      email
+      phoneNumber
+      postalCode
+      nibblesHistory {
         ...NibbleReservedInfo
       }
     }

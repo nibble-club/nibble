@@ -26,8 +26,11 @@ module add_user_lambda {
   layers = [aws_lambda_layer_version.db_utilities.arn]
 
   vpc_config = {
-    security_group_ids = [aws_security_group.lambda_security_group.id, aws_security_group.lambda_internet_access_security_group.id]
-    subnet_ids         = var.private_subnet_ids
+    security_group_ids = [
+      aws_security_group.lambda_security_group.id,
+      aws_security_group.lambda_internet_access_security_group.id
+    ]
+    subnet_ids = var.private_subnet_ids
   }
 }
 

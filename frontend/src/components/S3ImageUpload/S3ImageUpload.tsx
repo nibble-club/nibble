@@ -11,7 +11,11 @@ import { IMAGE_UPLOAD_URL } from "../../graphql/queries";
 import { useStyles } from "./S3ImageUpload.style";
 import { S3ImageUploadProps } from "./S3ImageUpload.types";
 
-const S3ImageUpload = ({ destination, setImageLocation }: S3ImageUploadProps) => {
+const S3ImageUpload = ({
+  destination,
+  setImageLocation,
+  children,
+}: S3ImageUploadProps) => {
   const classes = useStyles();
   const { loading, error, data, refetch } = useQuery<
     ImageUploadUrlQuery,
@@ -71,9 +75,16 @@ const S3ImageUpload = ({ destination, setImageLocation }: S3ImageUploadProps) =>
   });
 
   return (
-    <div {...getRootProps({ className: classes.container, id: "s3-image-upload" })}>
+    <div
+      {...getRootProps({
+        className: children ? classes.containerChildren : classes.container,
+        id: "s3-image-upload",
+      })}
+    >
       <input {...getInputProps()} />
-      {isDragActive ? (
+      {children ? (
+        children
+      ) : isDragActive ? (
         <p>Drop image here</p>
       ) : (
         <p>Drag image here or click to select</p>

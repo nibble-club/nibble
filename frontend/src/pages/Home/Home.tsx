@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useTheme } from "react-jss";
-import { useDispatch } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 
 import { useLazyQuery, useQuery } from "@apollo/client";
-import Auth from "@aws-amplify/auth";
 
 import useLocation from "../../common/hooks/useLocation";
 import { AppTheme } from "../../common/theming/theming.types";
@@ -27,15 +25,20 @@ import {
   NibbleRecommendationReason,
   NibblesWithPropertyDistanceQuery,
   NibblesWithPropertyDistanceQueryVariables,
-  UserInfoQuery,
-  UserInfoQueryVariables
+  UserInfoNibblesReservedQuery,
+  UserInfoNibblesReservedQueryVariables
 } from "../../graphql/generated/types";
-import { NIBBLES_WITH_PROPERTY_DISTANCE, USER_INFO } from "../../graphql/queries";
-import { userSignOut } from "../../redux/actions";
+import {
+  NIBBLES_WITH_PROPERTY_DISTANCE,
+  USER_INFO_NIBBLES_RESERVED
+} from "../../graphql/queries";
 import { useStyles } from "./Home.style";
 
 const Home = () => {
-  const { data } = useQuery<UserInfoQuery, UserInfoQueryVariables>(USER_INFO);
+  const { data } = useQuery<
+    UserInfoNibblesReservedQuery,
+    UserInfoNibblesReservedQueryVariables
+  >(USER_INFO_NIBBLES_RESERVED);
   const [fetchNearbyNibbles, { data: nearbyNibbles }] = useLazyQuery<
     NibblesWithPropertyDistanceQuery,
     NibblesWithPropertyDistanceQueryVariables
@@ -50,7 +53,6 @@ const Home = () => {
   >(NIBBLES_WITH_PROPERTY_DISTANCE);
   const appTheme = useTheme() as AppTheme;
   const classes = useStyles();
-  const dispatch = useDispatch();
   const location = useLocation();
   const history = useHistory();
   const [recommended, setRecommended] = useState<NibbleFeaturedCardProps[]>([]);
@@ -142,15 +144,6 @@ const Home = () => {
         {(availableNibbles && (
           <NibbleCollectionAvailable nibbles={availableNibbles.nibblesWithProperty} />
         )) || <NibbleCollectionLoading />}
-        <Link
-          to={{ pathname: "/login", state: { referrer: "/" } }}
-          onClick={async () => {
-            dispatch(userSignOut());
-            await Auth.signOut();
-          }}
-        >
-          Sign out
-        </Link>
         <ActionButton
           disabled={false}
           onClick={() => history.push("/restaurants")}

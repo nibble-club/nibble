@@ -323,3 +323,16 @@ variable resolver_nibbles_with_property_lambda_release_version {
   type    = string
   default = ""
 }
+
+variable resolver_update_user_lambda_name {
+  type = string
+}
+
+variable resolver_update_user_lambda_artifact {
+  type = string
+}
+
+variable resolver_update_user_lambda_release_version {
+  type    = string
+  default = ""
+}

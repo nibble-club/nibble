@@ -56,6 +56,25 @@ export type AdminNibbleInput = {
   availableTo: Scalars['AWSTimestamp'];
 };
 
+export type AdminNibbleReservation = {
+  __typename?: 'AdminNibbleReservation';
+  nibbleId: Scalars['ID'];
+  count: Scalars['Int'];
+  price: Scalars['Int'];
+  reservedAt: Scalars['AWSTimestamp'];
+  user: AdminNibbleReservationUserInfo;
+  status: NibbleReservationStatus;
+  cancelledAt?: Maybe<Scalars['AWSTimestamp']>;
+  cancellationReason?: Maybe<Scalars['String']>;
+};
+
+export type AdminNibbleReservationUserInfo = {
+  __typename?: 'AdminNibbleReservationUserInfo';
+  userId: Scalars['ID'];
+  name: Scalars['String'];
+  email: Scalars['String'];
+};
+
 export type AdminRestaurantInput = {
   name: Scalars['String'];
   address: AddressInput;
@@ -104,6 +123,7 @@ export type Mutation = {
   nibbleEditReservation: NibbleReserved;
   nibbleCancelReservation: NibbleCancelReservationResponse;
   nibbleCompleteReservation: NibbleReserved;
+  updateUser: User;
 };
 
 
@@ -165,6 +185,11 @@ export type MutationNibbleCancelReservationArgs = {
 
 export type MutationNibbleCompleteReservationArgs = {
   nibbleId: Scalars['ID'];
+};
+
+
+export type MutationUpdateUserArgs = {
+  userInfo: UserInfo;
 };
 
 export type NibbleAvailable = {
@@ -230,35 +255,24 @@ export type PaginationInput = {
 
 export type Query = {
   __typename?: 'Query';
-  userInfo: User;
-  nibblesFeatured: Array<NibbleAvailable>;
-  nibbleInfo: NibbleAvailable;
-  nibblesWithProperty: Array<NibbleAvailable>;
+  adminNibbleReservations: Array<AdminNibbleReservation>;
   closestRestaurants: ClosestRestaurantsResults;
   geocodeAddress: LatLon;
   imageUploadURL: ImageUploadDestination;
   locationForPostalCode: LatLon;
-  nibbleGetReservation?: Maybe<NibbleReserved>;
+  nibbleReservation?: Maybe<NibbleReserved>;
+  nibbleInfo: NibbleAvailable;
+  nibblesWithProperty: Array<NibbleAvailable>;
+  recentSearches: Array<SearchParameters>;
   restaurantForAdmin: Restaurant;
   restaurantInfo: Restaurant;
-  recentSearches: Array<SearchParameters>;
   search: SearchResults;
+  userInfo: User;
 };
 
 
-export type QueryNibblesFeaturedArgs = {
-  userLocation: LatLonInput;
-};
-
-
-export type QueryNibbleInfoArgs = {
+export type QueryAdminNibbleReservationsArgs = {
   nibbleId: Scalars['ID'];
-};
-
-
-export type QueryNibblesWithPropertyArgs = {
-  userLocation: LatLonInput;
-  property: NibbleRecommendationReason;
 };
 
 
@@ -275,7 +289,7 @@ export type QueryGeocodeAddressArgs = {
 
 
 export type QueryImageUploadUrlArgs = {
-  destination?: Maybe<S3ObjectDestination>;
+  destination: S3ObjectDestination;
 };
 
 
@@ -284,8 +298,19 @@ export type QueryLocationForPostalCodeArgs = {
 };
 
 
-export type QueryNibbleGetReservationArgs = {
+export type QueryNibbleReservationArgs = {
   nibbleId: Scalars['ID'];
+};
+
+
+export type QueryNibbleInfoArgs = {
+  nibbleId: Scalars['ID'];
+};
+
+
+export type QueryNibblesWithPropertyArgs = {
+  userLocation: LatLonInput;
+  property: NibbleRecommendationReason;
 };
 
 
@@ -370,9 +395,16 @@ export type User = {
   profilePicUrl: S3Object;
   email: Scalars['String'];
   phoneNumber?: Maybe<Scalars['String']>;
-  postalCode?: Maybe<Scalars['String']>;
+  postalCode: Scalars['String'];
   nibblesReserved: Array<NibbleReserved>;
   nibblesHistory: Array<NibbleReserved>;
+};
+
+export type UserInfo = {
+  fullName: Scalars['String'];
+  profilePicUrl: S3ObjectInput;
+  phoneNumber?: Maybe<Scalars['String']>;
+  postalCode: Scalars['String'];
 };
 
 export type NibbleAvailableInfoFragment = (
@@ -644,11 +676,44 @@ export type UserInfoQuery = (
   { __typename?: 'Query' }
   & { userInfo: (
     { __typename?: 'User' }
-    & Pick<User, 'fullName' | 'email' | 'postalCode'>
+    & Pick<User, 'id' | 'fullName' | 'email' | 'phoneNumber' | 'postalCode'>
+    & { profilePicUrl: (
+      { __typename?: 'S3Object' }
+      & Pick<S3Object, 'bucket' | 'region' | 'key'>
+    ) }
+  ) }
+);
+
+export type UserInfoNibblesReservedQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type UserInfoNibblesReservedQuery = (
+  { __typename?: 'Query' }
+  & { userInfo: (
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'fullName' | 'email' | 'phoneNumber' | 'postalCode'>
     & { profilePicUrl: (
       { __typename?: 'S3Object' }
       & Pick<S3Object, 'bucket' | 'region' | 'key'>
     ), nibblesReserved: Array<(
+      { __typename?: 'NibbleReserved' }
+      & NibbleReservedInfoFragment
+    )> }
+  ) }
+);
+
+export type UserInfoNibblesHistoryQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type UserInfoNibblesHistoryQuery = (
+  { __typename?: 'Query' }
+  & { userInfo: (
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'fullName' | 'email' | 'phoneNumber' | 'postalCode'>
+    & { profilePicUrl: (
+      { __typename?: 'S3Object' }
+      & Pick<S3Object, 'bucket' | 'region' | 'key'>
+    ), nibblesHistory: Array<(
       { __typename?: 'NibbleReserved' }
       & NibbleReservedInfoFragment
     )> }

@@ -197,8 +197,15 @@ export const muiTheme = createMuiTheme({
 const offset = "3px";
 const blur = "6px";
 export const textOutlineShadow = (
-  theme: AppTheme
-) => `-${offset} ${offset} ${blur} ${theme.color.background}, 
-${offset} ${offset} ${blur} ${theme.color.background}, 
-${offset} -${offset} ${blur} ${theme.color.background}, 
--${offset} -${offset} ${blur} ${theme.color.background}`;
+  theme: AppTheme,
+  transparency = 1
+) => `-${offset} ${offset} ${blur} ${withTransparency(
+  theme.color.background,
+  transparency
+)}, 
+${offset} ${offset} ${blur} ${withTransparency(theme.color.background, transparency)}, 
+${offset} -${offset} ${blur} ${withTransparency(theme.color.background, transparency)}, 
+-${offset} -${offset} ${blur} ${withTransparency(
+  theme.color.background,
+  transparency
+)}`;

@@ -152,9 +152,12 @@ def main():
         )
 
     # create admin Cognito users, one for each restaurant
-    if not os.path.isfile("var/usernames.json"):
+    usernames_filename = "var/usernames.json"
+    if not os.path.isfile(usernames_filename):
         print("Creating new admin users")
-        logging.warn("No usernames.json file found, creating new Cognito admin users")
+        logging.warning(
+            "No usernames.json file found, creating new Cognito admin users"
+        )
         # get user pool ID from SSM
         ssm_client = boto3.client("ssm", region_name=region)
         ssm_path = (
@@ -183,12 +186,14 @@ def main():
             admin_usernames.append(response["User"]["Username"])
             print(f"Added user {admin_usernames[-1]}")
             logging.info(f"Added user {admin_usernames[-1]}")
-        with open("var/usernames.json", "w") as f:
+
+        os.makedirs(os.path.dirname(usernames_filename), exist_ok=True)
+        with open(usernames_filename, "w") as f:
             json.dump(admin_usernames, f)
     else:
         print("Using existing admin users")
         logging.info("Using existing admin users from usernames.json")
-        with open("var/usernames.json", "r") as f:
+        with open(usernames_filename, "r") as f:
             admin_usernames = json.load(f)
 
     client = boto3.client("lambda", region_name=region)
@@ -209,7 +214,7 @@ def main():
         logging.info(f"Lambda invoked for username {username}")
         logging.info(base64.b64decode(response["LogResult"]).decode("utf-8"))
 
-        if response["StatusCode"] != 200:
+        if response["StatusCode"] != 200 or "FunctionError" in response:
             print("Lambda invocation failed")
             logging.error("Lambda invocation failed")
             print(response)

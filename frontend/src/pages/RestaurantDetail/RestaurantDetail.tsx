@@ -17,10 +17,10 @@ import {
   NibbleReservedInfoFragment,
   RestaurantInfoQuery,
   RestaurantInfoQueryVariables,
-  UserInfoQuery,
-  UserInfoQueryVariables
+  UserInfoNibblesReservedQuery,
+  UserInfoNibblesReservedQueryVariables
 } from "../../graphql/generated/types";
-import { RESTAURANT_INFO, USER_INFO } from "../../graphql/queries";
+import { RESTAURANT_INFO, USER_INFO_NIBBLES_RESERVED } from "../../graphql/queries";
 import { MessageType, showMessage } from "../../redux/actions";
 import { useStyles } from "./RestaurantDetail.style";
 
@@ -37,7 +37,10 @@ const RestaurantDetail = () => {
   >(RESTAURANT_INFO, {
     variables: { restaurantId: id },
   });
-  const { data: userData } = useQuery<UserInfoQuery, UserInfoQueryVariables>(USER_INFO);
+  const { data: userData } = useQuery<
+    UserInfoNibblesReservedQuery,
+    UserInfoNibblesReservedQueryVariables
+  >(USER_INFO_NIBBLES_RESERVED);
   const [userReservedNibbles, setUserReservedNibbles] = useState<
     NibbleReservedInfoFragment[]
   >([]);

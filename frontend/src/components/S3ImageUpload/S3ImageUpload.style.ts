@@ -28,4 +28,7 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
       color: theme.color.text.primary,
     },
   },
+  containerChildren: {
+    cursor: "pointer",
+  },
 }));

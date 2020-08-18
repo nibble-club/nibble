@@ -11,7 +11,7 @@ module migrate_elasticsearch_lambda {
   runtime                  = "python3.7"
   s3_bucket                = local.lambdas_bucket
   s3_key                   = "${var.environment_namespace}/${var.migrate_elasticsearch_lambda_name}/${var.migrate_elasticsearch_lambda_artifact}"
-  timeout                  = 3
+  timeout                  = 30
 
   environment = {
     ELASTICSEARCH_ENDPOINT = aws_elasticsearch_domain.elasticsearch.endpoint

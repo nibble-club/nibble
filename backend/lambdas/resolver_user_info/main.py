@@ -9,14 +9,20 @@ logger.setLevel(logging.INFO)
 
 # connect to database
 engine = utils.get_engine()
+user_table = tables.get_table_metadata(tables.NibbleTable.NIBBLE_USER)
 
 
 def lambda_handler(event, context):
-    """Resolves requests for user info (not related to Nibble history)
+    """Resolves mutations for user info
     """
     logger.info(event)
+    event_field = event["field"]
+    if event_field not in ("userInfo",):
+        raise NibbleError(
+            "Incorrect request type {0} for userInfo handler".format(event_field)
+        )
+
     user_id = event["identity"]["username"]
-    user_table = tables.get_table_metadata(tables.NibbleTable.NIBBLE_USER)
     s = select(
         [
             user_table.c.id,
@@ -34,7 +40,7 @@ def lambda_handler(event, context):
         result.close()
 
     if user_row is None:
-        raise NibbleError("User ID ${0} not found".format(user_id))
+        raise NibbleError("User ID {0} not found".format(user_id))
 
     user = {
         "id": user_id,
