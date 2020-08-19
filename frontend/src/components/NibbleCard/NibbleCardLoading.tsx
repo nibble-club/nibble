@@ -11,6 +11,7 @@ import {
   useLoadingStyles
 } from "./NibbleCard.style";
 
+/** Used to show a loading Nibble card */
 export const NibbleCardLoading = () => {
   const appTheme = useTheme() as AppTheme;
   const [isHovered, setIsHovered] = useState(false);

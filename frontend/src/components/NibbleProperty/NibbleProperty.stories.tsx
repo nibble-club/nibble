@@ -1,41 +1,49 @@
 import React from "react";
 
+import { Meta, Story } from "@storybook/react/types-6-0";
+
 import NibbleProperty from "./NibbleProperty";
-import {
-  NibblePropertyProps,
-  NibblePropertyIcon,
-} from "./NibbleProperty.types";
+import { NibblePropertyIcon, NibblePropertyProps } from "./NibbleProperty.types";
 
 export default {
   component: NibbleProperty,
-  title: "NibbleProperty",
+  title: "Nibbles/NibbleProperty",
   excludeStories: /.*Props$/,
-};
+  argTypes: {
+    icon: {
+      control: {
+        type: "inline-radio",
+        options: Object.keys(NibblePropertyIcon).map(
+          // @ts-ignore
+          (k) => NibblePropertyIcon[k as any]
+        ),
+      },
+    },
+  },
+} as Meta;
 
-export const ingredientsProps: NibblePropertyProps = {
+const Template: Story<NibblePropertyProps> = (args) => <NibbleProperty {...args} />;
+
+export const Ingredients = Template.bind({});
+Ingredients.args = {
   icon: NibblePropertyIcon.Ingredients,
   text: "Ingredients",
 };
 
-export const preparedProps: NibblePropertyProps = {
+export const Prepared = Template.bind({});
+Prepared.args = {
   icon: NibblePropertyIcon.Prepared,
   text: "Prepared",
 };
 
-export const locationProps: NibblePropertyProps = {
+export const Location = Template.bind({});
+Location.args = {
   icon: NibblePropertyIcon.Location,
   text: "0.2 miles",
 };
 
-export const timeProps: NibblePropertyProps = {
+export const Time = Template.bind({});
+Time.args = {
   icon: NibblePropertyIcon.Time,
   text: "9:00 pm",
 };
-
-export const Ingredients = () => <NibbleProperty {...ingredientsProps} />;
-
-export const Prepared = () => <NibbleProperty {...preparedProps} />;
-
-export const Location = () => <NibbleProperty {...locationProps} />;
-
-export const Time = () => <NibbleProperty {...timeProps} />;

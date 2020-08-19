@@ -4,7 +4,7 @@ import { NibbleCardLoading } from "./NibbleCardLoading";
 
 export default {
   component: NibbleCardLoading,
-  title: "NibbleCardLoading",
+  title: "Nibbles/NibbleCardLoading",
   excludeStories: /.*Props$/,
 };
 

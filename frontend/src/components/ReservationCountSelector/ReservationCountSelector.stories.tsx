@@ -1,21 +1,23 @@
 import React from "react";
 
-import { action } from "@storybook/addon-actions";
-import { number, withKnobs } from "@storybook/addon-knobs";
+import { Meta, Story } from "@storybook/react/types-6-0";
 
 import ReservationCountSelector from "./ReservationCountSelector";
+import { ReservationCountSelectorProps } from "./ReservationCountSelector.types";
 
 export default {
   component: ReservationCountSelector,
-  title: "ReservationCountSelector",
+  title: "Input/ReservationCountSelector",
   excludeStories: /.*Props$/,
-  decorators: [withKnobs],
-};
+  args: {
+    currentCount: 2,
+    availableCount: 5,
+  },
+  argTypes: {
+    onCountChange: { action: "count-changed", table: { disable: true } },
+  },
+} as Meta;
 
-export const Selector = () => (
-  <ReservationCountSelector
-    currentCount={number("Current selected count", 2)}
-    availableCount={number("Remaining count", 5)}
-    onCountChange={action("count-changed")}
-  />
+export const Selector: Story<ReservationCountSelectorProps> = (args) => (
+  <ReservationCountSelector {...args} />
 );

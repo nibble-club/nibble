@@ -1,60 +1,52 @@
 import moment from "moment";
 import React from "react";
 
-import {
-  NibbleReservationStatus,
-  NibbleReservedInfoFragment,
-  NibbleType
-} from "../../graphql/generated/types";
+import { Meta, Story } from "@storybook/react/types-6-0";
+
+import { NibbleReservationStatus, NibbleType } from "../../graphql/generated/types";
 import { NibbleCardReserved } from "./NibbleCardReserved";
+import { NibbleCardReservedProps } from "./NibbleCardReserved.types";
 
 export default {
   component: NibbleCardReserved,
-  title: "NibbleCardReserved",
+  title: "Nibbles/NibbleCardReserved",
   excludeStories: /.*Props$/,
-};
-
-export const symphonySushiReservedProps: NibbleReservedInfoFragment = {
-  id: "3",
-  restaurant: {
-    id: "123",
-    name: "Symphony Sushi",
+  args: {
+    id: "3",
+    restaurant: {
+      id: "123",
+      name: "Symphony Sushi",
+    },
+    name: "Half sushi roll",
+    type: NibbleType.Prepared,
+    count: 5,
+    imageUrl: {
+      bucket: "800344761765-dev-adchurch-nibble-images",
+      region: "us-west-2",
+      key: "seeding/sushi.jpg",
+    },
+    price: 300,
+    availableFrom: moment().subtract(7, "h").unix(),
+    availableTo: moment().endOf("hour").unix(),
+    status: NibbleReservationStatus.Reserved,
+    reservedAt: moment().subtract(3, "h").unix(),
   },
-  name: "Half sushi roll",
-  type: NibbleType.Prepared,
-  count: 5,
-  imageUrl: {
-    bucket: "PLACEHOLDER",
-    region: "",
-    key: "hero",
-  },
-  price: 300,
-  availableFrom: moment.utc().subtract(7, "h").unix(),
-  availableTo: moment.utc().add(1, "h").unix(),
-  status: NibbleReservationStatus.Reserved,
-  reservedAt: moment.utc().subtract(3, "h").unix(),
-};
+} as Meta;
 
-export const symphonySushiCompletedProps: NibbleReservedInfoFragment = {
-  ...symphonySushiReservedProps,
+const Template: Story<NibbleCardReservedProps> = (args) => (
+  <NibbleCardReserved {...args} />
+);
+
+export const Reserved = Template.bind({});
+
+export const Completed = Template.bind({});
+Completed.args = {
   status: NibbleReservationStatus.Completed,
 };
 
-export const symphonySushiCancelledProps: NibbleReservedInfoFragment = {
-  ...symphonySushiReservedProps,
+export const Cancelled = Template.bind({});
+Cancelled.args = {
   status: NibbleReservationStatus.CancelledByUser,
   cancellationReason: "bad",
   cancelledAt: moment.utc().subtract(20, "m").subtract(5, "s").unix(),
 };
-
-export const SymphonySushiReserved = () => (
-  <NibbleCardReserved {...symphonySushiReservedProps} />
-);
-
-export const SymphonySushiCompleted = () => (
-  <NibbleCardReserved {...symphonySushiCompletedProps} />
-);
-
-export const SymphonySushiCancelled = () => (
-  <NibbleCardReserved {...symphonySushiCancelledProps} />
-);

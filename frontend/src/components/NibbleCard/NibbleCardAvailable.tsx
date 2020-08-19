@@ -18,6 +18,7 @@ export const getIconForType = (type: string) => {
   }
 };
 
+/** Shows an available Nibble (e.g. one that has not yet been reserved). */
 export const NibbleCardAvailable = (props: NibbleCardAvailableProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const classes = useStyles({ isHovered, ...props });

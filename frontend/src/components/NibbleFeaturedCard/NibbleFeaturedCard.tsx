@@ -6,6 +6,10 @@ import { getS3ImageUrl } from "../S3Image/S3Image";
 import { useStyles } from "./NibbleFeaturedCard.style";
 import { NibbleFeaturedCardProps } from "./NibbleFeaturedCard.types";
 
+/**
+ * Shows an available Nibble in a dramatic fashion, highlighting the picture of the
+ * Nibble
+ */
 export const NibbleFeaturedCard = (props: NibbleFeaturedCardProps) => {
   const imageUrl = getS3ImageUrl(props.imageUrl);
   const classes = useStyles({ imageUrl, count: props.count });

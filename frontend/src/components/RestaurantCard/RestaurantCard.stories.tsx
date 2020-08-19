@@ -1,16 +1,21 @@
 import React from "react";
 
+import { Meta, Story } from "@storybook/react/types-6-0";
+
 import RestaurantCard from "./RestaurantCard";
 import { RestaurantCardProps } from "./RestaurantCard.types";
 import { RestaurantCardLoading } from "./RestaurantCardLoading";
 
 export default {
   component: RestaurantCard,
-  title: "RestaurantCard",
+  title: "Restaurants/RestaurantCard",
   excludeStories: /.*Props$/,
-};
+} as Meta;
 
-export const SymphonySushiProps: RestaurantCardProps = {
+export const SymphonySushi: Story<RestaurantCardProps> = (args) => (
+  <RestaurantCard {...args} />
+);
+SymphonySushi.args = {
   id: "1",
   name: "Symphony Sushi",
   market: "Boston",
@@ -47,7 +52,5 @@ export const SymphonySushiProps: RestaurantCardProps = {
   },
   __typename: "Restaurant",
 };
-
-export const SymphonySushi = () => <RestaurantCard {...SymphonySushiProps} />;
 
 export const Loading = () => <RestaurantCardLoading />;

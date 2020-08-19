@@ -1,35 +1,38 @@
 import React, { useState } from "react";
 
-import { action } from "@storybook/addon-actions";
+import { Meta, Story } from "@storybook/react/types-6-0";
 
 import SearchBar from "./SearchBar";
+import { SearchBarProps } from "./SearchBar.types";
 
 export default {
   component: SearchBar,
-  title: "SearchBar",
+  title: "Header/SearchBar",
   excludeStories: /.*Props$/,
-};
+  argTypes: {
+    onSearch: { action: "searched", table: { disable: true } },
+    searchString: { table: { disable: true } },
+    setSearchString: { table: { disable: true } },
+  },
+} as Meta;
 
-export const Focused = () => {
+const Template: Story<Pick<SearchBarProps, "onSearch" | "searchFocused">> = (args) => {
   const [searchString, setSearchString] = useState("");
   return (
     <SearchBar
-      searchFocused
-      setSearchString={setSearchString}
-      onSearch={action("searching")}
       searchString={searchString}
+      setSearchString={setSearchString}
+      {...args}
     />
   );
 };
 
-export const NotFocused = () => {
-  const [searchString, setSearchString] = useState("");
-  return (
-    <SearchBar
-      searchFocused={false}
-      setSearchString={setSearchString}
-      onSearch={action("searching")}
-      searchString={searchString}
-    />
-  );
+export const Focused = Template.bind({});
+Focused.args = {
+  searchFocused: true,
+};
+
+export const NotFocused = Template.bind({});
+NotFocused.args = {
+  searchFocused: false,
 };

@@ -1,46 +1,48 @@
 import React from "react";
 
-import { text, withKnobs } from "@storybook/addon-knobs";
+import { Meta, Story } from "@storybook/react/types-6-0";
 
 import { MessageType } from "../../redux/actions";
 import { NotificationBarWithoutConnect } from "./NotificationBar";
+import { NotificationBarProps } from "./NotificationBar.types";
 
 export default {
   component: NotificationBarWithoutConnect,
-  title: "NotificationBar",
+  title: "Utilities/NotificationBar",
   excludeStories: /.*Props$/,
-  decorators: [withKnobs],
-  parameters: {
-    knobs: {
-      escapeHTML: false,
+  argTypes: {
+    messageType: {
+      control: {
+        type: "inline-radio",
+        options: Object.keys(MessageType),
+      },
     },
   },
+} as Meta;
+
+const Template: Story<NotificationBarProps> = (args) => (
+  <NotificationBarWithoutConnect {...args} />
+);
+export const SuccessBar = Template.bind({});
+SuccessBar.args = {
+  message: "Successful operation!",
+  messageType: MessageType.Success,
 };
 
-export const SuccessBar = () => (
-  <NotificationBarWithoutConnect
-    message={text("Message", "Successful operation!")}
-    messageType={MessageType.Success}
-  />
-);
+export const WarningBar = Template.bind({});
+WarningBar.args = {
+  message: "You're being warned...",
+  messageType: MessageType.Warning,
+};
 
-export const WarningBar = () => (
-  <NotificationBarWithoutConnect
-    message={text("Message", "You're being warned...")}
-    messageType={MessageType.Warning}
-  />
-);
+export const ErrorBar = Template.bind({});
+ErrorBar.args = {
+  message: "Oh no, an error has occurred.",
+  messageType: MessageType.Error,
+};
 
-export const ErrorBar = () => (
-  <NotificationBarWithoutConnect
-    message={text("Message", "Oh no, an error has occurred.")}
-    messageType={MessageType.Error}
-  />
-);
-
-export const InfoBar = () => (
-  <NotificationBarWithoutConnect
-    message={text("Message", "For your information, here is some information.")}
-    messageType={MessageType.Information}
-  />
-);
+export const InfoBar = Template.bind({});
+InfoBar.args = {
+  message: "For your information, here is some information.",
+  messageType: MessageType.Information,
+};

@@ -1,79 +1,61 @@
 import React from "react";
 
-import { boolean, text, withKnobs } from "@storybook/addon-knobs";
+import { Meta, Story } from "@storybook/react/types-6-0";
 
-import { S3ObjectDestination } from "../../graphql/generated/types";
 import { LOGO_PLACEHOLDER } from "../S3Image/S3Image";
-import S3ImageUpload from "../S3ImageUpload";
-import TextInput from "../TextInput";
+import { ImageUpload } from "../S3ImageUpload/S3ImageUpload.stories";
+import { Empty } from "../TextInput/TextInput.stories";
 import LabeledInput from "./LabeledInput";
+import { LabeledInputProps } from "./LabeledInput.types";
 
 export default {
   component: LabeledInput,
-  title: "LabeledInput",
+  title: "Input/LabeledInput",
   excludeStories: /.*Props$/,
-  decorators: [withKnobs],
-  // parameters: {
-  //   knobs: {
-  //     escapeHTML: false,
-  //   },
-  // },
-};
-
-const textFieldProps = {
-  input: {
-    name: "email",
-    type: "text",
-    value: "",
-    onBlur: () => {},
-    onChange: () => {},
-    onFocus: () => {},
+  args: {
+    label: "Email:",
+    showError: false,
   },
-  meta: {},
-  placeholder: "",
-  center: false,
+} as Meta;
+
+export const SimpleInput: Story<LabeledInputProps> = (args) => (
+  <LabeledInput {...args}>
+    {/* @ts-ignore */}
+    <Empty {...Empty.args} />
+  </LabeledInput>
+);
+
+export const WithExplanation: Story<LabeledInputProps> = (args) => (
+  <LabeledInput {...args}>
+    {/* @ts-ignore */}
+    <Empty {...Empty.args} />
+  </LabeledInput>
+);
+WithExplanation.args = {
+  explanation: "Enter your email here",
 };
 
-export const SimpleInput = () => (
-  <LabeledInput label={text("Label", "Email:", "Simple Input")}>
-    <TextInput {...textFieldProps} />
+export const WithError: Story<LabeledInputProps> = (args) => (
+  <LabeledInput {...args}>
+    {/* @ts-ignore */}
+    <Empty {...Empty.args} />
   </LabeledInput>
 );
+WithError.args = {
+  ...WithExplanation.args,
+  error: "Invalid input",
+  showError: true,
+};
 
-export const WithExplanation = () => (
-  <LabeledInput
-    label={text("Label", "Email:", "With Explanation")}
-    explanation={text("Explanation", "Enter your email here", "With Explanation")}
-  >
-    <TextInput {...textFieldProps} />
+export const WithImagePreview: Story<LabeledInputProps> = (args) => (
+  <LabeledInput {...args}>
+    {/* @ts-ignore */}
+    <ImageUpload {...ImageUpload.args} />
   </LabeledInput>
 );
-
-export const WithError = () => (
-  <LabeledInput
-    label={text("Label", "Email:", "With Error")}
-    explanation={text("Explanation", "Enter your email here", "With Error")}
-    error={text("Error", "Invalid input", "With Error")}
-    showError={boolean("Show Error", true, "With Error")}
-  >
-    <TextInput {...textFieldProps} />
-  </LabeledInput>
-);
-
-export const WithImagePreview = () => (
-  <LabeledInput
-    label={text("Label", "Logo:", "With Image Preview")}
-    explanation={text(
-      "Explanation",
-      "Upload your square logo here",
-      "With Image Preview"
-    )}
-    imageToPreview={{ location: LOGO_PLACEHOLDER, width: 100, height: 100 }}
-    alignLabelTop={boolean("Align Label at Top", true, "With Image Preview")}
-  >
-    <S3ImageUpload
-      setImageLocation={() => {}}
-      destination={S3ObjectDestination.RestaurantLogos}
-    />
-  </LabeledInput>
-);
+WithImagePreview.args = {
+  label: "Logo:",
+  explanation: "Upload your square logo here",
+  imageToPreview: { location: LOGO_PLACEHOLDER, width: 100, height: 100 },
+  alignLabelTop: true,
+};

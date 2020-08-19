@@ -1,21 +1,18 @@
 import React from "react";
 
-import { withKnobs } from "@storybook/addon-knobs";
-
 import HeaderBar from "./HeaderBar";
 
 export default {
   component: HeaderBar,
-  title: "HeaderBar",
+  title: "Header/HeaderBar",
   excludeStories: /.*Props$/,
-  decorators: [withKnobs],
   parameters: {
-    knobs: {
-      escapeHTML: false,
-    },
+    layout: "fullscreen",
   },
 };
 
-export const Bar = () => <HeaderBar />;
+const Template = () => <HeaderBar />;
 
-export const AdminBar = () => <HeaderBar />;
+export const Bar = Template.bind({});
+
+export const AdminBar = Template.bind({});

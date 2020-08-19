@@ -1,84 +1,84 @@
 import React from "react";
 
-import { number, withKnobs } from "@storybook/addon-knobs";
+import { Meta, Story } from "@storybook/react/types-6-0";
 
 import { NibbleType } from "../../graphql/generated/types";
 import { NibbleFeaturedCard } from "./NibbleFeaturedCard";
 import { NibbleFeaturedCardProps } from "./NibbleFeaturedCard.types";
+import { NibbleFeaturedCardLoading } from "./NibbleFeaturedCardLoading";
 
 export default {
   component: NibbleFeaturedCard,
-  title: "NibbleFeaturedCard",
+  title: "Nibbles/NibbleFeaturedCard",
   excludeStories: /.*Props$/,
-  decorators: [withKnobs],
-};
-
-export const symphonySushiProps: NibbleFeaturedCardProps = {
-  id: "3",
-  restaurant: {
-    name: "Symphony Sushi",
-    address: {
-      location: {
-        latitude: 42,
-        longitude: -71,
-      },
-    },
-    id: "23",
-    logoUrl: {
-      bucket: "PLACEHOLDER",
-      region: "",
-      key: "logo",
-    },
-    distance: 0.2,
+  parameters: {
+    layout: "fullscreen",
   },
+  args: {
+    id: "3",
+    restaurant: {
+      name: "Symphony Sushi",
+      address: {
+        location: {
+          latitude: 42,
+          longitude: -71,
+        },
+      },
+      id: "23",
+      logoUrl: {
+        bucket: "PLACEHOLDER",
+        region: "",
+        key: "logo",
+      },
+      distance: 0.2,
+    },
+    availableFrom: 1595647341,
+    availableTo: 1595657341,
+  },
+  argTypes: {
+    availableFrom: {
+      control: null,
+    },
+    availableTo: {
+      control: null,
+    },
+  },
+} as Meta;
+
+const Template: Story<NibbleFeaturedCardProps> = (args) => (
+  <NibbleFeaturedCard {...args} />
+);
+
+export const Sushi = Template.bind({});
+Sushi.args = {
   name: "Half sushi roll",
   type: NibbleType.Prepared,
   count: 5,
   imageUrl: {
-    bucket: "PLACEHOLDER",
-    region: "",
-    key: "hero",
+    bucket: "800344761765-dev-adchurch-nibble-images",
+    region: "us-west-2",
+    key: "seeding/sushi.jpg",
   },
-  availableFrom: 1595647341,
-  availableTo: 1595657341,
   price: 300,
 };
 
-export const cheesesteakPlaceProps: NibbleFeaturedCardProps = {
-  id: "4",
+export const RiceAndBeans = Template.bind({});
+RiceAndBeans.args = {
+  // @ts-ignore
   restaurant: {
-    name: "Cheesesteak Place",
-    address: {
-      location: {
-        latitude: 42,
-        longitude: -71,
-      },
-    },
-    id: "23",
-    logoUrl: {
-      bucket: "PLACEHOLDER",
-      region: "",
-      key: "logo",
-    },
+    id: "5",
+    name: "Bolo Burrito",
     distance: 1.2,
   },
-  name: "2 Hoagie rolls",
+  name: "Rice & Beans",
   type: NibbleType.Ingredients,
   count: 1,
   imageUrl: {
-    bucket: "PLACEHOLDER",
-    region: "",
-    key: "hero",
+    bucket: "800344761765-dev-adchurch-nibble-images",
+    region: "us-west-2",
+    key: "seeding/rice-beans.jpg",
   },
-  availableFrom: 1595647341,
-  availableTo: 1595657341,
-  price: 300,
+  price: 100,
 };
 
-export const SymphonySushi = () => (
-  <NibbleFeaturedCard {...symphonySushiProps} count={number("Available count", 5)} />
-);
-
-export const CheesesteakPlace = () => (
-  <NibbleFeaturedCard {...cheesesteakPlaceProps} count={number("Available count", 1)} />
-);
+export const Loading = () => <NibbleFeaturedCardLoading />;

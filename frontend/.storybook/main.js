@@ -1,10 +1,12 @@
 module.exports = {
   stories: ["../src/**/*.stories.@(ts|tsx|js|jsx)"],
+  typescript: {
+    reactDocgen: "react-docgen-typescript",
+  },
   addons: [
     "@storybook/preset-create-react-app",
-    "@storybook/addon-actions/register",
+    "@storybook/addon-essentials",
     "@storybook/addon-links",
-    "@storybook/addon-viewport/register",
-    "@storybook/addon-knobs/register",
+    "@storybook/addon-knobs",
   ],
 };

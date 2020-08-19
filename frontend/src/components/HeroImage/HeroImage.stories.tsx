@@ -1,32 +1,24 @@
 import React from "react";
 
-import { withKnobs } from "@storybook/addon-knobs";
+import { Meta, Story } from "@storybook/react/types-6-0";
 
 import HeroImage from "./HeroImage";
+import { HeroImageProps } from "./HeroImage.types";
 
 export default {
   component: HeroImage,
-  title: "HeroImage",
+  title: "Utilities/HeroImage",
   excludeStories: /.*Props$/,
-  decorators: [withKnobs],
   parameters: {
-    knobs: {
-      escapeHTML: false,
-    },
+    layout: "fullscreen",
   },
-};
+} as Meta;
 
-export const Loading = () => <HeroImage loading={true} />;
+export const Loading = () => <HeroImage loading />;
 
-export const Image = () => (
+export const Image: Story<HeroImageProps> = (args) => (
   <div>
-    <HeroImage
-      location={{
-        bucket: "800344761765-dev-adchurch-restaurant-heros",
-        key: "fbf4bf1a-6c90-4c96-ae50-715d7edcd2a8.jpg",
-        region: "us-west-2",
-      }}
-    />
+    <HeroImage {...args} />
     <p>
       Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean gravida id lacus
       eu feugiat. Suspendisse ultrices lectus nisi, volutpat malesuada urna porttitor
@@ -79,3 +71,10 @@ export const Image = () => (
     </p>
   </div>
 );
+Image.args = {
+  location: {
+    bucket: "800344761765-dev-adchurch-restaurant-heros",
+    key: "fbf4bf1a-6c90-4c96-ae50-715d7edcd2a8.jpg",
+    region: "us-west-2",
+  },
+};

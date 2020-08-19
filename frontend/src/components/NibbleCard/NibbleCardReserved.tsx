@@ -6,6 +6,10 @@ import S3Image from "../S3Image";
 import { useStyles } from "./NibbleCard.style";
 import { NibbleCardReservedProps } from "./NibbleCardReserved.types";
 
+/**
+ * Shows a nibble the user has reserved, including some information about the state of
+ * the reservation
+ */
 export const NibbleCardReserved = (props: NibbleCardReservedProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const classes = useStyles({ isHovered, ...props });

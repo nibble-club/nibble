@@ -99,6 +99,7 @@ const getInitialValues = (data: NibbleInfoQuery | undefined) => {
   };
 };
 
+/** Form allowing admins to create and edit Nibbles */
 const AdminEditNibble = (props: AdminEditNibbleProps) => {
   let { id } = useParams();
   const classes = useStyles();

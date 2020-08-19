@@ -36,6 +36,7 @@ import {
 import { useStyles } from "./AdminEditRestaurant.style";
 
 type AdminEditRestaurantProps = {
+  /** Called on successful creation/edit of restaurant */
   onSuccess?: Function;
 };
 

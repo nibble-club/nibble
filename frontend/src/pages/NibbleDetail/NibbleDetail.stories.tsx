@@ -6,7 +6,7 @@ import NibbleDetail from "./NibbleDetail";
 
 export default {
   component: NibbleDetail,
-  title: "NibbleDetail",
+  title: "Pages/NibbleDetail",
   excludeStories: /.*Props$/,
   decorators: [StoryRouter()],
 };

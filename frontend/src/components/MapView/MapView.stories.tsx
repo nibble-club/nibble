@@ -1,22 +1,38 @@
 import React from "react";
 
-import { number, withKnobs } from "@storybook/addon-knobs";
+import { Meta, Story } from "@storybook/react/types-6-0";
 
 import MapView from "./MapView";
 import { MapViewProps } from "./MapView.types";
 
 export default {
   component: MapView,
-  title: "MapView",
+  title: "Utilities/MapView",
   excludeStories: /.*Props$/,
-  decorators: [withKnobs],
-};
+  parameters: {
+    layout: "fullscreen",
+  },
+  args: {
+    activePin: 0,
+  },
+  argTypes: {
+    activePin: {
+      control: "range",
+      min: 0,
+      max: 3,
+    },
+  },
+} as Meta;
 
-export const BlankMapProps: MapViewProps = {
+const Template: Story<MapViewProps> = (args) => <MapView {...args} />;
+
+export const BlankMap = Template.bind({});
+BlankMap.args = {
   pins: [],
 };
 
-export const MapWithPinsProps: MapViewProps = {
+export const MapWithPins = Template.bind({});
+MapWithPins.args = {
   pins: [
     {
       address: {
@@ -47,13 +63,3 @@ export const MapWithPinsProps: MapViewProps = {
     },
   ],
 };
-
-export const BlankMap = () => (
-  <div style={{ height: 500 }}>
-    <MapView {...BlankMapProps} />
-  </div>
-);
-
-export const MapWithPins = () => (
-  <MapView {...MapWithPinsProps} activePin={number("Active Pin", -1)} />
-);

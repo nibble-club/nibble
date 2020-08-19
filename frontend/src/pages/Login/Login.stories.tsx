@@ -1,19 +1,15 @@
 import React from "react";
 import StoryRouter from "storybook-react-router";
 
-import { action } from "@storybook/addon-actions";
+import { Meta } from "@storybook/react/types-6-0";
 
 import Login from "./Login";
 
 export default {
   component: Login,
-  title: "Login",
+  title: "Pages/Login",
   excludeStories: /.*Props$/,
   decorators: [StoryRouter()],
-};
+} as Meta;
 
-export const LoginProps: any = {
-  setLoggedIn: action("logged-in"),
-};
-
-export const LoginMain = () => <Login {...LoginProps} />;
+export const LoginMain = () => <Login />;

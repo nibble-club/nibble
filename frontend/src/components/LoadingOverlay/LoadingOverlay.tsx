@@ -6,6 +6,10 @@ import WithOverlay from "../WithOverlay";
 import { useStyles } from "./LoadingOverlay.style";
 import { LoadingOverlayProps } from "./LoadingOverlay.types";
 
+/**
+ * Displays a loading icon over everything in the next fixed container (normally the
+ * entire screen).
+ */
 const LoadingOverlay = (props: LoadingOverlayProps) => {
   const classes = useStyles();
   return (

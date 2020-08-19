@@ -314,6 +314,10 @@ const AdminChangePasswordForm = (
   </form>
 );
 
+/**
+ * Main login page for Nibble webapp. Contains a router for each sub-page (e.g. sign up,
+ * forgot password, etc.)
+ */
 const Login = () => {
   const classes = useStyles();
   const history = useHistory();

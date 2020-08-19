@@ -14,11 +14,11 @@ export const SHOW_SEARCH = "SHOW_SEARCH";
 export const HIDE_SEARCH = "HIDE_SEARCH";
 
 export enum MessageType {
-  Error,
-  Warning,
-  Success,
-  Information,
-  None,
+  Error = "Error",
+  Warning = "Warning",
+  Success = "Success",
+  Information = "Information",
+  None = "None",
 }
 
 // action creators
