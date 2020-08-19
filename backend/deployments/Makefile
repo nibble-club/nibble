@@ -10,6 +10,10 @@ DB_SCHEMAS_S3_BUCKET = $(AWS_TARGET_ACCOUNT_ID)-$(AWS_REGION)-$(DEPLOY_ENV)-db-s
 prepare:
 	@echo "Backend prepared"
 
+# build all, used to prepare every single lambda
+build-all:
+	./scripts/build_all.sh
+
 # manage database schemas
 
 # checks for existence first, then pushes local schemas/postgres folder

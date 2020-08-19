@@ -14,7 +14,9 @@ resource aws_cognito_user_pool users {
   }
 
   email_configuration {
-    email_sending_account = "COGNITO_DEFAULT"
+    from_email_address    = "Nibble <${aws_ses_email_identity.default.email}>"
+    source_arn            = aws_ses_email_identity.default.arn
+    email_sending_account = "DEVELOPER"
   }
 
   lambda_config {

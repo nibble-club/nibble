@@ -5,7 +5,7 @@ import { useTheme } from "react-jss";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 
-import { useMutation, useQuery } from "@apollo/client";
+import { useApolloClient, useMutation, useQuery } from "@apollo/client";
 import Auth from "@aws-amplify/auth";
 
 import useOutsideClickAlerter from "../../common/hooks/useOutsideClickAlerter";
@@ -75,6 +75,7 @@ const displayPhone = (onlyNums: string) => {
 };
 
 const Profile = () => {
+  const client = useApolloClient();
   const classes = useStyles();
   const { loading, error, data } = useQuery<
     UserInfoNibblesHistoryQuery,
@@ -269,6 +270,7 @@ const Profile = () => {
           to={{ pathname: "/login", state: { referrer: "/" } }}
           onClick={async () => {
             dispatch(userSignOut());
+            client.clearStore();
             await Auth.signOut();
           }}
         >
