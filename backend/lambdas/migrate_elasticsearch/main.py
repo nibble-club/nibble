@@ -31,9 +31,24 @@ es = Elasticsearch(
 
 
 def lambda_handler(event, context):
-    """Migrates ES indices
+    """Migrates ES indices. Does so by calling each *migration function* in sequence.
+    Migration functions should follow these rules (this is inspired by Flyway's
+    migration strategy):
+     1. Naming format: v[number]_[description of change], e.g. v2_add_location_field
+     2. Idempotent: calling function any number of times has same effect as calling it
+     once.
     """
     logger.info(event)
+
+    v1_initial_indices()
+
+
+def v1_initial_indices():
+    """Creates initial indices; will not raise error if index already exists.
+
+    Args:
+        es (Elasticsearch): Elasticsearch client
+    """
     logger.info("Beginning creation")
     try:
         es.indices.create(
@@ -75,7 +90,7 @@ def lambda_handler(event, context):
                 }
             },
         )
-        logger.info(f"Created index ${es_indices.RESTAURANT_INDEX}")
+        logger.info(f"Created index {es_indices.RESTAURANT_INDEX}")
     except exceptions.RequestError as e:
         if e.error == "resource_already_exists_exception":
             logger.info("Index already created")
@@ -105,11 +120,12 @@ def lambda_handler(event, context):
                                 "key": {"type": "keyword"},
                             }
                         },
+                        "location": {"type": "geo_point"},
                     }
                 }
             },
         )
-        logger.info(f"Created index ${es_indices.NIBBLE_INDEX}")
+        logger.info(f"Created index {es_indices.NIBBLE_INDEX}")
     except exceptions.RequestError as e:
         if e.error == "resource_already_exists_exception":
             logger.info("Index already created")

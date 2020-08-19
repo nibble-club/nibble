@@ -36,39 +36,42 @@ region = os.environ["AWS_REGION"]
 
 hero_bucket = f"{account_id}-{environment_namespace}-restaurant-heros".replace("_", "-")
 logo_bucket = f"{account_id}-{environment_namespace}-restaurant-logos".replace("_", "-")
+images_exist_filename = "var/images_uploaded"
 
 
 def upload_logo(url, place_id):
     file_name = f"imgs/restaurants/{place_id}_logo.jpg"
     key = f"seeding/{place_id}.jpg"
 
-    if not os.path.isfile(file_name):
-        # download and write image file
-        print(f"Downloading {file_name}")
-        logging.warn(f"Downloading {file_name}")
-        r = requests.get(url, stream=True)
-        if r.status_code == 200:
-            with open(file_name, "wb") as f:
-                shutil.copyfileobj(r.raw, f)
-        else:
-            raise RuntimeError("Failed request")
+    # check if file indicating images already checked exists
+    if not os.path.exists(images_exist_filename):
+        if not os.path.isfile(file_name):
+            # download and write image file
+            print(f"Downloading {file_name}")
+            logging.warn(f"Downloading {file_name}")
+            r = requests.get(url, stream=True)
+            if r.status_code == 200:
+                with open(file_name, "wb") as f:
+                    shutil.copyfileobj(r.raw, f)
+            else:
+                raise RuntimeError("Failed request")
 
-    s3_client = boto3.client("s3")
-    try:
-        s3_client.head_object(Bucket=logo_bucket, Key=key)
-        print(f"Checked     {file_name}")
-        logging.info(f"{file_name} exists on S3")
-    except ClientError:
+        s3_client = boto3.client("s3")
         try:
-            s3_client.upload_file(
-                file_name, logo_bucket, key, ExtraArgs={"ACL": "public-read"},
-            )
-            print(f"Uploaded    {file_name}")
-            logging.info(f"Uploaded {file_name} to S3")
-        except Exception:
-            print("Error uploading")
-            logging.error(f"Error uploading {file_name}")
-            raise RuntimeError()
+            s3_client.head_object(Bucket=logo_bucket, Key=key)
+            print(f"Checked     {file_name}")
+            logging.info(f"{file_name} exists on S3")
+        except ClientError:
+            try:
+                s3_client.upload_file(
+                    file_name, logo_bucket, key, ExtraArgs={"ACL": "public-read"},
+                )
+                print(f"Uploaded    {file_name}")
+                logging.info(f"Uploaded {file_name} to S3")
+            except Exception:
+                print("Error uploading")
+                logging.error(f"Error uploading {file_name}")
+                raise RuntimeError()
 
     return {
         "bucket": logo_bucket,
@@ -80,34 +83,37 @@ def upload_logo(url, place_id):
 def upload_hero_image(photo_reference, place_id):
     file_name = f"imgs/restaurants/{place_id}.jpg"
     key = f"seeding/{place_id}.jpg"
-    if not os.path.isfile(file_name):
-        # download and write image file
-        photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=1000&photoreference={photo_reference}&key={os.environ['GOOGLE_API_KEY']}"
-        print(f"Downloading {file_name}")
-        logging.warn(f"Downloading {file_name}")
-        r = requests.get(photo_url, stream=True)
-        if r.status_code == 200:
-            with open(file_name, "wb") as f:
-                shutil.copyfileobj(r.raw, f)
-        else:
-            raise RuntimeError("Failed request")
 
-    s3_client = boto3.client("s3")
-    try:
-        s3_client.head_object(Bucket=hero_bucket, Key=key)
-        print(f"Checked     {file_name}")
-        logging.info(f"{file_name} exists on S3")
-    except ClientError:
+    # check if file indicating images already checked exists
+    if not os.path.exists(images_exist_filename):
+        if not os.path.isfile(file_name):
+            # download and write image file
+            photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=1000&photoreference={photo_reference}&key={os.environ['GOOGLE_API_KEY']}"
+            print(f"Downloading {file_name}")
+            logging.warn(f"Downloading {file_name}")
+            r = requests.get(photo_url, stream=True)
+            if r.status_code == 200:
+                with open(file_name, "wb") as f:
+                    shutil.copyfileobj(r.raw, f)
+            else:
+                raise RuntimeError("Failed request")
+
+        s3_client = boto3.client("s3")
         try:
-            s3_client.upload_file(
-                file_name, hero_bucket, key, ExtraArgs={"ACL": "public-read"},
-            )
-            print(f"Uploaded    {file_name}")
-            logging.info(f"Uploaded {file_name} to S3")
-        except Exception:
-            print("Error uploading")
-            logging.error(f"Error uploading {file_name}")
-            raise RuntimeError("Error uploading to S3")
+            s3_client.head_object(Bucket=hero_bucket, Key=key)
+            print(f"Checked     {file_name}")
+            logging.info(f"{file_name} exists on S3")
+        except ClientError:
+            try:
+                s3_client.upload_file(
+                    file_name, hero_bucket, key, ExtraArgs={"ACL": "public-read"},
+                )
+                print(f"Uploaded    {file_name}")
+                logging.info(f"Uploaded {file_name} to S3")
+            except Exception:
+                print("Error uploading")
+                logging.error(f"Error uploading {file_name}")
+                raise RuntimeError("Error uploading to S3")
 
     return {
         "bucket": hero_bucket,
@@ -150,6 +156,10 @@ def main():
                 "active": True,
             }
         )
+    # save file noting that all images were checked, saving time on next seeding
+    os.makedirs(os.path.dirname(images_exist_filename), exist_ok=True)
+    with open(images_exist_filename, "w") as f:
+        f.write("checked")
 
     # create admin Cognito users, one for each restaurant
     usernames_filename = "var/usernames.json"
@@ -215,10 +225,8 @@ def main():
         logging.info(base64.b64decode(response["LogResult"]).decode("utf-8"))
 
         if response["StatusCode"] != 200 or "FunctionError" in response:
-            print("Lambda invocation failed")
             logging.error("Lambda invocation failed")
-            print(response)
-            raise RuntimeError()
+            raise RuntimeError("Lambda invocation failed")
         print(f"Added restaurant {payload['name']}")
         logging.info(f"Added restaurant {payload['name']}")
 

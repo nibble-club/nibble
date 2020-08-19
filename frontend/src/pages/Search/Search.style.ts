@@ -1,6 +1,6 @@
 import { createUseStyles } from "react-jss";
 
-import { COLUMN_FLEX_BOX } from "../../common/theming/theming";
+import { ROW_FLEX_BOX } from "../../common/theming/theming";
 import { AppTheme } from "../../common/theming/theming.types";
 
 export const useStyles = createUseStyles((theme: AppTheme) => ({
@@ -23,9 +23,12 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
     marginLeft: `calc(2 * ${theme.spacing.large})`,
   },
   restaurants: {
-    ...COLUMN_FLEX_BOX,
-    justifyContent: "start",
-    margin: theme.spacing.large,
+    ...ROW_FLEX_BOX,
+    width: "90%",
+    maxWidth: 1000,
+    margin: "auto",
+    flexWrap: "wrap",
+    marginBottom: theme.spacing.large,
     marginTop: 0,
   },
 }));

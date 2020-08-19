@@ -11,7 +11,6 @@ from elasticsearch_dsl import Q, Search
 # constants
 DEFAULT_MAX_DISTANCE = 10  # miles
 MAX_MAX_DISTANCE = 50  # miles
-MAX_INTERNAL_RESTAURANT_RESULTS = 50
 MAX_USER_RESULTS = 30  # each, for restaurants and nibbles
 SEARCH_HISTORY_LENGTH = 10
 
@@ -28,8 +27,8 @@ es = es_indices.get_es_client()
 def lambda_handler(event, context):
     """Resolves requests for searches. Currently search will find valid restaurants,
     with a preference for restaurants matching the search term, then for distance from
-    the user; then, it will look for nibbles from restaurants in that set (2 searches
-    total).
+    the user; then, it will look for nibbles within the given distance, matching the
+    given terms and filters.
     """
     logger.info(event)
     field = event["field"]
@@ -105,8 +104,7 @@ def lambda_handler(event, context):
 
     logger.info(restaurant_search.to_dict())
 
-    restaurant_response = restaurant_search[0:MAX_INTERNAL_RESTAURANT_RESULTS].execute()
-    valid_restaurant_ids = [hit.meta.id for hit in restaurant_response]
+    restaurant_response = restaurant_search[0:MAX_USER_RESULTS].execute()
 
     # get available nibbles at valid restaurants
     nibble_search = (
@@ -119,7 +117,17 @@ def lambda_handler(event, context):
         )
         .filter("range", **{"availableFrom": {"lte": "now"}})
         .filter("range", **{"availableTo": {"gte": search_pickup_after}})
-        .filter("terms", **{"restaurantId": valid_restaurant_ids})
+        .filter(
+            "geo_distance",
+            **{
+                "distance": f"{search_max_distance}miles",
+                "distance_type": "plane",
+                "location": {
+                    "lat": user_location["latitude"],
+                    "lon": user_location["longitude"],
+                },
+            },
+        )
     )
 
     nibble_response = nibble_search[0:MAX_USER_RESULTS].execute()

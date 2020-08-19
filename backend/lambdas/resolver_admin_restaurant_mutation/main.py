@@ -72,7 +72,8 @@ def lambda_handler(event, context):
                             restaurant_id=restaurant_id, admin_id=admin_id
                         )
                     )
-                except Exception:
+                except Exception as e:
+                    logger.error(e)
                     raise NibbleError("Admin already associated with a restaurant")
             else:
                 restaurant_id = result.fetchone()["id"]

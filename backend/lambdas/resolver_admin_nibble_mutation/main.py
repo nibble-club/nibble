@@ -64,7 +64,7 @@ def lambda_handler(event, context):
                     )
                 )
                 # update elasticsearch
-                add_to_elasticsearch(db_values, nibble_id, restaurant_id)
+                add_to_elasticsearch(db_values, nibble_id, restaurant_id, conn)
 
                 # update redis
                 nibble_available_count = db_values["available_count"]
@@ -111,7 +111,7 @@ def lambda_handler(event, context):
                         restaurant_id = result.fetchone()["restaurant_id"]
 
                         # update elasticsearch
-                        add_to_elasticsearch(db_values, nibble_id, restaurant_id)
+                        add_to_elasticsearch(db_values, nibble_id, restaurant_id, conn)
 
                         # update redis
                         pipe.hset(
@@ -209,7 +209,13 @@ def check_valid_nibble_update(
         raise NibbleError("Cannot update archived Nibble; please create a new one")
 
 
-def add_to_elasticsearch(db_values, nibble_id, restaurant_id):
+def add_to_elasticsearch(db_values, nibble_id, restaurant_id, conn):
+    logger.info("Fetching restaurant location")
+    restaurant_row = conn.execute(
+        select([restaurant_table.c.latitude, restaurant_table.c.longitude]).where(
+            restaurant_table.c.id == restaurant_id
+        )
+    ).fetchone()
     logger.info("Adding record to Elasticsearch")
     index_result = es.index(
         index=es_indices.NIBBLE_INDEX,
@@ -224,6 +230,10 @@ def add_to_elasticsearch(db_values, nibble_id, restaurant_id):
             "availableFrom": db_values["available_from"],
             "availableTo": db_values["available_to"],
             "imageUrl": db_values["image_url"],
+            "location": {
+                "lat": restaurant_row["latitude"],
+                "lon": restaurant_row["longitude"],
+            },
         },
     )
     logger.info(index_result)
