@@ -3,6 +3,7 @@ from datetime import datetime
 
 from common import tables, utils
 from common.errors import NibbleError
+from sqlalchemy import asc, desc
 from sqlalchemy.sql import and_, not_, select
 
 logger = logging.getLogger()
@@ -10,6 +11,8 @@ logger.setLevel(logging.INFO)
 
 # get tables and build query
 engine = utils.get_engine()
+nibble_table = tables.get_table_metadata(tables.NibbleTable.NIBBLE)
+reservation_table = tables.get_table_metadata(tables.NibbleTable.NIBBLE_RESERVATION)
 
 
 def lambda_handler(event, context):
@@ -27,8 +30,6 @@ def lambda_handler(event, context):
     # get user id from source
     user_id = event["source"]["id"]
 
-    nibble_table = tables.get_table_metadata(tables.NibbleTable.NIBBLE)
-    reservation_table = tables.get_table_metadata(tables.NibbleTable.NIBBLE_RESERVATION)
     current_time = int(datetime.now().timestamp())
 
     nibble_info_cols = [
@@ -60,10 +61,10 @@ def lambda_handler(event, context):
 
     if field == "nibblesReserved":
         nibbles_condition = nibbles_reserved_conditions
-        order_field = nibble_table.c.available_to
+        order_field = asc(nibble_table.c.available_to)
     else:  # field = nibblesHistory
         nibbles_condition = nibbles_history_conditions
-        order_field = reservation_table.c.reserved_at
+        order_field = desc(reservation_table.c.reserved_at)
 
     # get nibbles reserved by user, with given time condition
     s = (

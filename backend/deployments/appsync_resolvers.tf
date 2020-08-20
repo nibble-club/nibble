@@ -270,3 +270,13 @@ resource aws_appsync_resolver update_user {
   request_template  = templatefile("./resolver_templates/request_lambda.vm", { field = "updateUser" })
   response_template = file("./resolver_templates/response_lambda.vm")
 }
+
+resource aws_appsync_resolver admin_nibble_reservations {
+  api_id            = aws_appsync_graphql_api.api.id
+  kind              = "UNIT"
+  field             = "adminNibbleReservations"
+  type              = "Query"
+  data_source       = module.admin_nibble_reservations_datasource.name
+  request_template  = templatefile("./resolver_templates/request_lambda.vm", { field = "adminNibbleReservations" })
+  response_template = file("./resolver_templates/response_lambda.vm")
+}

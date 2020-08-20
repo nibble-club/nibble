@@ -206,3 +206,16 @@ module update_user_datasource {
   assume_role_policy_json  = data.aws_iam_policy_document.appsync_assume_role.json
   permissions_boundary_arn = local.permissions_boundary_arn
 }
+
+module admin_nibble_reservations_datasource {
+  source = "./modules/appsync_lambda_data_source"
+
+  name         = "admin_nibble_reservations"
+  description  = "Data source for reservations on a given Nibble"
+  function_arn = module.resolver_admin_nibble_reservations_lambda.arn
+
+  appsync_graphql_api_id   = aws_appsync_graphql_api.api.id
+  environment_namespace    = var.environment_namespace
+  assume_role_policy_json  = data.aws_iam_policy_document.appsync_assume_role.json
+  permissions_boundary_arn = local.permissions_boundary_arn
+}
