@@ -68,6 +68,8 @@ def get_table_metadata(table_name=None):
         Column("latitude", DOUBLE_PRECISION, nullable=False),
         Column("longitude", DOUBLE_PRECISION, nullable=False),
         Column("active", BOOLEAN, nullable=False),
+        Column("phone_number", TEXT, nullable=True),
+        Column("website_url", TEXT, nullable=True),
         Column("created_at", TIMESTAMP, server_default=FetchedValue()),
     )
 
@@ -94,6 +96,7 @@ def get_table_metadata(table_name=None):
         Column("available_from", BIGINT, nullable=False),
         Column("available_to", BIGINT, nullable=False),
         Column("image_url", JSON, nullable=False),
+        Column("active", BOOLEAN, nullable=False),
         Column("created_at", TIMESTAMP, server_default=FetchedValue()),
     )
 

@@ -15,6 +15,8 @@ CREATE TABLE restaurant (
 	latitude double precision NOT NULL,
 	longitude double precision NOT NULL,
 	active boolean NOT NULL,
+	phone_number text,
+	website_url text,
 	created_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT restaurant_pk PRIMARY KEY (id)
 ) WITH (
@@ -51,6 +53,7 @@ CREATE TABLE nibble (
 	available_from bigint NOT NULL,
 	available_to bigint NOT NULL,
 	image_url json NOT NULL,
+	active boolean NOT NULL DEFAULT true,
 	created_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT nibble_pk PRIMARY KEY (id)
 ) WITH (

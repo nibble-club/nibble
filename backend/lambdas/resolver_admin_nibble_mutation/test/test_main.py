@@ -43,7 +43,6 @@ sample_nibble = {
 class TestAdminNibbleMutation(unittest.TestCase):
     def setUp(self):
         self.conn_mock = Mock()
-        self.nibble_table_mock = Mock()
 
     def test_db_mapper_valid(self):
         result = main.nibble_event_db_mapper(sample_nibble)
@@ -68,6 +67,12 @@ class TestAdminNibbleMutation(unittest.TestCase):
         with self.assertRaises(NibbleError):
             main.nibble_event_db_mapper(invalid_count_nibble)
 
+    def test_db_mapper_invalid_price(self):
+        invalid_price_nibble = sample_nibble.copy()
+        invalid_price_nibble["price"] = -1
+        with self.assertRaises(NibbleError):
+            main.nibble_event_db_mapper(invalid_price_nibble)
+
     def test_db_mapper_invalid_available_to(self):
         invalid_time_nibble = sample_nibble.copy()
         invalid_time_nibble["availableTo"] = int(
@@ -91,10 +96,12 @@ class TestAdminNibbleMutation(unittest.TestCase):
         with patch("main.select") as select_mock:
             # patch selecting of row
             self.conn_mock.execute.return_value.fetchone.return_value = {
-                "available_to": (datetime.now() + timedelta(hours=1)).timestamp()
+                "available_to": (datetime.now() + timedelta(hours=1)).timestamp(),
+                "price": nibble_price,
+                "active": True,
             }
             main.check_valid_nibble_update(
-                sample_nibble, nibble_id, self.conn_mock, self.nibble_table_mock, 10, 9
+                sample_nibble, nibble_id, self.conn_mock, 10, 9
             )
             select_mock.assert_called_once()
         self.assertTrue(True, "Succeeded without error")
@@ -102,25 +109,66 @@ class TestAdminNibbleMutation(unittest.TestCase):
     def test_update_validation_invalid_amount(self):
         with self.assertRaises(NibbleError):
             main.check_valid_nibble_update(
-                sample_nibble, nibble_id, self.conn_mock, self.nibble_table_mock, 10, 5,
+                sample_nibble, nibble_id, self.conn_mock, 10, 5,
             )
+
+    def test_update_validation_invalid_price(self):
+        with patch("main.select") as select_mock:
+            # patch selecting of row
+            self.conn_mock.execute.return_value.fetchone.return_value = {
+                "available_to": int((datetime.now() + timedelta(hours=1)).timestamp()),
+                "price": nibble_price - 10,
+                "active": True,
+            }
+            with self.assertRaises(NibbleError):
+                main.check_valid_nibble_update(
+                    sample_nibble, nibble_id, self.conn_mock, 10, 9,
+                )
+            select_mock.assert_called_once()
 
     def test_update_validation_invalid_time(self):
         with patch("main.select") as select_mock:
             # patch selecting of row
             self.conn_mock.execute.return_value.fetchone.return_value = {
-                "available_to": (datetime.now() - timedelta(hours=1)).timestamp()
+                "available_to": int((datetime.now() - timedelta(hours=1)).timestamp()),
+                "price": nibble_price,
+                "active": True,
             }
             with self.assertRaises(NibbleError):
                 main.check_valid_nibble_update(
-                    sample_nibble,
-                    nibble_id,
-                    self.conn_mock,
-                    self.nibble_table_mock,
-                    10,
-                    9,
+                    sample_nibble, nibble_id, self.conn_mock, 10, 9,
+                )
+            select_mock.assert_called_once()  # we had to check the db
+
+    def test_update_validation_invalid_deleted(self):
+        with patch("main.select") as select_mock:
+            # patch selecting of row
+            self.conn_mock.execute.return_value.fetchone.return_value = {
+                "available_to": int((datetime.now() + timedelta(hours=1)).timestamp()),
+                "price": nibble_price,
+                "active": False,
+            }
+            with self.assertRaises(NibbleError):
+                main.check_valid_nibble_update(
+                    sample_nibble, nibble_id, self.conn_mock, 10, 9,
+                )
+            select_mock.assert_called_once()  # we had to check the db
+
+    def test_deletion_validation_invalid_time(self):
+        with patch("main.select") as select_mock:
+            # patch selecting of row
+            self.conn_mock.execute.return_value.fetchone.return_value = {
+                "available_to": int((datetime.now() - timedelta(hours=1)).timestamp())
+            }
+            with self.assertRaises(NibbleError):
+                main.check_valid_nibble_deletion(
+                    nibble_id, self.conn_mock, 10, 10,
                 )
             select_mock.assert_called_once()
+
+    def test_deletion_validation_invalid_amount(self):
+        with self.assertRaises(NibbleError):
+            main.check_valid_nibble_deletion(nibble_id, self.conn_mock, 10, 9)
 
 
 if __name__ == "__main__":

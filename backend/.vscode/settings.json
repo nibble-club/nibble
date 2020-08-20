@@ -4,6 +4,7 @@
     "chmod",
     "dbname",
     "geopy",
+    "hdel",
     "hget",
     "hincrby",
     "hset",

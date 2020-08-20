@@ -66,7 +66,6 @@ def handle_restaurant_nibbles(restaurant_id, r):
         .where(
             and_(
                 nibble_table.c.restaurant_id == restaurant_id,
-                nibble_table.c.available_from < current_time,
                 current_time < nibble_table.c.available_to,
             )
         )

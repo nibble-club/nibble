@@ -29,12 +29,11 @@ def lambda_handler(event, context):
     """
     logger.info(event)
     event_field = event["field"]
-    if event_field not in ("adminCreateNibble", "adminEditNibble"):
+    if event_field not in ("adminCreateNibble", "adminEditNibble", "adminDeleteNibble"):
         raise NibbleError(
             "Incorrect request type {0} for admin*Nibble handler".format(event_field)
         )
 
-    nibble = event["arguments"]["input"]
     admin_id = event["identity"]["username"]
     admin_id_restaurant_id_mapping = select(
         [restaurant_restaurant_admin_table.c.restaurant_id]
@@ -45,6 +44,8 @@ def lambda_handler(event, context):
     logger.info("Connected to Redis")
 
     if event_field == "adminCreateNibble":
+        nibble = event["arguments"]["input"]
+
         with engine.begin() as conn:  # transactionizes SQL updates
             with r.pipeline() as pipe:  # transactionizes Redis updates
                 # update db
@@ -79,6 +80,7 @@ def lambda_handler(event, context):
         # end of SQL transaction
 
     elif event_field == "adminEditNibble":
+        nibble = event["arguments"]["input"]
         nibble_id = event["arguments"]["id"]
 
         try:  # meant to catch LockErrors
@@ -91,12 +93,7 @@ def lambda_handler(event, context):
                 with engine.begin() as conn:  # transactionizes SQL calls
                     with r.pipeline() as pipe:  # transactionizes Redis calls
                         check_valid_nibble_update(
-                            nibble,
-                            nibble_id,
-                            conn,
-                            nibble_table,
-                            available_count,
-                            remaining_count,
+                            nibble, nibble_id, conn, available_count, remaining_count,
                         )
 
                         # confirmed valid update, push db changes
@@ -114,10 +111,17 @@ def lambda_handler(event, context):
                         add_to_elasticsearch(db_values, nibble_id, restaurant_id, conn)
 
                         # update redis
+
+                        reservation_count = available_count - remaining_count
+                        pipe.hset(
+                            redis_keys.NIBBLES_AVAILABLE,
+                            nibble_id,
+                            nibble_available_count,
+                        )
                         pipe.hset(
                             redis_keys.NIBBLES_REMAINING,
                             nibble_id,
-                            nibble_available_count,
+                            nibble_available_count - reservation_count,
                         )
                         pipe.execute()
                     # end of Redis pipeline
@@ -129,6 +133,57 @@ def lambda_handler(event, context):
                 "Someone is currently making a reservation, try again in a moment"
             )
     # end of adminEditNibble block
+    elif event_field == "adminDeleteNibble":
+        nibble_id = event["arguments"]["id"]
+
+        try:  # meant to catch LockErrors
+            with r.lock(
+                redis_keys.nibble_lock(nibble_id), blocking_timeout=3
+            ):  # acquire redis lock on nibble
+                try:
+                    available_count = int(
+                        r.hget(redis_keys.NIBBLES_AVAILABLE, nibble_id)
+                    )
+                    remaining_count = int(
+                        r.hget(redis_keys.NIBBLES_REMAINING, nibble_id)
+                    )
+                except TypeError as e:  # invalid conversion, nibble doesn't exist in Redis
+                    logger.error(e)
+                    raise NibbleError("Nibble does not exist")
+                with engine.begin() as conn:  # transactionizes SQL calls
+                    with r.pipeline() as pipe:  # transactionizes Redis calls
+                        check_valid_nibble_deletion(
+                            nibble_id, conn, available_count, remaining_count
+                        )
+
+                        # confirmed valid deletion, delete row
+                        conn.execute(
+                            nibble_table.update()
+                            .where(nibble_table.c.id == nibble_id)
+                            .values(active=False)
+                        )
+                        logger.info("Removed Nibble from database")
+
+                        # remove from Elasticsearch
+                        es.delete(es_indices.NIBBLE_INDEX, nibble_id)
+                        logger.info("Removed Nibble from Elasticsearch")
+
+                        # update Redis
+                        pipe.hdel(redis_keys.NIBBLES_AVAILABLE, nibble_id)
+                        pipe.hdel(redis_keys.NIBBLES_REMAINING, nibble_id)
+                        pipe.execute()
+                        logger.info("Removed Nibble keys from Redis")
+                    # end Redis pipeline
+                # end SQL transaction
+            # end of Redis lock
+            logger.info(f"Deleted Nibble with ID {nibble_id}")
+
+        except LockError:
+            raise NibbleError(
+                "Someone is currently making a reservation, try again in a moment"
+            )
+        return {"id": nibble_id}  # unique deletion response
+
     return nibble_event_result_mapper(db_values, nibble_id)
 
 
@@ -152,6 +207,9 @@ def nibble_event_db_mapper(nibble):
 
     if nibble["availableFrom"] >= nibble["availableTo"]:
         raise NibbleError("Invalid nibble timing, expires before start")
+
+    if nibble["price"] < 0:
+        raise NibbleError("Invalid price, less than 0")
 
     try:
         return {
@@ -184,10 +242,10 @@ def nibble_event_result_mapper(db_values, nibble_id):
 
 
 def check_valid_nibble_update(
-    nibble, nibble_id, conn, nibble_table, available_count, remaining_count
+    nibble, nibble_id, conn, available_count, remaining_count
 ):
     """Checks if the given nibble is a valid update of the existing nibble"""
-    nibble_available_count = nibble["count"]
+    nibble_available_count = nibble["count"]  # new available count from update
     # validate remaining count
     reserved_count = available_count - remaining_count
     if nibble_available_count < reserved_count:
@@ -199,6 +257,33 @@ def check_valid_nibble_update(
 
     # check if Nibble is in past
     nibble_row = conn.execute(
+        select(
+            [nibble_table.c.available_to, nibble_table.c.price, nibble_table.c.active]
+        ).where(nibble_table.c.id == nibble_id)
+    ).fetchone()
+
+    if nibble_row is None:
+        raise NibbleError("No Nibble exists with id {0}".format(nibble_id))
+
+    if not nibble_row["active"]:
+        raise NibbleError("Cannot update deleted Nibble")
+
+    if validation.in_past(nibble_row["available_to"]):
+        raise NibbleError("Cannot update archived Nibble; please create a new one")
+
+    if reserved_count > 0 and nibble["price"] != nibble_row["price"]:
+        raise NibbleError("Cannot change price on a Nibble with reservations")
+
+
+def check_valid_nibble_deletion(nibble_id, conn, available_count, remaining_count):
+    """Checks if nibble can be deleted"""
+    if available_count > remaining_count:  # there was at least one reservation
+        raise NibbleError(
+            "Cannot delete Nibble with reservations; please cancel reservations first"
+        )
+
+    # check if Nibble is in past
+    nibble_row = conn.execute(
         select([nibble_table.c.available_to]).where(nibble_table.c.id == nibble_id)
     ).fetchone()
 
@@ -206,7 +291,7 @@ def check_valid_nibble_update(
         raise NibbleError("No Nibble exists with id {0}".format(nibble_id))
 
     if validation.in_past(nibble_row["available_to"]):
-        raise NibbleError("Cannot update archived Nibble; please create a new one")
+        raise NibbleError("Cannot delete archived Nibble")
 
 
 def add_to_elasticsearch(db_values, nibble_id, restaurant_id, conn):

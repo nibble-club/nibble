@@ -31,6 +31,16 @@ resource aws_appsync_resolver admin_edit_nibble {
   response_template = file("./resolver_templates/response_lambda.vm")
 }
 
+resource aws_appsync_resolver admin_delete_nibble {
+  api_id            = aws_appsync_graphql_api.api.id
+  kind              = "UNIT"
+  field             = "adminDeleteNibble"
+  type              = "Mutation"
+  data_source       = module.admin_nibble_mutation_datasource.name
+  request_template  = templatefile("./resolver_templates/request_lambda.vm", { field = "adminDeleteNibble" })
+  response_template = file("./resolver_templates/response_lambda.vm")
+}
+
 resource aws_appsync_resolver admin_create_restaurant {
   api_id            = aws_appsync_graphql_api.api.id
   kind              = "UNIT"
