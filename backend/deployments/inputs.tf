@@ -349,3 +349,16 @@ variable resolver_admin_nibble_reservations_lambda_release_version {
   type    = string
   default = ""
 }
+
+variable resolver_admin_deactivate_restaurant_lambda_name {
+  type = string
+}
+
+variable resolver_admin_deactivate_restaurant_lambda_artifact {
+  type = string
+}
+
+variable resolver_admin_deactivate_restaurant_lambda_release_version {
+  type    = string
+  default = ""
+}

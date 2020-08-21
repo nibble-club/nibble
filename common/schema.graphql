@@ -38,8 +38,9 @@ type Mutation {
   adminCreateRestaurant(input: AdminRestaurantInput!): Restaurant!
   # id is fetched from identity
   adminEditRestaurant(input: AdminRestaurantInput!): Restaurant!
-  # restaurants are never deleted, they are only deactivated
-  adminDeactivateRestaurant(id: ID!): Restaurant!
+  # restaurants are never deleted, they are only deactivated; deactivates restaurant,
+  # but Nibbles are still available until they expire
+  adminDeactivateRestaurant: AdminDeactivateRestaurantResponse!
   adminCreateNibble(input: AdminNibbleInput!): NibbleAvailable!
   adminEditNibble(id: ID!, input: AdminNibbleInput!): NibbleAvailable!
   adminDeleteNibble(id: ID!): AdminDeleteNibbleResponse!
@@ -96,6 +97,10 @@ input AddressWithoutLocationInput {
   administrativeArea: String!
   country: String!
   postalCode: String!
+}
+
+type AdminDeactivateRestaurantResponse {
+  id: ID!
 }
 
 type AdminDeleteNibbleResponse {

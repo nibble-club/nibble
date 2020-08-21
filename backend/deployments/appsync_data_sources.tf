@@ -219,3 +219,16 @@ module admin_nibble_reservations_datasource {
   assume_role_policy_json  = data.aws_iam_policy_document.appsync_assume_role.json
   permissions_boundary_arn = local.permissions_boundary_arn
 }
+
+module admin_deactivate_restaurant_datasource {
+  source = "./modules/appsync_lambda_data_source"
+
+  name         = "admin_deactivate_restaurant"
+  description  = "Data source for deactivating restaurant"
+  function_arn = module.resolver_admin_deactivate_restaurant_lambda.arn
+
+  appsync_graphql_api_id   = aws_appsync_graphql_api.api.id
+  environment_namespace    = var.environment_namespace
+  assume_role_policy_json  = data.aws_iam_policy_document.appsync_assume_role.json
+  permissions_boundary_arn = local.permissions_boundary_arn
+}

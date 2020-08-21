@@ -65,8 +65,6 @@ def lambda_handler(event, context):
         .where(reservation_table.c.nibble_id == nibble_id)
         .order_by(reservation_table.c.reserved_at)
     )
-    print(s)
-
     with engine.connect() as conn:  # transactionizes SQL updates
         # check that this restaurant admin owns this nibble
         result = conn.execute(

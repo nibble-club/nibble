@@ -57,4 +57,6 @@ resolver_nibbles_with_property_lambda_artifact = "resolver_nibbles_with_property
 resolver_update_user_lambda_name = "resolver_update_user"
 resolver_update_user_lambda_artifact = "resolver_update_user-dd009d0ed8.zip"
 resolver_admin_nibble_reservations_lambda_name = "resolver_admin_nibble_reservations"
-resolver_admin_nibble_reservations_lambda_artifact = "resolver_admin_nibble_reservations-b1eab6a14b.zip"
+resolver_admin_nibble_reservations_lambda_artifact = "resolver_admin_nibble_reservations-9b1bd78167.zip"
+resolver_admin_deactivate_restaurant_lambda_name = "resolver_admin_deactivate_restaurant"
+resolver_admin_deactivate_restaurant_lambda_artifact = "resolver_admin_deactivate_restaurant-fe5824ee95.zip"

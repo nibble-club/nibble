@@ -19,7 +19,8 @@
     "ssh",
     "ssh'ed",
     "venv",
-    "virtualenv"
+    "virtualenv",
+    "zrem"
   ],
   "python.autoComplete.extraPaths": [
     "${workspaceFolder}/lambdas/db_utilities/python"

@@ -9,7 +9,7 @@ from sqlalchemy.sql import and_, not_, select
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-# get tables and build query
+# get tables
 engine = utils.get_engine()
 nibble_table = tables.get_table_metadata(tables.NibbleTable.NIBBLE)
 reservation_table = tables.get_table_metadata(tables.NibbleTable.NIBBLE_RESERVATION)

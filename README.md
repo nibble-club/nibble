@@ -12,7 +12,7 @@ If you're just getting started, follow the [instructions in `ops`](ops/README.md
 - [AWS CLI v2](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
 - Follow the instructions below in [first-time setup](#first-time-setup) to set up your AWS user account locally
 - [Gradle](https://gradle.org/install/)
-- Python (also [set up a virtual environment](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/))
+- Python
 - [Terraform](https://www.terraform.io/downloads.html)
 - [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli)
 
