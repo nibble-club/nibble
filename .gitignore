@@ -2,3 +2,4 @@
 .venv/
 var/
 .terraform/
+__pycache__/

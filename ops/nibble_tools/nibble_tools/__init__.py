@@ -1,1 +1,1 @@
-from .aws_mfa import aws_mfa
+from .aws_mfa import cli

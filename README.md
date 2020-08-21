@@ -16,7 +16,21 @@ If you're just getting started, follow the [instructions in `ops`](ops/README.md
 - [Terraform](https://www.terraform.io/downloads.html)
 - [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli)
 
-### First Time Setup
+## First Time Setup
+
+Once you get your AWS account (see the `ops` directory for instructions), [install the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html).
+
+Then go [here](https://console.aws.amazon.com/iam/home#/security_credentials) to get your AWS _access key ID_ and _secret access key_. Leave the window open for the next steps!
+
+### Automatic
+
+To do all the below steps automatically, from the `nibble` root directory, run the following command:
+
+```shell script
+make setup-local
+```
+
+### Manual
 
 First, create a Python virtual environment:
 

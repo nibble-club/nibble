@@ -5,10 +5,13 @@ setup(
     version="1.0",
     description="Tools for Nibble",
     url="https://github.com/nibble-club/nibble",
-    author="Andrew Churchill",
+    author="Nibble",
     license="MIT",
     packages=["nibble_tools"],
-    scripts=["bin/aws_mfa"],
-    install_requires=["wheel", "boto3"],
+    install_requires=["wheel", "boto3", "Click"],
+    entry_points="""
+        [console_scripts]
+        aws_mfa=nibble_tools.aws_mfa:cli
+    """,
     zip_safe=False,
 )
