@@ -14,6 +14,7 @@ type Query {
   imageUploadURL(destination: S3ObjectDestination!): ImageUploadDestination!
   # gets lat lon for users who don't allow location access
   locationForPostalCode(postalCode: String!): LatLon!
+  # fetch reservation for a single nibble, or null if it does not exist
   nibbleReservation(nibbleId: ID!): NibbleReserved
   nibbleInfo(nibbleId: ID!): NibbleAvailable!
   # all "intelligent" recommendations come from this query

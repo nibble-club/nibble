@@ -161,6 +161,16 @@ resource aws_appsync_resolver nibbles_history {
   response_template = file("./resolver_templates/response_lambda.vm")
 }
 
+resource aws_appsync_resolver nibble_reservation {
+  api_id            = aws_appsync_graphql_api.api.id
+  kind              = "UNIT"
+  field             = "nibbleReservation"
+  type              = "Query"
+  data_source       = module.nibble_history_datasource.name
+  request_template  = templatefile("./resolver_templates/request_lambda.vm", { field = "nibbleReservation" })
+  response_template = file("./resolver_templates/response_lambda.vm")
+}
+
 resource aws_appsync_resolver nibble_create_reservation {
   api_id            = aws_appsync_graphql_api.api.id
   kind              = "UNIT"

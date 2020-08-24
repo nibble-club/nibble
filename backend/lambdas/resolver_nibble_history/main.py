@@ -19,19 +19,16 @@ def lambda_handler(event, context):
     """Resolves requests for user's reserved/history nibble information
     """
     logger.info(event)
-    source_info = event["field"]
-    source, field = source_info.split(".")
+    field = event["field"]
 
-    if source != "User":
-        raise NibbleError("Invalid type, expecting to resolve on User type")
-    if field not in ("nibblesReserved", "nibblesHistory"):
+    if field not in (
+        "User.nibblesReserved",
+        "User.nibblesHistory",
+        "nibbleReservation",
+    ):
         raise NibbleError("Resolving unexpected field {0} on User type".format(field))
 
-    # get user id from source
-    user_id = event["source"]["id"]
-
-    current_time = int(datetime.now().timestamp())
-
+    # set up info we want
     nibble_info_cols = [
         nibble_table.c.id,
         nibble_table.c.type,
@@ -41,6 +38,7 @@ def lambda_handler(event, context):
         nibble_table.c.available_to,
     ]
     nibble_reservation_info_cols = [
+        reservation_table.c.nibble_id,
         reservation_table.c.nibble_name,
         reservation_table.c.reserved_count,
         reservation_table.c.reserved_at,
@@ -49,6 +47,50 @@ def lambda_handler(event, context):
         reservation_table.c.cancelled_at,
         reservation_table.c.cancellation_reason,
     ]
+
+    # handle single nibbleReservation query
+    if field == "nibbleReservation":
+        user_id = event["identity"]["username"]
+        nibble_id = event["arguments"]["nibbleId"]
+
+        s = select(nibble_info_cols + nibble_reservation_info_cols).where(
+            and_(
+                reservation_table.c.user_id == user_id,
+                reservation_table.c.nibble_id == nibble_id,
+                nibble_table.c.id == nibble_id,
+            )
+        )
+
+        with engine.connect() as conn:
+            result = conn.execute(s)
+            reservation_row = result.fetchone()
+            if reservation_row is None:
+                logger.info("No reservation found")
+                return None
+            result = {
+                "id": reservation_row["nibble_id"],
+                "name": reservation_row["nibble_name"],  # from reservation, not nibble
+                "type": reservation_row["type"],
+                "count": reservation_row["reserved_count"],
+                "imageUrl": reservation_row["image_url"],
+                "description": reservation_row["description"],
+                "price": reservation_row["price"],
+                "availableFrom": reservation_row["available_from"],
+                "availableTo": reservation_row["available_to"],
+                "status": reservation_row["status"],
+                "cancelledAt": reservation_row["cancelled_at"],
+                "cancellationReason": reservation_row["cancellation_reason"],
+                "reservedAt": reservation_row["reserved_at"],
+            }
+            logger.info(result)
+            return result
+
+    # query is either nibblesReserved or nibblesHistory
+
+    # get user id from source
+    user_id = event["source"]["id"]
+
+    current_time = int(datetime.now().timestamp())
 
     nibbles_reserved_conditions = and_(
         (
