@@ -29,6 +29,7 @@ def lambda_handler(event, context):
         "nibbleCreateReservation",
         "nibbleEditReservation",
         "nibbleCancelReservation",
+        "nibbleCompleteReservation",
         "adminCancelReservation",
     ):
         raise NibbleError(
@@ -76,8 +77,48 @@ def lambda_handler(event, context):
     nibble_image_url = nibble_row["image_url"]
     nibble_description = nibble_row["description"]
 
-    if validation.in_past(nibble_available_to):
+    # for all actions but completing reservation, action must occur before expiration
+    if field != "nibbleCompleteReservation" and validation.in_past(nibble_available_to):
         raise NibbleError("Cannot change reservation on nibble, already expired")
+
+    if field == "nibbleCompleteReservation":
+
+        def complete_reservation(conn, pipe, counts):
+            select_reservation = select(
+                [reservation_table.c.status, reservation_table.c.nibble_name]
+            ).where(
+                and_(
+                    reservation_table.c.user_id == user_id,
+                    reservation_table.c.nibble_id == nibble_id,
+                )
+            )
+            rows = conn.execute(select_reservation)
+            reservation = rows.fetchone()
+            if reservation is None:
+                raise NibbleError("No such reservation to complete")
+
+            status = reservation["status"]
+            if status in (
+                utils.NibbleReservationStatus.CancelledByRestaurant.value,
+                utils.NibbleReservationStatus.CancelledByUser.value,
+            ):
+                raise NibbleError("Cannot complete cancelled reservation")
+            update_reservation = (
+                reservation_table.update()
+                .where(
+                    and_(
+                        reservation_table.c.user_id == user_id,
+                        reservation_table.c.nibble_id == nibble_id,
+                    )
+                )
+                .values(status=utils.NibbleReservationStatus.Completed.value)
+            )
+            conn.execute(update_reservation)
+            return {"success": True}
+
+        result = run_in_transaction(r, engine, nibble_id, complete_reservation)
+        logger.info(result)
+        return result
 
     if field == "nibbleCancelReservation" or field == "adminCancelReservation":
 
@@ -94,7 +135,6 @@ def lambda_handler(event, context):
                     reservation_table.c.nibble_id == nibble_id,
                 )
             )
-            # TODO: do nothing if status is already cancelled
             rows = conn.execute(select_old_reservation)
             old_reservation = rows.fetchone()
             if old_reservation is None:
