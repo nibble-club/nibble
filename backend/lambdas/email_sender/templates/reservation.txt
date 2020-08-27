@@ -1,0 +1,15 @@
+Your Nibble reservation is confirmed!
+
+{nibble_name}
+Count: {nibble_count}
+Price: ${reservation_price}
+
+Location:
+{restaurant_name}
+
+{restaurant_address}
+{restaurant_address_line_2}
+
+See reservation: {reservation_page}
+
+© Nibble {current_year}

@@ -2,6 +2,10 @@ resource aws_sqs_queue cancelled_reservations {
   name = "${var.environment_namespace}-cancelled_reservations"
 }
 
+resource aws_sqs_queue email_notifications {
+  name = "${var.environment_namespace}-email_notifications"
+}
+
 
 resource aws_vpc_endpoint sqs_access_endpoint {
   vpc_endpoint_type   = "Interface"

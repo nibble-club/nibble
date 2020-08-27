@@ -101,12 +101,14 @@ def lambda_handler(event, context):
 
     nibbles_history_conditions = not_(nibbles_reserved_conditions)
 
-    if field == "nibblesReserved":
+    if field == "User.nibblesReserved":
         nibbles_condition = nibbles_reserved_conditions
         order_field = asc(nibble_table.c.available_to)
-    else:  # field = nibblesHistory
+    elif field == "User.nibblesHistory":
         nibbles_condition = nibbles_history_conditions
         order_field = desc(reservation_table.c.reserved_at)
+    else:
+        raise NibbleError("Unrecognized field " + field)
 
     # get nibbles reserved by user, with given time condition
     s = (

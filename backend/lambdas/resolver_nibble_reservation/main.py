@@ -13,11 +13,16 @@ from sqlalchemy.sql import and_, select
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-# get database info
+# connect to database
 engine = utils.get_engine()
+nibble_table = tables.get_table_metadata(tables.NibbleTable.NIBBLE)
+reservation_table = tables.get_table_metadata(tables.NibbleTable.NIBBLE_RESERVATION)
 
 # connect to Redis
 r = redis.Redis(host=os.environ["REDIS_HOST"], port=os.environ["REDIS_PORT"])
+
+# connect to SQS
+sqs = boto3.client(service_name="sqs", endpoint_url="https://" + os.environ["ENDPOINT"])
 
 
 def lambda_handler(event, context):
@@ -45,9 +50,6 @@ def lambda_handler(event, context):
 
     r.ping()
     logger.info("Connected to Redis")
-
-    nibble_table = tables.get_table_metadata(tables.NibbleTable.NIBBLE)
-    reservation_table = tables.get_table_metadata(tables.NibbleTable.NIBBLE_RESERVATION)
 
     current_time = int(datetime.now().timestamp())
 
@@ -175,9 +177,6 @@ def lambda_handler(event, context):
 
         result = run_in_transaction(r, engine, nibble_id, cancel_reservation)
         logger.info(result)
-        sqs = boto3.client(
-            service_name="sqs", endpoint_url="https://" + os.environ["ENDPOINT"]
-        )
         sqs.send_message(
             QueueUrl=os.environ["CANCELLED_QUEUE"], MessageBody=json.dumps(event),
         )
@@ -266,6 +265,17 @@ def lambda_handler(event, context):
             }
 
         result = run_in_transaction(r, engine, nibble_id, create_reservation)
+        sqs.send_message(
+            QueueUrl=os.environ["EMAIL_QUEUE"],
+            MessageBody=json.dumps(
+                {
+                    "type": utils.EmailType.Reservation.value,
+                    "payload": result,
+                    "user_id": user_id,
+                }
+            ),
+        )
+        logger.info("Sent event to email queue")
         logger.info(result)
         return result
     # end if creation

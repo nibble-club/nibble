@@ -35,5 +35,10 @@
     }
   },
   "python.sortImports.path": "isort",
-  "python.sortImports.args": ["-sp", "${workspaceFolder}/.isort.cfg"]
+  "python.sortImports.args": ["-sp", "${workspaceFolder}/.isort.cfg"],
+  "[html]": {
+    "editor.formatOnSave": false
+  },
+  "html.validate.styles": false,
+  "html.validate.scripts": false
 }

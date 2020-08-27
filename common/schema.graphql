@@ -62,8 +62,8 @@ type Mutation {
     nibbleId: ID!
     reason: String
   ): NibbleCancelReservationResponse!
-  # either restaurant or user can mark reservation as completed
-  nibbleCompleteReservation(nibbleId: ID!): NibbleReserved!
+  # user can mark reservation as completed
+  nibbleCompleteReservation(nibbleId: ID!): NibbleCompleteReservationResponse!
 
   # update user info
   updateUser(userInfo: UserInfo!): User!
@@ -182,6 +182,10 @@ type NibbleAvailable {
 
 type NibbleCancelReservationResponse {
   oldPrice: Int!
+}
+
+type NibbleCompleteReservationResponse {
+  success: Boolean!
 }
 
 # represents Nibbles that have a reservation, either currently

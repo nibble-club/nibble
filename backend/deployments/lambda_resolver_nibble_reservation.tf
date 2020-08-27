@@ -15,6 +15,7 @@ module resolver_nibble_reservation_lambda {
 
   environment = {
     CANCELLED_QUEUE = aws_sqs_queue.cancelled_reservations.id
+    EMAIL_QUEUE     = aws_sqs_queue.email_notifications.id
     DB_HOST         = aws_db_instance.postgres.address
     DB_NAME         = aws_db_instance.postgres.name
     DB_PASSWORD     = aws_db_instance.postgres.password
@@ -45,7 +46,8 @@ data aws_iam_policy_document resolver_nibble_reservation {
     ]
     effect = "Allow"
     resources = [
-      aws_sqs_queue.cancelled_reservations.arn
+      aws_sqs_queue.cancelled_reservations.arn,
+      aws_sqs_queue.email_notifications.arn,
     ]
   }
 }

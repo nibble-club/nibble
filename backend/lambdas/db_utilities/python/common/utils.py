@@ -11,6 +11,10 @@ class NibbleReservationStatus(Enum):
     Completed = "Completed"
 
 
+class EmailType(Enum):
+    Reservation = "reservation"
+
+
 def get_engine():
     """Creates a SQLAlchemy Postgres connection engine, based on the OS environment
     variables.

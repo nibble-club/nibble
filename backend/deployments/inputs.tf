@@ -362,3 +362,16 @@ variable resolver_admin_deactivate_restaurant_lambda_release_version {
   type    = string
   default = ""
 }
+
+variable email_sender_lambda_name {
+  type = string
+}
+
+variable email_sender_lambda_artifact {
+  type = string
+}
+
+variable email_sender_lambda_release_version {
+  type    = string
+  default = ""
+}
