@@ -63,6 +63,7 @@ const MapView = ({ pins, activePin = -1, height = "500px" }: MapViewProps) => {
   const classes = useStyles(height);
   const [map, setMap] = useState<Map | null>(null);
   const [isMounted, setIsMounted] = useState(false);
+  const [isInitialLoaded, setIsInitialLoaded] = useState(false);
   const [pinsChanged, setPinsChanged] = useState(false);
 
   // need to update markers with timeout because there's a LOT of weirdness with adding
@@ -111,16 +112,22 @@ const MapView = ({ pins, activePin = -1, height = "500px" }: MapViewProps) => {
       map.addControl(userLocation);
 
       map.on("load", () => {
-        setMap(map);
-        // userLocation.trigger();
-        // map.resize();
+        if (isMounted) {
+          setMap(map);
+        }
+      });
+
+      map.on("idle", () => {
+        if (isMounted) {
+          setIsInitialLoaded(true);
+        }
       });
     };
 
     if (!map) {
       initializeMap();
     }
-  }, [map, pins]);
+  }, [map, pins, isMounted]);
 
   // detect pin change
   const pinsStr = JSON.stringify(
@@ -145,13 +152,20 @@ const MapView = ({ pins, activePin = -1, height = "500px" }: MapViewProps) => {
     if (!map) {
       return;
     }
-    if (!pinsChanged) {
-      return;
-    }
     if (!isMounted) {
       return;
     }
-    setPinsChanged(false);
+    if (!isInitialLoaded) {
+      return;
+    }
+    if (!pinsChanged) {
+      return;
+    }
+
+    // protect from no-op state update
+    if (isMounted) {
+      setPinsChanged(false);
+    }
     const pinsCopy = [...pins];
 
     // ignore empty list
@@ -213,7 +227,15 @@ const MapView = ({ pins, activePin = -1, height = "500px" }: MapViewProps) => {
       maxZoom: PROGRAMMATIC_MAX_ZOOM,
     });
     map.triggerRepaint();
-  }, [pins, pinsChanged, map, isMounted, classes.popup, classes.restaurantPopup]);
+  }, [
+    pins,
+    pinsChanged,
+    map,
+    isMounted,
+    isInitialLoaded,
+    classes.popup,
+    classes.restaurantPopup,
+  ]);
 
   // move map to current activePin
   useEffect(() => {

@@ -97,8 +97,8 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
     alignItems: "center",
     flexDirection: "row",
     "& img": {
-      width: 30,
-      height: 30,
+      width: 50,
+      height: 50,
       paddingRight: theme.spacing.medium,
     },
   },

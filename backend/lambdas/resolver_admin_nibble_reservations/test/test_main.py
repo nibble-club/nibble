@@ -2,10 +2,14 @@ import unittest
 from unittest.mock import patch
 
 with patch("common.utils.get_engine"):
-    import main
+    with patch(
+        "os.environ", {"REDIS_HOST": "host", "REDIS_PORT": "6379"},
+    ):
+        with patch("redis.Redis"):
+            import main
 
 
-class TestAdminNibbleMutation(unittest.TestCase):
+class TestAdminNibbleReservations(unittest.TestCase):
     def test_runs(self):
         main.lambda_handler(
             {

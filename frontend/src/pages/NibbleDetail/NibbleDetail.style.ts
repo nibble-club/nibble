@@ -9,6 +9,12 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
     maxWidth: 1000,
     margin: "auto",
   },
+  alertsContainer: {
+    ...COLUMN_FLEX_BOX,
+    alignItems: "start",
+    marginLeft: theme.spacing.large,
+    marginTop: theme.spacing.medium,
+  },
   detailsContainer: {
     ...COLUMN_FLEX_BOX,
     alignItems: "start",

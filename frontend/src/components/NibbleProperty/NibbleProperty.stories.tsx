@@ -47,3 +47,9 @@ Time.args = {
   icon: NibblePropertyIcon.Time,
   text: "9:00 pm",
 };
+
+export const Alert = Template.bind({});
+Alert.args = {
+  icon: NibblePropertyIcon.Alert,
+  text: "Reservation already cancelled",
+};

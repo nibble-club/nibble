@@ -18,6 +18,7 @@ restaurant_restaurant_admin_table = tables.get_table_metadata(
 )
 restaurant_table = tables.get_table_metadata(tables.NibbleTable.RESTAURANT)
 
+# connect to Redis
 r = redis.Redis(host=os.environ["REDIS_HOST"], port=os.environ["REDIS_PORT"])
 
 # connect to Elasticsearch

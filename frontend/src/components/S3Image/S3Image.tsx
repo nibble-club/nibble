@@ -30,7 +30,7 @@ export const getS3ImageUrl = (location: S3Object) => {
     } else if (location.key === LOGO_PLACEHOLDER.key) {
       url = require("../../imgs/n-orange.png");
     } else if (location.key === HERO_PLACEHOLDER.key) {
-      url = require("../../imgs/plate.svg");
+      url = require("../../imgs/plate.png");
     }
   }
 

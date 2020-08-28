@@ -1,6 +1,8 @@
 import logging
+import os
 
-from common import tables, utils
+import redis
+from common import redis_keys, tables, utils
 from common.errors import NibbleError
 from sqlalchemy.sql import and_, select
 
@@ -15,6 +17,9 @@ restaurant_restaurant_admin_table = tables.get_table_metadata(
     tables.NibbleTable.RESTAURANT_RESTAURANT_ADMIN
 )
 reservation_table = tables.get_table_metadata(tables.NibbleTable.NIBBLE_RESERVATION)
+
+# connect to Redis
+r = redis.Redis(host=os.environ["REDIS_HOST"], port=os.environ["REDIS_PORT"])
 
 
 def lambda_handler(event, context):
@@ -84,7 +89,16 @@ def lambda_handler(event, context):
         result = admin_reservations_result_mapper(db_rows)
     # end of SQL connection
     logger.info(result)
-    return result
+    try:
+        total_available = int(r.hget(redis_keys.NIBBLES_AVAILABLE, nibble_id))
+    except Exception as e:
+        logger.error(e)
+        raise NibbleError("Could not get total Nibble count")
+    # get total available count
+    return {
+        "reservations": result,
+        "totalAvailable": total_available,
+    }
 
 
 def admin_reservations_result_mapper(db_rows):

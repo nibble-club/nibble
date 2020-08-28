@@ -5,6 +5,7 @@ export enum NibblePropertyIcon {
   Ingredients = "shopping_basket",
   Mystery = "redeem",
   Time = "schedule",
+  Alert = "error",
 }
 
 export type NibblePropertyProps = {

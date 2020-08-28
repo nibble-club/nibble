@@ -7,11 +7,9 @@ import AdminEditNibble from "../../components/AdminEditNibble";
 import AdminEditRestaurant from "../../components/AdminEditRestaurant";
 import AdminHome from "../../components/AdminHome";
 import HeaderBar from "../../components/HeaderBar";
-import HeroImage from "../../components/HeroImage/HeroImage";
 import {
   RestaurantForAdminQuery,
-  RestaurantForAdminQueryVariables,
-  RestaurantInfoFragment
+  RestaurantForAdminQueryVariables
 } from "../../graphql/generated/types";
 import { RESTAURANT_FOR_ADMIN } from "../../graphql/queries";
 import { useStyles } from "./Admin.style";
@@ -20,10 +18,9 @@ const Admin = () => {
   const classes = useStyles();
   let { path, url } = useRouteMatch();
 
-  const { loading, error, data, refetch } = useQuery<
-    RestaurantForAdminQuery,
-    RestaurantForAdminQueryVariables
-  >(RESTAURANT_FOR_ADMIN);
+  const { error } = useQuery<RestaurantForAdminQuery, RestaurantForAdminQueryVariables>(
+    RESTAURANT_FOR_ADMIN
+  );
 
   return (
     <div>
@@ -34,18 +31,10 @@ const Admin = () => {
             <AdminEditNibble />
           </Route>
           <Route path={`${path}/edit`}>
-            <AdminEditRestaurant onSuccess={refetch} />
+            <AdminEditRestaurant />
           </Route>
           <Route exact path={path}>
-            {loading ? (
-              <HeroImage loading={true} />
-            ) : error ? (
-              <Redirect to={{ pathname: `${url}/edit` }} />
-            ) : (
-              <AdminHome
-                restaurant={data?.restaurantForAdmin as RestaurantInfoFragment}
-              />
-            )}
+            {error ? <Redirect to={{ pathname: `${url}/edit` }} /> : <AdminHome />}
           </Route>
         </Switch>
       </div>

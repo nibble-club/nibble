@@ -14,7 +14,7 @@ const ReservationCountSelector = (props: ReservationCountSelectorProps) => {
           onClick={() => {
             props.onCountChange(-1);
           }}
-          disabled={props.currentCount <= 1}
+          disabled={props.currentCount <= 0}
         >
           -
         </button>

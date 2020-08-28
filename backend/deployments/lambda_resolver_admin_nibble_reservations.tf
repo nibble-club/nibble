@@ -19,6 +19,8 @@ module resolver_admin_nibble_reservations_lambda {
     DB_PASSWORD = aws_db_instance.postgres.password
     DB_PORT     = aws_db_instance.postgres.port
     DB_USERNAME = aws_db_instance.postgres.username
+    REDIS_HOST  = aws_elasticache_cluster.redis.cache_nodes[0].address
+    REDIS_PORT  = aws_elasticache_cluster.redis.cache_nodes[0].port
   }
 
   layers = [aws_lambda_layer_version.db_utilities.arn]

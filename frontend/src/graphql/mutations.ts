@@ -51,6 +51,23 @@ export const NIBBLE_CREATE_RESERVATION = gql`
   ${NIBBLE_RESERVED_INFO_FRAGMENT}
 `;
 
+export const NIBBLE_EDIT_RESERVATION = gql`
+  mutation NibbleEditReservation($nibbleId: ID!, $newCount: Int!) {
+    nibbleEditReservation(nibbleId: $nibbleId, newCount: $newCount) {
+      ...NibbleReservedInfo
+    }
+  }
+  ${NIBBLE_RESERVED_INFO_FRAGMENT}
+`;
+
+export const NIBBLE_CANCEL_RESERVATION = gql`
+  mutation NibbleCancelReservation($nibbleId: ID!, $reason: String) {
+    nibbleCancelReservation(nibbleId: $nibbleId, reason: $reason) {
+      oldPrice
+    }
+  }
+`;
+
 export const UPDATE_USER = gql`
   mutation UpdateUser($userInfo: UserInfo!) {
     updateUser(userInfo: $userInfo) {

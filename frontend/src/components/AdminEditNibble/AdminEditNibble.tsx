@@ -9,6 +9,8 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 
 import {
   AdminNibbleInput,
+  AdminNibbleReservationsQuery,
+  AdminNibbleReservationsQueryVariables,
   NibbleInfoQuery,
   NibbleInfoQueryVariables,
   NibbleType,
@@ -16,7 +18,11 @@ import {
   S3ObjectInput
 } from "../../graphql/generated/types";
 import { ADMIN_CREATE_NIBBLE, ADMIN_EDIT_NIBBLE } from "../../graphql/mutations";
-import { NIBBLE_INFO, RESTAURANT_FOR_ADMIN } from "../../graphql/queries";
+import {
+  ADMIN_NIBBLE_RESERVATIONS,
+  NIBBLE_INFO,
+  RESTAURANT_FOR_ADMIN
+} from "../../graphql/queries";
 import { MessageType, showMessage } from "../../redux/actions";
 import FormSection from "../FormSection";
 import LabeledInput from "../LabeledInput";
@@ -83,11 +89,14 @@ const validateValues = (values: NibbleDetailValues) => {
   return Object.keys(errors).length ? errors : {};
 };
 
-const getInitialValues = (data: NibbleInfoQuery | undefined) => {
+const getInitialValues = (
+  data: NibbleInfoQuery | undefined,
+  reservationData: AdminNibbleReservationsQuery | undefined
+) => {
   return {
     name: data?.nibbleInfo.name || "",
     type: data?.nibbleInfo.type || NibbleType.Ingredients,
-    count: data?.nibbleInfo.count || 1,
+    count: reservationData?.adminNibbleReservations.totalAvailable || 1,
     description: data?.nibbleInfo.description || "",
     price: data?.nibbleInfo.price || 200,
     availableFrom:
@@ -117,8 +126,14 @@ const AdminEditNibble = (props: AdminEditNibbleProps) => {
     variables: { nibbleId: id },
   });
 
+  const [getReservationInfo, { data: reservationData }] = useLazyQuery<
+    AdminNibbleReservationsQuery,
+    AdminNibbleReservationsQueryVariables
+  >(ADMIN_NIBBLE_RESERVATIONS, { variables: { nibbleId: id } });
+
   if (!isCreate && !loading && !error && !data) {
     getNibbleInfo();
+    getReservationInfo();
   }
 
   useEffect(() => {
@@ -174,7 +189,7 @@ const AdminEditNibble = (props: AdminEditNibbleProps) => {
   return (
     <Form
       onSubmit={onSubmit}
-      initialValues={getInitialValues(data)}
+      initialValues={getInitialValues(data, reservationData)}
       validate={validateValues}
       initialValuesEqual={(
         vals1: AnyObject | undefined,
@@ -194,7 +209,7 @@ const AdminEditNibble = (props: AdminEditNibbleProps) => {
     >
       {(formRenderProps) => (
         <div className={classes.container}>
-          <LoadingOverlay show={createLoading || editLoading} />
+          <LoadingOverlay show={true || createLoading || editLoading} />
           {!isCreate && loading ? (
             <LoadingForm />
           ) : (

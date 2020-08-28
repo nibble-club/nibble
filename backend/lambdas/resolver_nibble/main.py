@@ -78,20 +78,19 @@ def handle_restaurant_nibbles(restaurant_id, r):
             # fetch available count from redis
             nibble_id = row["id"]
             available_count = int(r.hget(redis_keys.NIBBLES_REMAINING, nibble_id))
-            if available_count > 0:
-                nibbles.append(
-                    {
-                        "id": nibble_id,
-                        "name": row["name"],
-                        "type": row["type"],
-                        "count": available_count,
-                        "imageUrl": row["image_url"],
-                        "description": row["description"],
-                        "price": row["price"],
-                        "availableFrom": row["available_from"],
-                        "availableTo": row["available_to"],
-                    }
-                )
+            nibbles.append(
+                {
+                    "id": nibble_id,
+                    "name": row["name"],
+                    "type": row["type"],
+                    "count": available_count,
+                    "imageUrl": row["image_url"],
+                    "description": row["description"],
+                    "price": row["price"],
+                    "availableFrom": row["available_from"],
+                    "availableTo": row["available_to"],
+                }
+            )
 
     logger.info(nibbles)
     return nibbles

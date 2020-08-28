@@ -1,5 +1,6 @@
 import { createUseStyles } from "react-jss";
 
+import { COLUMN_FLEX_BOX } from "../../common/theming/theming";
 import { AppTheme } from "../../common/theming/theming.types";
 
 export const useStyles = createUseStyles((theme: AppTheme) => ({
@@ -18,5 +19,9 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
       marginBottom: theme.spacing.large,
       width: "min(42.5vw, 425px)",
     },
+  },
+  inactive: {
+    ...COLUMN_FLEX_BOX,
+    textAlign: "center",
   },
 }));

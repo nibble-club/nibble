@@ -49,6 +49,7 @@ const TextInput = (fieldRenderProps: TextInputProps) => {
         disablePast={fieldRenderProps.datetimeOptions?.disablePast}
         TextFieldComponent={dateTextField(fieldRenderProps.input.name)}
         allowKeyboardControl={false}
+        openTo={"hours"}
       />
     </MuiPickersUtilsProvider>
   ) : (

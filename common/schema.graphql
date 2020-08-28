@@ -1,6 +1,6 @@
 type Query {
   # returns reservations on given Nibble
-  adminNibbleReservations(nibbleId: ID!): [AdminNibbleReservation!]!
+  adminNibbleReservations(nibbleId: ID!): AdminNibbleReservationsResponse!
   # note that this returns restaurant distance for free,
   # without making an extra request. maxDistance unit is miles
   closestRestaurants(
@@ -128,6 +128,11 @@ type AdminNibbleReservation {
   status: NibbleReservationStatus!
   cancelledAt: AWSTimestamp # mandatory if NibbleReservationStatus is CANCELLED*
   cancellationReason: String
+}
+
+type AdminNibbleReservationsResponse {
+  totalAvailable: Int! # total offered by restaurant
+  reservations: [AdminNibbleReservation!]!
 }
 
 type AdminNibbleReservationUserInfo {

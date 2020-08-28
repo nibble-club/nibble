@@ -76,7 +76,7 @@ function useLocation(): LocationResult {
       );
     }
     // don't have user location, don't have access to GPS; fetch location from postal code
-    else if (postalCode.length > 0 && !browserLocationLoading) {
+    else if (postalCode && postalCode.length > 0 && !browserLocationLoading) {
       fetchLocationFromPostalCode();
       if (data) {
         console.log("Setting location from postal code");
@@ -99,7 +99,7 @@ function useLocation(): LocationResult {
     dispatch,
     fetchLocationFromPostalCode,
     location,
-    postalCode.length,
+    postalCode,
     data,
     locationResult.loading,
     browserLocationLoading,

@@ -8,6 +8,28 @@ import {
   RESTAURANT_INFO_FRAGMENT
 } from "./fragments";
 
+export const ADMIN_NIBBLE_RESERVATIONS = gql`
+  query AdminNibbleReservations($nibbleId: ID!) {
+    adminNibbleReservations(nibbleId: $nibbleId) {
+      totalAvailable
+      reservations {
+        nibbleId
+        count
+        price
+        reservedAt
+        user {
+          userId
+          name
+          email
+        }
+        status
+        cancelledAt
+        cancellationReason
+      }
+    }
+  }
+`;
+
 export const CLOSEST_RESTAURANTS = gql`
   query ClosestRestaurants(
     $location: LatLonInput!
@@ -78,6 +100,15 @@ export const NIBBLE_INFO_WITH_RESTAURANT = gql`
   }
   ${NIBBLE_AVAILABLE_INFO_FRAGMENT}
   ${NIBBLE_RESTAURANT_INFO_FRAGMENT}
+`;
+
+export const NIBBLE_RESERVATION = gql`
+  query NibbleReservation($nibbleId: ID!) {
+    nibbleReservation(nibbleId: $nibbleId) {
+      ...NibbleReservedInfo
+    }
+  }
+  ${NIBBLE_RESERVED_INFO_FRAGMENT}
 `;
 
 export const NIBBLES_WITH_PROPERTY_DISTANCE = gql`

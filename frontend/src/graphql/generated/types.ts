@@ -40,6 +40,11 @@ export type AddressWithoutLocationInput = {
   postalCode: Scalars['String'];
 };
 
+export type AdminDeactivateRestaurantResponse = {
+  __typename?: 'AdminDeactivateRestaurantResponse';
+  id: Scalars['ID'];
+};
+
 export type AdminDeleteNibbleResponse = {
   __typename?: 'AdminDeleteNibbleResponse';
   id: Scalars['ID'];
@@ -66,6 +71,12 @@ export type AdminNibbleReservation = {
   status: NibbleReservationStatus;
   cancelledAt?: Maybe<Scalars['AWSTimestamp']>;
   cancellationReason?: Maybe<Scalars['String']>;
+};
+
+export type AdminNibbleReservationsResponse = {
+  __typename?: 'AdminNibbleReservationsResponse';
+  totalAvailable: Scalars['Int'];
+  reservations: Array<AdminNibbleReservation>;
 };
 
 export type AdminNibbleReservationUserInfo = {
@@ -114,7 +125,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   adminCreateRestaurant: Restaurant;
   adminEditRestaurant: Restaurant;
-  adminDeactivateRestaurant: Restaurant;
+  adminDeactivateRestaurant: AdminDeactivateRestaurantResponse;
   adminCreateNibble: NibbleAvailable;
   adminEditNibble: NibbleAvailable;
   adminDeleteNibble: AdminDeleteNibbleResponse;
@@ -122,7 +133,7 @@ export type Mutation = {
   nibbleCreateReservation: NibbleReserved;
   nibbleEditReservation: NibbleReserved;
   nibbleCancelReservation: NibbleCancelReservationResponse;
-  nibbleCompleteReservation: NibbleReserved;
+  nibbleCompleteReservation: NibbleCompleteReservationResponse;
   updateUser: User;
 };
 
@@ -134,11 +145,6 @@ export type MutationAdminCreateRestaurantArgs = {
 
 export type MutationAdminEditRestaurantArgs = {
   input: AdminRestaurantInput;
-};
-
-
-export type MutationAdminDeactivateRestaurantArgs = {
-  id: Scalars['ID'];
 };
 
 
@@ -211,6 +217,11 @@ export type NibbleCancelReservationResponse = {
   oldPrice: Scalars['Int'];
 };
 
+export type NibbleCompleteReservationResponse = {
+  __typename?: 'NibbleCompleteReservationResponse';
+  success: Scalars['Boolean'];
+};
+
 export enum NibbleRecommendationReason {
   Recommended = 'Recommended',
   Distance = 'Distance',
@@ -255,7 +266,7 @@ export type PaginationInput = {
 
 export type Query = {
   __typename?: 'Query';
-  adminNibbleReservations: Array<AdminNibbleReservation>;
+  adminNibbleReservations: AdminNibbleReservationsResponse;
   closestRestaurants: ClosestRestaurantsResults;
   geocodeAddress: LatLon;
   imageUploadURL: ImageUploadDestination;
@@ -483,6 +494,27 @@ export type RestaurantInfoFragment = (
   ) }
 );
 
+export type AdminNibbleReservationsQueryVariables = Exact<{
+  nibbleId: Scalars['ID'];
+}>;
+
+
+export type AdminNibbleReservationsQuery = (
+  { __typename?: 'Query' }
+  & { adminNibbleReservations: (
+    { __typename?: 'AdminNibbleReservationsResponse' }
+    & Pick<AdminNibbleReservationsResponse, 'totalAvailable'>
+    & { reservations: Array<(
+      { __typename?: 'AdminNibbleReservation' }
+      & Pick<AdminNibbleReservation, 'nibbleId' | 'count' | 'price' | 'reservedAt' | 'status' | 'cancelledAt' | 'cancellationReason'>
+      & { user: (
+        { __typename?: 'AdminNibbleReservationUserInfo' }
+        & Pick<AdminNibbleReservationUserInfo, 'userId' | 'name' | 'email'>
+      ) }
+    )> }
+  ) }
+);
+
 export type ClosestRestaurantsQueryVariables = Exact<{
   location: LatLonInput;
   paginationInput: PaginationInput;
@@ -571,6 +603,19 @@ export type NibbleInfoWithRestaurantQuery = (
     & NibbleAvailableInfoFragment
     & NibbleRestaurantInfoFragment
   ) }
+);
+
+export type NibbleReservationQueryVariables = Exact<{
+  nibbleId: Scalars['ID'];
+}>;
+
+
+export type NibbleReservationQuery = (
+  { __typename?: 'Query' }
+  & { nibbleReservation?: Maybe<(
+    { __typename?: 'NibbleReserved' }
+    & NibbleReservedInfoFragment
+  )> }
 );
 
 export type NibblesWithPropertyDistanceQueryVariables = Exact<{

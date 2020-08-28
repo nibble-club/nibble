@@ -15,8 +15,8 @@ const colorForIcon = (icon: NibblePropertyIcon) => {
     icon === NibblePropertyIcon.Location
   ) {
     return appTheme.color.green;
-  } else if (icon === NibblePropertyIcon.Time) {
-    return appTheme.color.blue;
+  } else if (icon === NibblePropertyIcon.Alert) {
+    return appTheme.color.text.alert;
   } else {
     return appTheme.color.text.primary;
   }

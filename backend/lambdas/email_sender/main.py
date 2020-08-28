@@ -146,4 +146,6 @@ def image_url_mapper(image):
     bucket = image["bucket"]
     region = image["region"]
     key = image["key"]
+    if bucket == "PLACEHOLDER":
+        return "https://nibble-branding.s3-us-west-2.amazonaws.com/plate.png"
     return f"https://{bucket}.s3-{region}.amazonaws.com/{key}"
