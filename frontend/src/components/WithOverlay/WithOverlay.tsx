@@ -61,6 +61,7 @@ const WithOverlay = (props: WithOverlayProps) => {
   const classes = useStyles({
     opacity,
     display,
+    noShadow: props.noShadow,
   });
   return (
     <div>

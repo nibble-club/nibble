@@ -13,7 +13,7 @@ import { LoadingOverlayProps } from "./LoadingOverlay.types";
 const LoadingOverlay = (props: LoadingOverlayProps) => {
   const classes = useStyles();
   return (
-    <WithOverlay delay={500} show={props.show}>
+    <WithOverlay delay={500} show={props.show} noShadow>
       <CircularProgress
         classes={{
           root: classes.circularProgress,

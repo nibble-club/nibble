@@ -21,6 +21,11 @@ export const ADMIN_NIBBLE_RESERVATIONS = gql`
           userId
           name
           email
+          profilePicUrl {
+            bucket
+            region
+            key
+          }
         }
         status
         cancelledAt

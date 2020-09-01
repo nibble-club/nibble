@@ -1,6 +1,9 @@
 import unittest
 from unittest.mock import patch
 
+from hypothesis import given
+from hypothesis.strategies import fixed_dictionaries, integers, just, lists, one_of
+
 with patch("common.utils.get_engine"):
     with patch(
         "os.environ", {"REDIS_HOST": "host", "REDIS_PORT": "6379"},
@@ -34,6 +37,7 @@ class TestAdminNibbleReservations(unittest.TestCase):
                     "cancellation_reason": None,
                     "user_id": "def456",
                     "email": "abc@xyz.com",
+                    "profile_url": {"a": "b"},
                 }
             ]
         )
@@ -48,6 +52,42 @@ class TestAdminNibbleReservations(unittest.TestCase):
         self.assertEqual(result["user"]["userId"], "def456")
         self.assertEqual(result["user"]["name"], "Abc X.")
         self.assertEqual(result["user"]["email"], "abc@xyz.com")
+
+    @given(
+        lists(
+            fixed_dictionaries(
+                {
+                    "reservedAt": integers(1500000000, 2000000000),
+                    "status": one_of(
+                        just("Reserved"),
+                        just("Completed"),
+                        just("CancelledByRestaurant"),
+                        just("CancelledByUser"),
+                    ),
+                }
+            )
+        )
+    )
+    def test_sorting(self, reservations_unsorted):
+        reservations = sorted(reservations_unsorted, key=main.reservation_sort_key)
+        for i in range(len(reservations)):
+            for j in range(i + 1, len(reservations)):
+                if reservations[i]["status"] == reservations[j]["status"]:
+                    self.assertLessEqual(
+                        reservations[i]["reservedAt"], reservations[j]["reservedAt"]
+                    )
+                else:
+                    self.assertIn(
+                        (reservations[i]["status"], reservations[j]["status"]),
+                        [
+                            ("Reserved", "Completed"),
+                            ("Reserved", "CancelledByRestaurant"),
+                            ("Reserved", "CancelledByUser"),
+                            ("Completed", "CancelledByRestaurant"),
+                            ("Completed", "CancelledByUser"),
+                            ("CancelledByRestaurant", "CancelledByUser"),
+                        ],
+                    )
 
 
 if __name__ == "__main__":

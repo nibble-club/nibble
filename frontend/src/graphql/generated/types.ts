@@ -84,6 +84,7 @@ export type AdminNibbleReservationUserInfo = {
   userId: Scalars['ID'];
   name: Scalars['String'];
   email: Scalars['String'];
+  profilePicUrl: S3Object;
 };
 
 export type AdminRestaurantInput = {
@@ -510,6 +511,10 @@ export type AdminNibbleReservationsQuery = (
       & { user: (
         { __typename?: 'AdminNibbleReservationUserInfo' }
         & Pick<AdminNibbleReservationUserInfo, 'userId' | 'name' | 'email'>
+        & { profilePicUrl: (
+          { __typename?: 'S3Object' }
+          & Pick<S3Object, 'bucket' | 'region' | 'key'>
+        ) }
       ) }
     )> }
   ) }

@@ -126,7 +126,7 @@ const NibbleDetail = () => {
           NibbleReservationStatus.CancelledByRestaurant
       ) {
         setReservationDisabled(true);
-        setHasReservation(true);
+        setHasReservation(false);
         setCurrentCount(reservationData.nibbleReservation.count);
         setAlerts((alerts) =>
           alerts.concat(

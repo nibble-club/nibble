@@ -139,6 +139,7 @@ type AdminNibbleReservationUserInfo {
   userId: ID!
   name: String!
   email: String!
+  profilePicUrl: S3Object!
 }
 
 input AdminRestaurantInput {

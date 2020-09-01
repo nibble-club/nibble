@@ -6,6 +6,14 @@ import {
   RESTAURANT_INFO_FRAGMENT
 } from "./fragments";
 
+export const ADMIN_CANCEL_RESERVATION = gql`
+  mutation AdminCancelReservation($userId: ID!, $nibbleId: ID!, $reason: String) {
+    adminCancelReservation(userId: $userId, nibbleId: $nibbleId, reason: $reason) {
+      oldPrice
+    }
+  }
+`;
+
 export const ADMIN_CREATE_NIBBLE = gql`
   mutation AdminCreateNibble($input: AdminNibbleInput!) {
     adminCreateNibble(input: $input) {

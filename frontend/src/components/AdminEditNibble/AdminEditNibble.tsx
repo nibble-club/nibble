@@ -24,6 +24,7 @@ import {
   RESTAURANT_FOR_ADMIN
 } from "../../graphql/queries";
 import { MessageType, showMessage } from "../../redux/actions";
+import AdminNibbleReservationCard from "../AdminNibbleReservationCard";
 import FormSection from "../FormSection";
 import LabeledInput from "../LabeledInput";
 import LoadingForm from "../LoadingForm/LoadingForm";
@@ -187,208 +188,228 @@ const AdminEditNibble = (props: AdminEditNibbleProps) => {
   };
 
   return (
-    <Form
-      onSubmit={onSubmit}
-      initialValues={getInitialValues(data, reservationData)}
-      validate={validateValues}
-      initialValuesEqual={(
-        vals1: AnyObject | undefined,
-        vals2: AnyObject | undefined
-      ) => {
-        // compare all but timestamps, which may change but we can safely ignore
-        return (
-          (!vals1 && !vals2) ||
-          (vals1?.name === vals2?.name &&
-            vals1?.type === vals2?.type &&
-            vals1?.count === vals2?.count &&
-            vals1?.imageUrl === vals2?.imageUrl &&
-            vals1?.description === vals2?.description &&
-            vals1?.price === vals2?.price)
-        );
-      }}
-    >
-      {(formRenderProps) => (
-        <div className={classes.container}>
-          <LoadingOverlay show={true || createLoading || editLoading} />
-          {!isCreate && loading ? (
-            <LoadingForm />
-          ) : (
-            <form onSubmit={formRenderProps.handleSubmit}>
-              <div className={classes.formContainer}>
-                <h2>{isCreate ? "Create a new Nibble" : "Update Nibble"}</h2>
-                <FormSection>
-                  <h3>Nibble Information</h3>
-                  <Field<string> name="name" placeholder="" type="text">
-                    {(fieldRenderProps) => (
-                      <LabeledInput
-                        label={"Nibble Name:"}
-                        inputWidth={40}
-                        explanation={`Quickly describe exactly what you're offering. For example: "Half sushi roll" or "Hoagie roll". This is the title users will see when browsing Nibbles.`}
-                        error={fieldRenderProps.meta.error}
-                        showError={
-                          fieldRenderProps.meta.touched && fieldRenderProps.meta.error
-                        }
+    <div>
+      <div className={classes.reservationsContainer}>
+        {reservationData &&
+          reservationData.adminNibbleReservations.reservations.length > 0 && (
+            <div>
+              <h2>Reservations</h2>
+              <div className={classes.reservations}>
+                {reservationData.adminNibbleReservations.reservations.map(
+                  (reservation) => (
+                    <AdminNibbleReservationCard
+                      key={reservation.user.userId}
+                      {...reservation}
+                    />
+                  )
+                )}
+              </div>
+            </div>
+          )}
+      </div>
+      <Form
+        onSubmit={onSubmit}
+        initialValues={getInitialValues(data, reservationData)}
+        validate={validateValues}
+        initialValuesEqual={(
+          vals1: AnyObject | undefined,
+          vals2: AnyObject | undefined
+        ) => {
+          // compare all but timestamps, which may change but we can safely ignore
+          return (
+            (!vals1 && !vals2) ||
+            (vals1?.name === vals2?.name &&
+              vals1?.type === vals2?.type &&
+              vals1?.count === vals2?.count &&
+              vals1?.imageUrl === vals2?.imageUrl &&
+              vals1?.description === vals2?.description &&
+              vals1?.price === vals2?.price)
+          );
+        }}
+      >
+        {(formRenderProps) => (
+          <div className={classes.container}>
+            <LoadingOverlay show={createLoading || editLoading} />
+            {!isCreate && loading ? (
+              <LoadingForm />
+            ) : (
+              <form onSubmit={formRenderProps.handleSubmit}>
+                <div className={classes.formContainer}>
+                  <h2>{isCreate ? "Create a new Nibble" : "Update Nibble"}</h2>
+                  <FormSection>
+                    <h3>Nibble Information</h3>
+                    <Field<string> name="name" placeholder="" type="text">
+                      {(fieldRenderProps) => (
+                        <LabeledInput
+                          label={"Nibble Name:"}
+                          inputWidth={40}
+                          explanation={`Quickly describe exactly what you're offering. For example: "Half sushi roll" or "Hoagie roll". This is the title users will see when browsing Nibbles.`}
+                          error={fieldRenderProps.meta.error}
+                          showError={
+                            fieldRenderProps.meta.touched && fieldRenderProps.meta.error
+                          }
+                        >
+                          <TextInput center={false} {...fieldRenderProps} />
+                        </LabeledInput>
+                      )}
+                    </Field>
+                    <Field<string> name="description" placeholder="" type="textarea">
+                      {(fieldRenderProps) => (
+                        <LabeledInput
+                          label={"Description:"}
+                          inputWidth={55}
+                          explanation={`Describe in more detail what you're offering. This is the description users will see when they click on this Nibble.`}
+                          error={fieldRenderProps.meta.error}
+                          showError={
+                            fieldRenderProps.meta.touched && fieldRenderProps.meta.error
+                          }
+                        >
+                          <TextInput center={false} {...fieldRenderProps} />
+                        </LabeledInput>
+                      )}
+                    </Field>
+                    <LabeledInput
+                      label="Type:"
+                      error={formRenderProps.errors.type}
+                      explanation={"What type of Nibble are you offering?"}
+                      showError={
+                        formRenderProps.form.getFieldState("type")?.touched &&
+                        formRenderProps.errors.type
+                      }
+                    >
+                      <Field<NibbleType>
+                        name="type"
+                        component="select"
+                        className={classes.selectActive}
                       >
-                        <TextInput center={false} {...fieldRenderProps} />
-                      </LabeledInput>
-                    )}
-                  </Field>
-                  <Field<string> name="description" placeholder="" type="textarea">
-                    {(fieldRenderProps) => (
-                      <LabeledInput
-                        label={"Description:"}
-                        inputWidth={55}
-                        explanation={`Describe in more detail what you're offering. This is the description users will see when they click on this Nibble.`}
-                        error={fieldRenderProps.meta.error}
-                        showError={
-                          fieldRenderProps.meta.touched && fieldRenderProps.meta.error
-                        }
-                      >
-                        <TextInput center={false} {...fieldRenderProps} />
-                      </LabeledInput>
-                    )}
-                  </Field>
-                  <LabeledInput
-                    label="Type:"
-                    error={formRenderProps.errors.type}
-                    explanation={"What type of Nibble are you offering?"}
-                    showError={
-                      formRenderProps.form.getFieldState("type")?.touched &&
-                      formRenderProps.errors.type
+                        {Object.keys(NibbleType).map((key) => {
+                          return (
+                            <option key={key} value={key}>
+                              {key}
+                            </option>
+                          );
+                        })}
+                      </Field>
+                    </LabeledInput>
+                    <Field<number>
+                      name="count"
+                      placeholder=""
+                      type="number"
+                      parse={(value: string) => parseInt(value, 10) || 0}
+                      format={(value: number) => (value && value) || ""}
+                    >
+                      {(fieldRenderProps) => (
+                        <LabeledInput
+                          label={"Count:"}
+                          inputWidth={30}
+                          explanation={`Total number of this Nibble you are offering`}
+                          error={fieldRenderProps.meta.error}
+                          showError={
+                            fieldRenderProps.meta.touched && fieldRenderProps.meta.error
+                          }
+                        >
+                          <TextInput center={false} {...fieldRenderProps} />
+                        </LabeledInput>
+                      )}
+                    </Field>
+                    <Field<number>
+                      name="price"
+                      placeholder="$2.00"
+                      type="text"
+                      parse={storePrice}
+                      format={showPrice}
+                    >
+                      {(fieldRenderProps) => (
+                        <LabeledInput
+                          label={"Price:"}
+                          inputWidth={20}
+                          explanation={`Price per Nibble`}
+                          error={fieldRenderProps.meta.error}
+                          showError={
+                            fieldRenderProps.meta.touched && fieldRenderProps.meta.error
+                          }
+                        >
+                          <TextInput center={false} {...fieldRenderProps} />
+                        </LabeledInput>
+                      )}
+                    </Field>
+                    <Field<moment.Moment>
+                      name="availableFrom"
+                      placeholder=""
+                      type="datetime"
+                    >
+                      {(fieldRenderProps) => (
+                        <LabeledInput
+                          label={"Available From:"}
+                          inputWidth={40}
+                          explanation={`When this Nibble becomes available. Time zone: UTC${fieldRenderProps.input.value.format(
+                            "Z"
+                          )}`}
+                          error={fieldRenderProps.meta.error}
+                          showError={fieldRenderProps.meta.error}
+                        >
+                          <TextInput center={false} {...fieldRenderProps} />
+                        </LabeledInput>
+                      )}
+                    </Field>
+                    <Field<moment.Moment>
+                      name="availableTo"
+                      placeholder=""
+                      type="datetime"
+                    >
+                      {(fieldRenderProps) => (
+                        <LabeledInput
+                          label={"Available Until:"}
+                          inputWidth={40}
+                          explanation={`When this Nibble must be picked up by. Note that users should be allowed to pick up this Nibble any time between the available from and available to times.`}
+                          error={fieldRenderProps.meta.error}
+                          showError={fieldRenderProps.meta.error}
+                        >
+                          <TextInput
+                            center={false}
+                            datetimeOptions={{ disablePast: true }}
+                            {...fieldRenderProps}
+                          />
+                        </LabeledInput>
+                      )}
+                    </Field>
+                  </FormSection>
+                  <FormSection>
+                    <LabeledInput
+                      label={"Nibble Image:"}
+                      inputWidth={60}
+                      explanation="Add an image of your Nibble here. Should be a 3:2 aspect ratio. Feel free to leave the default if this is a Mystery Nibble!"
+                      imageToPreview={{
+                        location: imageLocation,
+                        width: 225,
+                        height: 150,
+                      }}
+                      alignLabelTop={true}
+                    >
+                      <S3ImageUpload
+                        setImageLocation={setImageLocation}
+                        destination={S3ObjectDestination.NibbleImages}
+                      />
+                    </LabeledInput>
+                  </FormSection>
+                  <button
+                    type="submit"
+                    disabled={
+                      formRenderProps.hasValidationErrors ||
+                      formRenderProps.submitting ||
+                      (formRenderProps.hasSubmitErrors &&
+                        !formRenderProps.dirtySinceLastSubmit)
                     }
                   >
-                    <Field<NibbleType>
-                      name="type"
-                      component="select"
-                      className={classes.selectActive}
-                    >
-                      {Object.keys(NibbleType).map((key) => {
-                        return (
-                          <option key={key} value={key}>
-                            {key}
-                          </option>
-                        );
-                      })}
-                    </Field>
-                  </LabeledInput>
-                  <Field<number>
-                    name="count"
-                    placeholder=""
-                    type="number"
-                    parse={(value: string) => parseInt(value, 10) || 0}
-                    format={(value: number) => (value && value) || ""}
-                  >
-                    {(fieldRenderProps) => (
-                      <LabeledInput
-                        label={"Count:"}
-                        inputWidth={30}
-                        explanation={`Total number of this Nibble you are offering`}
-                        error={fieldRenderProps.meta.error}
-                        showError={
-                          fieldRenderProps.meta.touched && fieldRenderProps.meta.error
-                        }
-                      >
-                        <TextInput center={false} {...fieldRenderProps} />
-                      </LabeledInput>
-                    )}
-                  </Field>
-                  <Field<number>
-                    name="price"
-                    placeholder="$2.00"
-                    type="text"
-                    parse={storePrice}
-                    format={showPrice}
-                  >
-                    {(fieldRenderProps) => (
-                      <LabeledInput
-                        label={"Price:"}
-                        inputWidth={20}
-                        explanation={`Price per Nibble`}
-                        error={fieldRenderProps.meta.error}
-                        showError={
-                          fieldRenderProps.meta.touched && fieldRenderProps.meta.error
-                        }
-                      >
-                        <TextInput center={false} {...fieldRenderProps} />
-                      </LabeledInput>
-                    )}
-                  </Field>
-                  <Field<moment.Moment>
-                    name="availableFrom"
-                    placeholder=""
-                    type="datetime"
-                  >
-                    {(fieldRenderProps) => (
-                      <LabeledInput
-                        label={"Available From:"}
-                        inputWidth={40}
-                        explanation={`When this Nibble becomes available. Time zone: UTC${fieldRenderProps.input.value.format(
-                          "Z"
-                        )}`}
-                        error={fieldRenderProps.meta.error}
-                        showError={fieldRenderProps.meta.error}
-                      >
-                        <TextInput center={false} {...fieldRenderProps} />
-                      </LabeledInput>
-                    )}
-                  </Field>
-                  <Field<moment.Moment>
-                    name="availableTo"
-                    placeholder=""
-                    type="datetime"
-                  >
-                    {(fieldRenderProps) => (
-                      <LabeledInput
-                        label={"Available Until:"}
-                        inputWidth={40}
-                        explanation={`When this Nibble must be picked up by. Note that users should be allowed to pick up this Nibble any time between the available from and available to times.`}
-                        error={fieldRenderProps.meta.error}
-                        showError={fieldRenderProps.meta.error}
-                      >
-                        <TextInput
-                          center={false}
-                          datetimeOptions={{ disablePast: true }}
-                          {...fieldRenderProps}
-                        />
-                      </LabeledInput>
-                    )}
-                  </Field>
-                </FormSection>
-                <FormSection>
-                  <LabeledInput
-                    label={"Nibble Image:"}
-                    inputWidth={60}
-                    explanation="Add an image of your Nibble here. Should be a 3:2 aspect ratio. Feel free to leave the default if this is a Mystery Nibble!"
-                    imageToPreview={{
-                      location: imageLocation,
-                      width: 225,
-                      height: 150,
-                    }}
-                    alignLabelTop={true}
-                  >
-                    <S3ImageUpload
-                      setImageLocation={setImageLocation}
-                      destination={S3ObjectDestination.NibbleImages}
-                    />
-                  </LabeledInput>
-                </FormSection>
-                <button
-                  type="submit"
-                  disabled={
-                    formRenderProps.hasValidationErrors ||
-                    formRenderProps.submitting ||
-                    (formRenderProps.hasSubmitErrors &&
-                      !formRenderProps.dirtySinceLastSubmit)
-                  }
-                >
-                  {isCreate ? "Create Nibble" : "Save changes"}
-                </button>
-              </div>
-            </form>
-          )}
-        </div>
-      )}
-    </Form>
+                    {isCreate ? "Create Nibble" : "Save changes"}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        )}
+      </Form>
+    </div>
   );
 };
 

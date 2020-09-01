@@ -47,6 +47,7 @@ def lambda_handler(event, context):
     user_info_cols = [
         user_table.c.full_name,
         user_table.c.email,
+        user_table.c.profile_url,
     ]
     nibble_reservation_info_cols = [
         reservation_table.c.nibble_id,
@@ -86,7 +87,9 @@ def lambda_handler(event, context):
             raise NibbleError("Cannot retrieve reservations for given Nibble")
 
         db_rows = conn.execute(s)
-        result = admin_reservations_result_mapper(db_rows)
+        result = sorted(
+            admin_reservations_result_mapper(db_rows), key=reservation_sort_key
+        )
     # end of SQL connection
     logger.info(result)
     try:
@@ -121,7 +124,26 @@ def admin_reservations_result_mapper(db_rows):
                     "userId": row["user_id"],
                     "name": truncated_name,
                     "email": row["email"],
+                    "profilePicUrl": row["profile_url"],
                 },
             }
         )
     return result
+
+
+def reservation_sort_key(reservation):
+    """Creates sorting key from a reservation, as returned by
+    `admin_reservations_result_mapper`. Sorts orders first by status (reserved, then
+    completed, then cancelled by the user, then cancelled by the restaurant), and then
+    by the time of reservation"""
+    if reservation["status"] == "Reserved":
+        status_code = 0
+    elif reservation["status"] == "Completed":
+        status_code = 1
+    elif reservation["status"] == "CancelledByRestaurant":
+        status_code = 2
+    elif reservation["status"] == "CancelledByUser":
+        status_code = 3
+    else:
+        status_code = 4
+    return (status_code, reservation["reservedAt"])

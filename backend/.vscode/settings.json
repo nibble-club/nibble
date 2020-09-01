@@ -40,5 +40,8 @@
     "editor.formatOnSave": false
   },
   "html.validate.styles": false,
-  "html.validate.scripts": false
+  "html.validate.scripts": false,
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}/lambdas/db_utilities/python"
+  ]
 }

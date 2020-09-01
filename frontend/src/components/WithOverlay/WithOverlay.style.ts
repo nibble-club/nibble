@@ -17,7 +17,7 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
     zIndex: 99,
     overflow: "visible",
     margin: "auto",
-    boxShadow: theme.shadow[3],
+    boxShadow: ({ noShadow }) => (noShadow ? "" : theme.shadow[3]),
   },
   overlay: {
     display: ({ display }) => (display ? "block" : "none"),

@@ -19,7 +19,7 @@ def create_input(loc_1, loc_2):
     }
 
 
-class TestAdminRestaurantMutation(unittest.TestCase):
+class TestRestaurantDistance(unittest.TestCase):
     @given(
         tuples(
             floats(min_value=-180, max_value=180), floats(min_value=-85, max_value=85)
