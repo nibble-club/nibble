@@ -5,6 +5,8 @@ import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 import { createStore } from "redux";
 import { devToolsEnhancer } from "redux-devtools-extension";
+import { persistStore } from "redux-persist";
+import { PersistGate } from "redux-persist/integration/react";
 
 import {
   ApolloClient,
@@ -42,7 +44,7 @@ const client = new ApolloClient({
   cache: new InMemoryCache({
     typePolicies: {
       Address: {
-        // uniquely identified by street address, locality, and admin area
+        // uniquely identified by latitude and longitude
         keyFields: ["location", ["latitude", "longitude"]],
       },
     },
@@ -50,19 +52,22 @@ const client = new ApolloClient({
 });
 
 const store = createStore(nibbleApp, devToolsEnhancer({}));
+const persistor = persistStore(store);
 
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-      <BrowserRouter>
-        <JSSThemeProvider theme={appTheme}>
-          <MUIThemeProvider theme={muiTheme}>
-            <ApolloProvider client={client}>
-              <App />
-            </ApolloProvider>
-          </MUIThemeProvider>
-        </JSSThemeProvider>
-      </BrowserRouter>
+      <PersistGate loading={null} persistor={persistor}>
+        <BrowserRouter>
+          <JSSThemeProvider theme={appTheme}>
+            <MUIThemeProvider theme={muiTheme}>
+              <ApolloProvider client={client}>
+                <App />
+              </ApolloProvider>
+            </MUIThemeProvider>
+          </JSSThemeProvider>
+        </BrowserRouter>
+      </PersistGate>
     </Provider>
   </React.StrictMode>,
   document.getElementById("root")
@@ -71,4 +76,4 @@ ReactDOM.render(
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+serviceWorker.register();

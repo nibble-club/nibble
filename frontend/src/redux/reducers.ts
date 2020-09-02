@@ -1,4 +1,6 @@
 import { combineReducers } from "redux";
+import { PersistConfig, persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage";
 
 import { LatLon } from "../graphql/generated/types";
 import {
@@ -97,6 +99,12 @@ function search(state = { show: false }, action: SearchAction) {
   }
 }
 
+const persistConfig = {
+  key: "root-persisted",
+  whitelist: ["user", "userPostalCode", "userLocation"],
+  storage,
+} as PersistConfig<RootState>;
+
 const nibbleState = combineReducers({
   user,
   message,
@@ -105,6 +113,8 @@ const nibbleState = combineReducers({
   search,
 });
 
-export default nibbleState;
+const persistedNibbleState = persistReducer(persistConfig, nibbleState);
+
+export default persistedNibbleState;
 
 export type RootState = ReturnType<typeof nibbleState>;

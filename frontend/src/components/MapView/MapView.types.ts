@@ -11,6 +11,7 @@ export type MapPin = {
     location: LatLon;
   };
   name: string;
+  id?: string;
   logoUrl?: S3Object;
   /** Allows you to put any random keys; these will be ignored */
   [key: string]: any;

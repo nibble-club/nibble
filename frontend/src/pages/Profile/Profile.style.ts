@@ -51,7 +51,9 @@ export const useStyles = createUseStyles((theme: AppTheme) => ({
   userInfoText: {
     ...COLUMN_FLEX_BOX,
     flexGrow: 1,
-    maxWidth: 500,
+    width: "80vw",
+    maxWidth: 400,
+    textAlign: "center",
     margin: theme.spacing.medium,
     "& h2": {
       fontSize: theme.fontSizes.xLarge,

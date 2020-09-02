@@ -13,6 +13,7 @@ import { withTransparency } from "../../common/theming/theming";
 import { AppTheme } from "../../common/theming/theming.types";
 import FormSection from "../../components/FormSection";
 import LabeledInput from "../../components/LabeledInput";
+import LoadingOverlay from "../../components/LoadingOverlay";
 import { NibbleCollectionReserved } from "../../components/NibbleCollection";
 import S3Image from "../../components/S3Image";
 import { PROFILE_PICTURE_PLACEHOLDER } from "../../components/S3Image/S3Image";
@@ -300,6 +301,7 @@ const Profile = () => {
       <WithOverlay show={showForm}>
         {data && (
           <div ref={formRef}>
+            <LoadingOverlay show={updateLoading} />
             <Form
               onSubmit={onSubmit}
               initialValues={{

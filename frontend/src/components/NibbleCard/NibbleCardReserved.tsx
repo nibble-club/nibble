@@ -47,7 +47,7 @@ export const NibbleCardReserved = (props: NibbleCardReservedProps) => {
             <div className={classes.pickupBy}>Cancelled:</div>
             <div className={classes.pickupByTime}>
               {moment.unix(props.cancelledAt || moment().unix()).calendar()}
-            </div>{" "}
+            </div>
           </div>
         )}
         <div className={classes.remaining} id={"reserved"}>
